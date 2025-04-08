@@ -1,68 +1,75 @@
 [project]
-name = "app"
-version = "0.1.0"
-description = ""
-requires-python = ">=3.10,<4.0"
+name = "fastapi_best_architecture"
+version = "0.0.1"
+description = """
+A RBAC (Role-Based Access Control) permission control system built on FastAPI, featuring a unique pseudo-three-tier
+architecture design, with built-in basic implementation of fastapi admin as a template library, free and open-source.
+"""
+authors = [
+    { name = "Wu Clan", email = "jianhengwu0407@gmail.com" },
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10,<3.13"
 dependencies = [
-    "fastapi[standard]<1.0.0,>=0.114.2",
-    "python-multipart<1.0.0,>=0.0.7",
-    "email-validator<3.0.0.0,>=2.1.0.post1",
-    "passlib[bcrypt]<2.0.0,>=1.7.4",
-    "tenacity<9.0.0,>=8.2.3",
-    "pydantic>2.0",
-    "emails<1.0,>=0.6",
-    "jinja2<4.0.0,>=3.1.4",
-    "alembic<2.0.0,>=1.12.1",
-    "httpx<1.0.0,>=0.25.1",
-    "psycopg[binary]<4.0.0,>=3.1.13",
-    "sqlmodel<1.0.0,>=0.0.21",
-    # Pin bcrypt until passlib supports the latest
-    "bcrypt==4.0.1",
-    "pydantic-settings<3.0.0,>=2.2.1",
-    "sentry-sdk[fastapi]<2.0.0,>=1.40.6",
-    "pyjwt<3.0.0,>=2.8.0",
+    "aiofiles>=24.1.0",
+    "alembic>=1.14.1",
+    "asgi-correlation-id>=4.3.3",
+    "asgiref>=3.8.0",
+    "asyncmy>=0.2.10",
+    "asyncpg>=0.30.0",
+    "bcrypt>=4.2.1",
+    "celery==5.3.6",
+    # When celery version < 6.0.0
+    # https://github.com/celery/celery/issues/7874
+    "celery-aio-pool==0.1.0rc8",
+    "cryptography>=44.0.0",
+    "fast-captcha>=0.3.2",
+    "fastapi-cli==0.0.5",
+    "fastapi-limiter>=0.1.6",
+    "fastapi-oauth20>=0.0.1a2",
+    "fastapi-pagination>=0.12.34",
+    "fastapi[standard]==0.115.11",
+    "flower>=2.0.0",
+    "gevent>=24.11.1",
+    "ip2loc>=1.0.0",
+    "itsdangerous>=2.2.0",
+    "jinja2>=3.1.4",
+    "loguru>=0.7.3",
+    "msgspec>=0.19.0",
+    "path==17.0.0",
+    "psutil>=6.0.0",
+    "pwdlib>=0.2.1",
+    "pydantic>=2.11.0",
+    "pydantic-settings>=2.0.0",
+    "python-jose>=3.3.0",
+    "python-socketio>=5.12.0",
+    "redis[hiredis]>=5.2.0",
+    "rtoml>=0.12.0",
+    "sqlalchemy-crud-plus==1.6.0",
+    "sqlalchemy[asyncio]>=2.0.40",
+    "user-agents==2.2.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-sugar>=1.0.0",
+]
+lint = [
+    "pre-commit>=4.0.0",
+]
+server = [
+    "gunicorn>=21.2.0",
+    "aio-pika>=9.4.3",
+    "wait-for-it>=2.2.2",
 ]
 
 [tool.uv]
-dev-dependencies = [
-    "pytest<8.0.0,>=7.4.3",
-    "mypy<2.0.0,>=1.8.0",
-    "ruff<1.0.0,>=0.2.2",
-    "pre-commit<4.0.0,>=3.6.2",
-    "types-passlib<2.0.0.0,>=1.7.7.20240106",
-    "coverage<8.0.0,>=7.4.3",
-]
+package = false
+python-downloads = "manual"
+default-groups = ["dev", "lint"]
 
-[build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.mypy]
-strict = true
-exclude = ["venv", ".venv", "alembic"]
-
-[tool.ruff]
-target-version = "py310"
-exclude = ["alembic"]
-
-[tool.ruff.lint]
-select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
-    "ARG001", # unused arguments in functions
-]
-ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
-    "W191",  # indentation contains tabs
-    "B904",  # Allow raising exceptions without from e, for HTTPException
-]
-
-[tool.ruff.lint.pyupgrade]
-# Preserve types, even if a file imports `from __future__ import annotations`.
-keep-runtime-typing = true
+[[tool.uv.index]]
+name = "aliyun"
+url = "https://mirrors.aliyun.com/pypi/simple"

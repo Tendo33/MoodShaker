@@ -1,5 +1,3 @@
-#!/bin/sh -e
-set -x
+#!/usr/bin/env bash
 
-ruff check app scripts --fix
-ruff format app scripts
+ruff format --check
