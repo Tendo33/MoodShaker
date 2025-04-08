@@ -3,6 +3,7 @@ import os.path
 from contextlib import asynccontextmanager
 
 from fastapi import Depends, FastAPI
+from fastapi.responses import RedirectResponse
 from fastapi_limiter import FastAPILimiter
 from fastapi_pagination import add_pagination
 
@@ -53,6 +54,12 @@ def register_app():
         openapi_url=settings.FASTAPI_OPENAPI_URL,
         lifespan=register_init,
     )
+    # 首页重定向
+
+    @app.get('/')
+    async def welcome():
+        return RedirectResponse(url='/docs')
+
     # 日志
     register_logger()
 

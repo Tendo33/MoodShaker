@@ -30,7 +30,7 @@ class Settings(BaseSettings):
 
     # FastAPI
     FASTAPI_API_V1_PATH: str = '/api/v1'
-    FASTAPI_TITLE: str = 'FastAPI'
+    FASTAPI_TITLE: str = 'Moodshaker'
     FASTAPI_VERSION: str = '0.0.1'
     FASTAPI_DESCRIPTION: str = 'FastAPI Best Architecture'
     FASTAPI_DOCS_URL: str = '/docs'
