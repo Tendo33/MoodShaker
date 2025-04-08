@@ -1,21 +1,20 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import os.path
+
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi_limiter import FastAPILimiter
 from fastapi_pagination import add_pagination
 
 from backend.app.router import route
 from backend.common.exception.exception_handler import register_exception
-from backend.common.log import setup_logging, set_custom_logfile
-from backend.core.path_conf import STATIC_DIR
-from backend.database.redis import redis_client
+from backend.common.log import set_custom_logfile, setup_logging
 from backend.core.conf import settings
+from backend.core.path_conf import STATIC_DIR
 from backend.database.db import create_table
+from backend.database.redis import redis_client
 from backend.utils.demo_site import demo_site
-from backend.utils.health_check import http_limit_callback, ensure_unique_route_names
+from backend.utils.health_check import ensure_unique_route_names, http_limit_callback
 from backend.utils.openapi import simplify_operation_ids
 
 

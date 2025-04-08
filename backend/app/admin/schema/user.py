@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 import datetime
 
-from pydantic import Field, EmailStr, ConfigDict, UUID4, HttpUrl
+from pydantic import UUID4, ConfigDict, EmailStr, Field, HttpUrl
 
-from backend.common.schema import SchemaBase, CustomPhoneNumber
+from backend.common.schema import CustomPhoneNumber, SchemaBase
 
 
 class Auth(SchemaBase):

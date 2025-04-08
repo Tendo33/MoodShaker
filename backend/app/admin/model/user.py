@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from datetime import datetime
 
-from sqlalchemy import String, VARBINARY
+from sqlalchemy import VARBINARY, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.common.model import DataClassBase, id_key

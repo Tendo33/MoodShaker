@@ -1,15 +1,15 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from datetime import datetime
 
 import bcrypt
-from sqlalchemy import select, update, desc, and_
+
+from sqlalchemy import and_, desc, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import Select
 from sqlalchemy_crud_plus import CRUDPlus
 
 from backend.app.admin.model import User
-from backend.app.admin.schema.user import CreateUser, UpdateUser, Avatar
+from backend.app.admin.schema.user import Avatar, CreateUser, UpdateUser
 from backend.common.security.jwt import get_hash_password
 
 

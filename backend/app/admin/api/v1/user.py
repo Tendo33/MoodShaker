@@ -1,15 +1,14 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from backend.common.security.jwt import CurrentUser, DependsJwtAuth
-from backend.common.pagination import paging_data, DependsPagination, PageData
-from backend.common.response.response_schema import response_base, ResponseModel, ResponseSchemaModel
-from backend.database.db import CurrentSession
-from backend.app.admin.schema.user import CreateUser, GetUserInfo, ResetPassword, UpdateUser, Avatar
+from backend.app.admin.schema.user import Avatar, CreateUser, GetUserInfo, ResetPassword, UpdateUser
 from backend.app.admin.service.user_service import UserService
+from backend.common.pagination import DependsPagination, PageData, paging_data
+from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
+from backend.common.security.jwt import CurrentUser, DependsJwtAuth
+from backend.database.db import CurrentSession
 from backend.utils.serializers import select_as_dict
 
 router = APIRouter()

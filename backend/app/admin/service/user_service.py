@@ -1,13 +1,12 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from sqlalchemy import Select
 
-from backend.common.exception import errors
-from backend.common.security.jwt import superuser_verify, password_verify, get_hash_password
 from backend.app.admin.crud.crud_user import user_dao
-from backend.database.db import async_db_session
 from backend.app.admin.model import User
-from backend.app.admin.schema.user import CreateUser, ResetPassword, UpdateUser, Avatar
+from backend.app.admin.schema.user import Avatar, CreateUser, ResetPassword, UpdateUser
+from backend.common.exception import errors
+from backend.common.security.jwt import get_hash_password, password_verify, superuser_verify
+from backend.database.db import async_db_session
 
 
 class UserService:

@@ -1,10 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 import inspect
 import logging
 import os
 import sys
-
 
 from loguru import logger
 

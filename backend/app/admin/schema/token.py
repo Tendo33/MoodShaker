@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
-from backend.common.schema import SchemaBase
+
 from backend.app.admin.schema.user import GetUserInfo
+from backend.common.schema import SchemaBase
 
 
 class GetSwaggerToken(SchemaBase):

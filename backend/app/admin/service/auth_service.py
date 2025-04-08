@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from fastapi import Request
 from fastapi.security import OAuth2PasswordRequestForm
 
@@ -9,7 +8,7 @@ from backend.app.admin.schema.token import GetLoginToken
 from backend.app.admin.schema.user import Auth2
 from backend.common.exception import errors
 from backend.common.response.response_code import CustomErrorCode
-from backend.common.security.jwt import password_verify, create_access_token
+from backend.common.security.jwt import create_access_token, password_verify
 from backend.core.conf import settings
 from backend.database.db import async_db_session
 from backend.database.redis import redis_client

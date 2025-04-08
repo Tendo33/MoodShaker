@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from functools import lru_cache
 from typing import Literal
 
@@ -58,7 +57,7 @@ class Settings(BaseSettings):
     REDIS_TIMEOUT: int = 10
 
     # Captcha
-    CAPTCHA_LOGIN_REDIS_PREFIX: str = 'fba:login:captcha'
+    CAPTCHA_LOGIN_REDIS_PREFIX: str = 'moodshaker:login:captcha'
     CAPTCHA_LOGIN_EXPIRE_SECONDS: int = 60 * 5  # 过期时间，单位：秒
 
     # Token
@@ -72,8 +71,8 @@ class Settings(BaseSettings):
     LOG_ERROR_FILE_LEVEL: str = 'ERROR'
     LOG_STD_FORMAT: str = '<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | <lvl>{level: <8}</> | <lvl>{message}</>'
     LOG_FILE_FORMAT: str = '<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | <lvl>{level: <8}</> | <lvl>{message}</>'
-    LOG_ACCESS_FILENAME: str = 'fba_access.log'
-    LOG_ERROR_FILENAME: str = 'fba_error.log'
+    LOG_ACCESS_FILENAME: str = 'moodshaker_access.log'
+    LOG_ERROR_FILENAME: str = 'moodshaker_error.log'
 
     # 中间件
     MIDDLEWARE_CORS: bool = True
@@ -92,7 +91,7 @@ class Settings(BaseSettings):
     DATETIME_FORMAT: str = '%Y-%m-%d %H:%M:%S'
 
     # Request limiter
-    REQUEST_LIMITER_REDIS_PREFIX: str = 'fba:limiter'
+    REQUEST_LIMITER_REDIS_PREFIX: str = 'moodshaker:limiter'
 
     # Demo mode (Only GET, OPTIONS requests are allowed)
     DEMO_MODE: bool = False
