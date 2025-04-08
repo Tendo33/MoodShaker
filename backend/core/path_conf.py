@@ -11,7 +11,7 @@ BasePath = Path(__file__).resolve().parent.parent
 ALEMBIC_VERSIONS_DIR = os.path.join(BasePath, 'alembic', 'versions')
 
 # 日志文件路径
-LOG_DIR = os.path.join(BasePath, 'log')
+LOG_DIR = os.path.join(BasePath, 'logs')
 
 # 挂载静态目录
 STATIC_DIR = os.path.join(BasePath, 'static')
