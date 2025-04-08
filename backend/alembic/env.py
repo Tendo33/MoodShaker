@@ -8,6 +8,7 @@ from logging.config import fileConfig
 # for 'autogenerate' support
 # https://alembic.sqlalchemy.org/en/latest/autogenerate.html#autogenerating-multiple-metadata-collections
 from backend.app.admin.model import MappedBase as AdminModel
+from backend.core import path_conf
 
 # other values from the config, defined by the needs of env.py,
 from backend.database.db import SQLALCHEMY_DATABASE_URL
@@ -18,7 +19,6 @@ from alembic import context
 
 sys.path.append('../')
 
-from backend.core import path_conf
 
 if not os.path.exists(path_conf.ALEMBIC_VERSIONS_DIR):
     os.makedirs(path_conf.ALEMBIC_VERSIONS_DIR)

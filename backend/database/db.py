@@ -2,6 +2,7 @@
 import sys
 
 from typing import Annotated
+from urllib.parse import quote_plus
 from uuid import uuid4
 
 from fastapi import Depends
@@ -54,8 +55,9 @@ def uuid4_str() -> str:
     return str(uuid4())
 
 
+mysql_password = quote_plus(settings.DATABASE_PASSWORD)   
 SQLALCHEMY_DATABASE_URL = (
-    f'mysql+asyncmy://{settings.DATABASE_USER}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOST}:'
+    f'mysql+asyncmy://{settings.DATABASE_USER}:{mysql_password}@{settings.DATABASE_HOST}:'
     f'{settings.DATABASE_PORT}/{settings.DATABASE_SCHEMA}?charset={settings.DATABASE_CHARSET}'
 )
 
