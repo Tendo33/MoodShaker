@@ -1,6 +1,0 @@
-[app]
-include = 'admin'
-
-[api.config]
-prefix = '/configs'
-tags = '系统参数配置'

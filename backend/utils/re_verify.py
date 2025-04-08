@@ -1,46 +1,43 @@
-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import re
 
 
-def search_string(pattern: str, text: str) -> bool:
+def search_string(pattern, text) -> bool:
     """
     全字段正则匹配
 
-    :param pattern: 正则表达式模式
-    :param text: 待匹配的文本
+    :param pattern:
+    :param text:
     :return:
     """
-    if not pattern or not text:
+    result = re.search(pattern, text)
+    if result:
+        return True
+    else:
         return False
 
-    result = re.search(pattern, text)
-    return result is not None
 
-
-def match_string(pattern: str, text: str) -> bool:
+def match_string(pattern, text) -> bool:
     """
     从字段开头正则匹配
 
-    :param pattern: 正则表达式模式
-    :param text: 待匹配的文本
+    :param pattern:
+    :param text:
     :return:
     """
-    if not pattern or not text:
-        return False
-
     result = re.match(pattern, text)
-    return result is not None
+    if result:
+        return True
+    else:
+        return False
 
 
 def is_phone(text: str) -> bool:
     """
-    检查手机号码格式
+    检查手机号码
 
-    :param text: 待检查的手机号码
+    :param text:
     :return:
     """
-    if not text:
-        return False
-
-    phone_pattern = r'^1[3-9]\d{9}$'
-    return match_string(phone_pattern, text)
+    return match_string(r'^1[3-9]\d{9}$', text)

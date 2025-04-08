@@ -1,4 +1,5 @@
-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from math import ceil
 
 from fastapi import FastAPI, Request, Response
@@ -11,7 +12,7 @@ def ensure_unique_route_names(app: FastAPI) -> None:
     """
     检查路由名称是否唯一
 
-    :param app: FastAPI 应用实例
+    :param app:
     :return:
     """
     temp_routes = set()
@@ -22,13 +23,13 @@ def ensure_unique_route_names(app: FastAPI) -> None:
             temp_routes.add(route.name)
 
 
-async def http_limit_callback(request: Request, response: Response, expire: int) -> None:
+async def http_limit_callback(request: Request, response: Response, expire: int):
     """
     请求限制时的默认回调函数
 
-    :param request: FastAPI 请求对象
-    :param response: FastAPI 响应对象
-    :param expire: 剩余毫秒数
+    :param request:
+    :param response:
+    :param expire: 剩余毫秒
     :return:
     """
     expires = ceil(expire / 1000)

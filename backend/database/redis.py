@@ -1,4 +1,5 @@
-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import sys
 
 from redis.asyncio import Redis
@@ -9,26 +10,22 @@ from backend.core.conf import settings
 
 
 class RedisCli(Redis):
-    """Redis 客户端"""
-
-    def __init__(self) -> None:
-        """初始化 Redis 客户端"""
+    def __init__(self):
         super(RedisCli, self).__init__(
             host=settings.REDIS_HOST,
             port=settings.REDIS_PORT,
             password=settings.REDIS_PASSWORD,
             db=settings.REDIS_DATABASE,
             socket_timeout=settings.REDIS_TIMEOUT,
-            socket_connect_timeout=5,  # 连接超时
-            socket_keepalive=True,  # 保持连接
-            health_check_interval=30,  # 健康检查间隔
             decode_responses=True,  # 转码 utf-8
-            retry_on_timeout=True,  # 超时重试
-            max_connections=20,  # 最大连接数
         )
 
-    async def open(self) -> None:
-        """触发初始化连接"""
+    async def open(self):
+        """
+        触发初始化连接
+
+        :return:
+        """
         try:
             await self.ping()
         except TimeoutError:
@@ -41,12 +38,12 @@ class RedisCli(Redis):
             log.error('❌ 数据库 redis 连接异常 {}', e)
             sys.exit()
 
-    async def delete_prefix(self, prefix: str, exclude: str | list[str] | None = None) -> None:
+    async def delete_prefix(self, prefix: str, exclude: str | list = None):
         """
-        删除指定前缀的所有 key
+        删除指定前缀的所有key
 
-        :param prefix: 前缀
-        :param exclude: 排除的 key
+        :param prefix:
+        :param exclude:
         :return:
         """
         keys = []

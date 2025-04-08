@@ -1,4 +1,5 @@
-
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 from decimal import Decimal
 from typing import Any, Sequence, TypeVar
 
@@ -13,38 +14,43 @@ RowData = Row | RowMapping | Any
 R = TypeVar('R', bound=RowData)
 
 
-def select_columns_serialize(row: R) -> dict[str, Any]:
+def select_columns_serialize(row: R) -> dict:
     """
-    序列化 SQLAlchemy 查询表的列，不包含关联列
+    Serialize SQLAlchemy select table columns, does not contain relational columns
 
-    :param row: SQLAlchemy 查询结果行
+    :param row:
     :return:
     """
     result = {}
     for column in row.__table__.columns.keys():
-        value = getattr(row, column)
-        if isinstance(value, Decimal):
-            value = decimal_encoder(value)
-        result[column] = value
+        v = getattr(row, column)
+        if isinstance(v, Decimal):
+            v = decimal_encoder(v)
+        result[column] = v
     return result
 
 
-def select_list_serialize(row: Sequence[R]) -> list[dict[str, Any]]:
+def select_list_serialize(row: Sequence[R]) -> list:
     """
-    序列化 SQLAlchemy 查询列表
+    Serialize SQLAlchemy select list
 
-    :param row: SQLAlchemy 查询结果列表
+    :param row:
     :return:
     """
-    return [select_columns_serialize(item) for item in row]
+    result = [select_columns_serialize(_) for _ in row]
+    return result
 
 
-def select_as_dict(row: R, use_alias: bool = False) -> dict[str, Any]:
+def select_as_dict(row: R, use_alias: bool = False) -> dict:
     """
-    将 SQLAlchemy 查询结果转换为字典，可以包含关联数据
+    Converting SQLAlchemy select to dict, which can contain relational data,
+    depends on the properties of the select object itself
 
-    :param row: SQLAlchemy 查询结果行
-    :param use_alias: 是否使用别名作为列名
+    If set use_alias is True, the column name will be returned as alias,
+    If alias doesn't exist in columns, we don't recommend setting it to True
+
+    :param row:
+    :param use_alias:
     :return:
     """
     if not use_alias:
@@ -53,7 +59,7 @@ def select_as_dict(row: R, use_alias: bool = False) -> dict[str, Any]:
             del result['_sa_instance_state']
     else:
         result = {}
-        mapper = class_mapper(row.__class__)  # type: ignore
+        mapper = class_mapper(row.__class__)
         for prop in mapper.iterate_properties:
             if isinstance(prop, (ColumnProperty, SynonymProperty)):
                 key = prop.key
@@ -64,7 +70,7 @@ def select_as_dict(row: R, use_alias: bool = False) -> dict[str, Any]:
 
 class MsgSpecJSONResponse(JSONResponse):
     """
-    使用高性能的 msgspec 库将数据序列化为 JSON 的响应类
+    JSON response using the high-performance msgspec library to serialize data to JSON.
     """
 
     def render(self, content: Any) -> bytes:
