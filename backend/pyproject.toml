@@ -1,5 +1,5 @@
 [project]
-name = "fastapi_best_architecture"
+name = "moodshake"
 version = "0.0.1"
 description = """
 A RBAC (Role-Based Access Control) permission control system built on FastAPI, featuring a unique pseudo-three-tier

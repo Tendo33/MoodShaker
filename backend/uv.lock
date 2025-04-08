@@ -576,115 +576,6 @@ standard = [
 ]
 
 [[package]]
-name = "fastapi-best-architecture"
-version = "0.0.1"
-source = { virtual = "." }
-dependencies = [
-    { name = "agno" },
-    { name = "aiofiles" },
-    { name = "alembic" },
-    { name = "asgi-correlation-id" },
-    { name = "asgiref" },
-    { name = "asyncmy" },
-    { name = "asyncpg" },
-    { name = "bcrypt" },
-    { name = "celery" },
-    { name = "celery-aio-pool" },
-    { name = "cryptography" },
-    { name = "fast-captcha" },
-    { name = "fastapi", extra = ["standard"] },
-    { name = "fastapi-cli" },
-    { name = "fastapi-limiter" },
-    { name = "fastapi-oauth20" },
-    { name = "fastapi-pagination" },
-    { name = "flower" },
-    { name = "gevent" },
-    { name = "ip2loc" },
-    { name = "itsdangerous" },
-    { name = "jinja2" },
-    { name = "loguru" },
-    { name = "msgspec" },
-    { name = "path" },
-    { name = "psutil" },
-    { name = "pwdlib" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "python-jose" },
-    { name = "python-socketio" },
-    { name = "redis", extra = ["hiredis"] },
-    { name = "rtoml" },
-    { name = "sqlalchemy", extra = ["asyncio"] },
-    { name = "sqlalchemy-crud-plus" },
-    { name = "user-agents" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-sugar" },
-]
-lint = [
-    { name = "pre-commit" },
-]
-server = [
-    { name = "aio-pika" },
-    { name = "gunicorn" },
-    { name = "wait-for-it" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "agno", specifier = ">=1.2.13" },
-    { name = "aiofiles", specifier = ">=24.1.0" },
-    { name = "alembic", specifier = ">=1.14.1" },
-    { name = "asgi-correlation-id", specifier = ">=4.3.3" },
-    { name = "asgiref", specifier = ">=3.8.0" },
-    { name = "asyncmy", specifier = ">=0.2.10" },
-    { name = "asyncpg", specifier = ">=0.30.0" },
-    { name = "bcrypt", specifier = ">=4.2.1" },
-    { name = "celery", specifier = "==5.3.6" },
-    { name = "celery-aio-pool", specifier = "==0.1.0rc8" },
-    { name = "cryptography", specifier = ">=44.0.0" },
-    { name = "fast-captcha", specifier = ">=0.3.2" },
-    { name = "fastapi", extras = ["standard"], specifier = "==0.115.11" },
-    { name = "fastapi-cli", specifier = "==0.0.5" },
-    { name = "fastapi-limiter", specifier = ">=0.1.6" },
-    { name = "fastapi-oauth20", specifier = ">=0.0.1a2" },
-    { name = "fastapi-pagination", specifier = ">=0.12.34" },
-    { name = "flower", specifier = ">=2.0.0" },
-    { name = "gevent", specifier = ">=24.11.1" },
-    { name = "ip2loc", specifier = ">=1.0.0" },
-    { name = "itsdangerous", specifier = ">=2.2.0" },
-    { name = "jinja2", specifier = ">=3.1.4" },
-    { name = "loguru", specifier = ">=0.7.3" },
-    { name = "msgspec", specifier = ">=0.19.0" },
-    { name = "path", specifier = "==17.0.0" },
-    { name = "psutil", specifier = ">=6.0.0" },
-    { name = "pwdlib", specifier = ">=0.2.1" },
-    { name = "pydantic", specifier = ">=2.11.0" },
-    { name = "pydantic-settings", specifier = ">=2.0.0" },
-    { name = "python-jose", specifier = ">=3.3.0" },
-    { name = "python-socketio", specifier = ">=5.12.0" },
-    { name = "redis", extras = ["hiredis"], specifier = ">=5.2.0" },
-    { name = "rtoml", specifier = ">=0.12.0" },
-    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.40" },
-    { name = "sqlalchemy-crud-plus", specifier = "==1.6.0" },
-    { name = "user-agents", specifier = "==2.2.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "pytest", specifier = ">=8.0.0" },
-    { name = "pytest-sugar", specifier = ">=1.0.0" },
-]
-lint = [{ name = "pre-commit", specifier = ">=4.0.0" }]
-server = [
-    { name = "aio-pika", specifier = ">=9.4.3" },
-    { name = "gunicorn", specifier = ">=21.2.0" },
-    { name = "wait-for-it", specifier = ">=2.2.2" },
-]
-
-[[package]]
 name = "fastapi-cli"
 version = "0.0.5"
 source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
@@ -1163,6 +1054,115 @@ source = { registry = "https://mirrors.aliyun.com/pypi/simple" }
 sdist = { url = "https://mirrors.aliyun.com/pypi/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba" }
 wheels = [
     { url = "https://mirrors.aliyun.com/pypi/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8" },
+]
+
+[[package]]
+name = "moodshake"
+version = "0.0.1"
+source = { virtual = "." }
+dependencies = [
+    { name = "agno" },
+    { name = "aiofiles" },
+    { name = "alembic" },
+    { name = "asgi-correlation-id" },
+    { name = "asgiref" },
+    { name = "asyncmy" },
+    { name = "asyncpg" },
+    { name = "bcrypt" },
+    { name = "celery" },
+    { name = "celery-aio-pool" },
+    { name = "cryptography" },
+    { name = "fast-captcha" },
+    { name = "fastapi", extra = ["standard"] },
+    { name = "fastapi-cli" },
+    { name = "fastapi-limiter" },
+    { name = "fastapi-oauth20" },
+    { name = "fastapi-pagination" },
+    { name = "flower" },
+    { name = "gevent" },
+    { name = "ip2loc" },
+    { name = "itsdangerous" },
+    { name = "jinja2" },
+    { name = "loguru" },
+    { name = "msgspec" },
+    { name = "path" },
+    { name = "psutil" },
+    { name = "pwdlib" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "python-jose" },
+    { name = "python-socketio" },
+    { name = "redis", extra = ["hiredis"] },
+    { name = "rtoml" },
+    { name = "sqlalchemy", extra = ["asyncio"] },
+    { name = "sqlalchemy-crud-plus" },
+    { name = "user-agents" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-sugar" },
+]
+lint = [
+    { name = "pre-commit" },
+]
+server = [
+    { name = "aio-pika" },
+    { name = "gunicorn" },
+    { name = "wait-for-it" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "agno", specifier = ">=1.2.13" },
+    { name = "aiofiles", specifier = ">=24.1.0" },
+    { name = "alembic", specifier = ">=1.14.1" },
+    { name = "asgi-correlation-id", specifier = ">=4.3.3" },
+    { name = "asgiref", specifier = ">=3.8.0" },
+    { name = "asyncmy", specifier = ">=0.2.10" },
+    { name = "asyncpg", specifier = ">=0.30.0" },
+    { name = "bcrypt", specifier = ">=4.2.1" },
+    { name = "celery", specifier = "==5.3.6" },
+    { name = "celery-aio-pool", specifier = "==0.1.0rc8" },
+    { name = "cryptography", specifier = ">=44.0.0" },
+    { name = "fast-captcha", specifier = ">=0.3.2" },
+    { name = "fastapi", extras = ["standard"], specifier = "==0.115.11" },
+    { name = "fastapi-cli", specifier = "==0.0.5" },
+    { name = "fastapi-limiter", specifier = ">=0.1.6" },
+    { name = "fastapi-oauth20", specifier = ">=0.0.1a2" },
+    { name = "fastapi-pagination", specifier = ">=0.12.34" },
+    { name = "flower", specifier = ">=2.0.0" },
+    { name = "gevent", specifier = ">=24.11.1" },
+    { name = "ip2loc", specifier = ">=1.0.0" },
+    { name = "itsdangerous", specifier = ">=2.2.0" },
+    { name = "jinja2", specifier = ">=3.1.4" },
+    { name = "loguru", specifier = ">=0.7.3" },
+    { name = "msgspec", specifier = ">=0.19.0" },
+    { name = "path", specifier = "==17.0.0" },
+    { name = "psutil", specifier = ">=6.0.0" },
+    { name = "pwdlib", specifier = ">=0.2.1" },
+    { name = "pydantic", specifier = ">=2.11.0" },
+    { name = "pydantic-settings", specifier = ">=2.0.0" },
+    { name = "python-jose", specifier = ">=3.3.0" },
+    { name = "python-socketio", specifier = ">=5.12.0" },
+    { name = "redis", extras = ["hiredis"], specifier = ">=5.2.0" },
+    { name = "rtoml", specifier = ">=0.12.0" },
+    { name = "sqlalchemy", extras = ["asyncio"], specifier = ">=2.0.40" },
+    { name = "sqlalchemy-crud-plus", specifier = "==1.6.0" },
+    { name = "user-agents", specifier = "==2.2.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=8.0.0" },
+    { name = "pytest-sugar", specifier = ">=1.0.0" },
+]
+lint = [{ name = "pre-commit", specifier = ">=4.0.0" }]
+server = [
+    { name = "aio-pika", specifier = ">=9.4.3" },
+    { name = "gunicorn", specifier = ">=21.2.0" },
+    { name = "wait-for-it", specifier = ">=2.2.2" },
 ]
 
 [[package]]
