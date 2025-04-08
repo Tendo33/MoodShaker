@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from typing import Any, Sequence
 
 from backend.common.enums import BuildTreeType

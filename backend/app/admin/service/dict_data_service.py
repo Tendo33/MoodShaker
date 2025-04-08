@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from sqlalchemy import Select
 
 from backend.app.admin.crud.crud_dict_data import dict_data_dao

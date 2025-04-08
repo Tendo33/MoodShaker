@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from typing import Any
 
 from fast_captcha import text_captcha

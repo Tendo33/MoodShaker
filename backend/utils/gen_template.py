@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from typing import Sequence
 
 from jinja2 import Environment, FileSystemLoader, Template, select_autoescape

@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from typing import Sequence
 
 from backend.app.generator.crud.crud_gen_model import gen_model_dao

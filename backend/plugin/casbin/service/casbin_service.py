@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from uuid import UUID
 
 from sqlalchemy import Select

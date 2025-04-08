@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from celery.exceptions import NotRegistered
 from celery.result import AsyncResult
 from starlette.concurrency import run_in_threadpool

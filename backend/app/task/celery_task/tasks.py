@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from anyio import sleep
 
 from backend.app.task.celery import celery_app

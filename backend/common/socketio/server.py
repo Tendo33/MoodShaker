@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 import socketio
 
 from backend.app.task.conf import task_settings

@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 # ruff: noqa: F403, F401, I001, RUF100
 import asyncio
 import os

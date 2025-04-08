@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from fast_captcha import img_captcha
 from fastapi import APIRouter, Depends, Request
 from fastapi_limiter.depends import RateLimiter

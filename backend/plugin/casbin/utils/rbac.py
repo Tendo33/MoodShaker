@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 import casbin
 import casbin_async_sqlalchemy_adapter
 

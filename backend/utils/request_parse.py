@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 import httpx
 
 from asgiref.sync import sync_to_async

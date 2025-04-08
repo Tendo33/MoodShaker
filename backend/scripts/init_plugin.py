@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 # ruff: noqa: I001
 from anyio import run
 

@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from sqlalchemy import INT, Column, ForeignKey, Integer, Table
 
 from backend.common.model import MappedBase

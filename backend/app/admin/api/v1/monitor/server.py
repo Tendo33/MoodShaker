@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from fastapi import APIRouter, Depends
 from starlette.concurrency import run_in_threadpool
 

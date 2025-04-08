@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
 from fastapi import APIRouter, Depends
 
 from backend.common.response.response_schema import ResponseModel, response_base
