@@ -4,6 +4,13 @@ import sys
 
 from logging.config import fileConfig
 
+# add your model's MetaData object here
+# for 'autogenerate' support
+# https://alembic.sqlalchemy.org/en/latest/autogenerate.html#autogenerating-multiple-metadata-collections
+from backend.app.admin.model import MappedBase as AdminModel
+
+# other values from the config, defined by the needs of env.py,
+from backend.database.db import SQLALCHEMY_DATABASE_URL
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -24,17 +31,11 @@ config = context.config
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
-# add your model's MetaData object here
-# for 'autogenerate' support
-# https://alembic.sqlalchemy.org/en/latest/autogenerate.html#autogenerating-multiple-metadata-collections
-from backend.app.admin.model import MappedBase as AdminModel
 
 target_metadata = [
     AdminModel.metadata,
 ]
 
-# other values from the config, defined by the needs of env.py,
-from backend.database.db import SQLALCHEMY_DATABASE_URL
 
 config.set_main_option('sqlalchemy.url', SQLALCHEMY_DATABASE_URL)
 
