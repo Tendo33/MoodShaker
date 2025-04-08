@@ -8,93 +8,100 @@ from backend.core.path_conf import BasePath
 
 
 class Settings(BaseSettings):
+    """应用配置类，管理所有配置项"""
+
     model_config = SettingsConfigDict(env_file=f'{BasePath}/.env', env_file_encoding='utf-8', extra='ignore')
 
-    # Env Config
-    ENVIRONMENT: Literal['dev', 'pro']
+    # 环境配置
+    ENVIRONMENT: Literal['dev', 'pro']  # 运行环境：开发或生产
 
-    # Env Database
-    DATABASE_HOST: str
-    DATABASE_PORT: int
-    DATABASE_USER: str
-    DATABASE_PASSWORD: str
+    # 数据库配置
+    DATABASE_HOST: str  # 数据库主机
+    DATABASE_PORT: int  # 数据库端口
+    DATABASE_USER: str  # 数据库用户
+    DATABASE_PASSWORD: str  # 数据库密码
 
-    # Env Redis
-    REDIS_HOST: str
-    REDIS_PORT: int
-    REDIS_PASSWORD: str
-    REDIS_DATABASE: int
+    # Redis配置
+    REDIS_HOST: str  # Redis主机
+    REDIS_PORT: int  # Redis端口
+    REDIS_PASSWORD: str  # Redis密码
+    REDIS_DATABASE: int  # Redis数据库编号
 
-    # Env Token
-    TOKEN_SECRET_KEY: str  # 密钥 secrets.token_urlsafe(32)
+    # Token配置
+    TOKEN_SECRET_KEY: str  # JWT密钥
 
-    # FastAPI
-    FASTAPI_API_V1_PATH: str = '/api/v1'
-    FASTAPI_TITLE: str = 'Moodshaker'
-    FASTAPI_VERSION: str = '0.0.1'
-    FASTAPI_DESCRIPTION: str = 'FastAPI Best Architecture'
-    FASTAPI_DOCS_URL: str = '/docs'
-    FASTAPI_REDOC_URL: str = '/redoc'
-    FASTAPI_OPENAPI_URL: str | None = '/openapi'
-    FASTAPI_STATIC_FILES: bool = False
+    # FastAPI配置
+    FASTAPI_API_V1_PATH: str = '/api/v1'  # API基础路径
+    FASTAPI_TITLE: str = 'Moodshaker'  # API标题
+    FASTAPI_VERSION: str = '0.0.1'  # API版本
+    FASTAPI_DESCRIPTION: str = 'FastAPI Best Architecture'  # API描述
+    FASTAPI_DOCS_URL: str = '/docs'  # Swagger文档路径
+    FASTAPI_REDOC_URL: str = '/redoc'  # ReDoc文档路径
+    FASTAPI_OPENAPI_URL: str | None = '/openapi'  # OpenAPI文档路径
+    FASTAPI_STATIC_FILES: bool = False  # 静态文件服务
 
     @model_validator(mode='before')
     @classmethod
     def validator_api_url(cls, values):
+        """生产环境禁用OpenAPI和静态文件"""
         if values['ENVIRONMENT'] == 'pro':
             values['FASTAPI_OPENAPI_URL'] = None
             values['FASTAPI_STATIC_FILES'] = False
         return values
 
-    # MYSQL
-    DATABASE_ECHO: bool = False
-    DATABASE_POOL_ECHO: bool = False
-    DATABASE_SCHEMA: str = 'fsm'
-    DATABASE_CHARSET: str = 'utf8mb4'
+    # MySQL配置
+    DATABASE_ECHO: bool = False  # SQL语句打印
+    DATABASE_POOL_ECHO: bool = False  # 连接池日志
+    DATABASE_SCHEMA: str = 'fsm'  # 数据库名
+    DATABASE_CHARSET: str = 'utf8mb4'  # 字符集
 
-    # Redis
-    REDIS_TIMEOUT: int = 10
+    # Redis配置
+    REDIS_TIMEOUT: int = 10  # 操作超时时间
 
-    # Captcha
-    CAPTCHA_LOGIN_REDIS_PREFIX: str = 'moodshaker:login:captcha'
-    CAPTCHA_LOGIN_EXPIRE_SECONDS: int = 60 * 5  # 过期时间，单位：秒
+    # 验证码配置
+    CAPTCHA_LOGIN_REDIS_PREFIX: str = 'moodshaker:login:captcha'  # 验证码键前缀
+    CAPTCHA_LOGIN_EXPIRE_SECONDS: int = 60 * 5  # 验证码过期时间
 
-    # Token
-    TOKEN_ALGORITHM: str = 'HS256'  # 算法
-    TOKEN_EXPIRE_SECONDS: int = 60 * 60 * 24 * 1  # 过期时间，单位：秒
-    TOKEN_URL_SWAGGER: str = f'{FASTAPI_API_V1_PATH}/auth/login/swagger'
+    # Token配置
+    TOKEN_ALGORITHM: str = 'HS256'  # JWT算法
+    TOKEN_EXPIRE_SECONDS: int = 60 * 60 * 24 * 1  # Token过期时间
+    TOKEN_URL_SWAGGER: str = f'{FASTAPI_API_V1_PATH}/auth/login/swagger'  # Swagger登录路径
 
-    # Log
-    LOG_STD_LEVEL: str = 'INFO'
-    LOG_ACCESS_FILE_LEVEL: str = 'INFO'
-    LOG_ERROR_FILE_LEVEL: str = 'ERROR'
-    LOG_STD_FORMAT: str = '<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | <lvl>{level: <8}</> | <lvl>{message}</>'
-    LOG_FILE_FORMAT: str = '<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | <lvl>{level: <8}</> | <lvl>{message}</>'
-    LOG_ACCESS_FILENAME: str = 'moodshaker_access.log'
-    LOG_ERROR_FILENAME: str = 'moodshaker_error.log'
+    # 日志配置
+    LOG_STD_LEVEL: str = 'INFO'  # 标准输出级别
+    LOG_ACCESS_FILE_LEVEL: str = 'INFO'  # 访问日志级别
+    LOG_ERROR_FILE_LEVEL: str = 'ERROR'  # 错误日志级别
+    LOG_STD_FORMAT: str = (
+        '<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | <lvl>{level: <8}</> | <lvl>{message}</>'  # 标准输出格式
+    )
+    LOG_FILE_FORMAT: str = (
+        '<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | <lvl>{level: <8}</> | <lvl>{message}</>'  # 文件日志格式
+    )
+    LOG_ACCESS_FILENAME: str = 'moodshaker_access.log'  # 访问日志文件
+    LOG_ERROR_FILENAME: str = 'moodshaker_error.log'  # 错误日志文件
 
-    # 中间件
-    MIDDLEWARE_CORS: bool = True
-    MIDDLEWARE_ACCESS: bool = True
+    # 中间件配置
+    MIDDLEWARE_CORS: bool = True  # CORS中间件
+    MIDDLEWARE_ACCESS: bool = True  # 访问日志中间件
 
-    # CORS
+    # CORS配置
     CORS_ALLOWED_ORIGINS: list[str] = [
-        'http://127.0.0.1:8000',
+        'http://127.0.0.1:8000',  # 允许的跨域源
     ]
     CORS_EXPOSE_HEADERS: list[str] = [
-        '*',
+        '*',  # 允许暴露的响应头
     ]
 
-    # DateTime
-    DATETIME_TIMEZONE: str = 'Asia/Shanghai'
-    DATETIME_FORMAT: str = '%Y-%m-%d %H:%M:%S'
+    # 日期时间配置
+    DATETIME_TIMEZONE: str = 'Asia/Shanghai'  # 时区
+    DATETIME_FORMAT: str = '%Y-%m-%d %H:%M:%S'  # 时间格式
 
-    # Request limiter
-    REQUEST_LIMITER_REDIS_PREFIX: str = 'moodshaker:limiter'
+    # 请求限制配置
+    REQUEST_LIMITER_REDIS_PREFIX: str = 'moodshaker:limiter'  # 限流器键前缀
 
-    # Demo mode (Only GET, OPTIONS requests are allowed)
-    DEMO_MODE: bool = False
-    DEMO_MODE_EXCLUDE: set[tuple[str, str]] = {
+    # 演示模式配置
+    DEMO_MODE: bool = False  # 演示模式开关
+    DEMO_MODE_EXCLUDE: set[tuple[str, str]] = {  # 演示模式例外接口
         ('POST', f'{FASTAPI_API_V1_PATH}/auth/login'),
         ('POST', f'{FASTAPI_API_V1_PATH}/auth/logout'),
         ('GET', f'{FASTAPI_API_V1_PATH}/auth/captcha'),
@@ -103,8 +110,8 @@ class Settings(BaseSettings):
 
 @lru_cache
 def get_settings():
-    """读取配置优化写法"""
+    """获取配置实例（带缓存）"""
     return Settings()
 
 
-settings = get_settings()
+settings = get_settings()  # 全局配置实例
