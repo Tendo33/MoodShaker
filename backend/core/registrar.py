@@ -56,9 +56,9 @@ def register_app():
     )
     # 首页重定向
 
-    @app.get('/')
+    @app.get("/")
     async def welcome():
-        return RedirectResponse(url='/docs')
+        return RedirectResponse(url="/docs")
 
     # 日志
     register_logger()
@@ -104,7 +104,7 @@ def register_static_file(app: FastAPI):
         if not os.path.exists(STATIC_DIR):
             os.makedirs(STATIC_DIR)
 
-        app.mount('/static', StaticFiles(directory=STATIC_DIR), name='static')
+        app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 
 def register_middleware(app) -> None:
@@ -119,10 +119,10 @@ def register_middleware(app) -> None:
 
         app.add_middleware(
             CORSMiddleware,
-            allow_origins=['*'],
+            allow_origins=["*"],
             allow_credentials=True,
-            allow_methods=['*'],
-            allow_headers=['*'],
+            allow_methods=["*"],
+            allow_headers=["*"],
         )
 
 

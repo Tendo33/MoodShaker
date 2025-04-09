@@ -45,7 +45,7 @@ def create_access_token(sub: str) -> str:
     :param sub: The subject/userid of the JWT
     :return:
     """
-    to_encode = {'sub': sub}
+    to_encode = {"sub": sub}
     access_token = jwt.encode(to_encode, settings.TOKEN_SECRET_KEY, settings.TOKEN_ALGORITHM)
     return access_token
 
@@ -56,10 +56,10 @@ def get_token(request: Request) -> str:
 
     :return:
     """
-    authorization = request.headers.get('Authorization')
+    authorization = request.headers.get("Authorization")
     scheme, token = get_authorization_scheme_param(authorization)
-    if not authorization or scheme.lower() != 'bearer':
-        raise TokenError(msg='Token 无效')
+    if not authorization or scheme.lower() != "bearer":
+        raise TokenError(msg="Token 无效")
     return token
 
 
@@ -72,13 +72,13 @@ def jwt_decode(token: str) -> int:
     """
     try:
         payload = jwt.decode(token, settings.TOKEN_SECRET_KEY, algorithms=[settings.TOKEN_ALGORITHM])
-        user_id = int(payload.get('sub'))
+        user_id = int(payload.get("sub"))
         if not user_id:
-            raise TokenError(msg='Token 无效')
+            raise TokenError(msg="Token 无效")
     except ExpiredSignatureError:
-        raise TokenError(msg='Token 已过期')
+        raise TokenError(msg="Token 已过期")
     except (JWTError, Exception):
-        raise TokenError(msg='Token 无效')
+        raise TokenError(msg="Token 无效")
     return user_id
 
 
@@ -95,9 +95,9 @@ async def get_current_user(db: CurrentSession, token: str = Depends(oauth2_schem
 
     user = await user_dao.get(db, user_id)
     if not user:
-        raise TokenError(msg='Token 无效')
+        raise TokenError(msg="Token 无效")
     if not user.status:
-        raise AuthorizationError(msg='用户已被锁定，请联系系统管理员')
+        raise AuthorizationError(msg="用户已被锁定，请联系系统管理员")
     return user
 
 

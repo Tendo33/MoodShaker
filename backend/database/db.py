@@ -42,7 +42,7 @@ def create_async_engine_and_session(url: str | URL) -> tuple[AsyncEngine, async_
             pool_use_lifo=False,  # 是否使用LIFO（后进先出）策略
         )
     except Exception as e:
-        log.error('❌ 数据库链接失败 {}', e)
+        log.error("❌ 数据库链接失败 {}", e)
         sys.exit()
     else:
         # 创建异步会话工厂
@@ -88,8 +88,8 @@ mysql_password = quote_plus(settings.DATABASE_PASSWORD)
 
 # 构建数据库连接URL
 SQLALCHEMY_DATABASE_URL = (
-    f'mysql+asyncmy://{settings.DATABASE_USER}:{mysql_password}@{settings.DATABASE_HOST}:'
-    f'{settings.DATABASE_PORT}/{settings.DATABASE_SCHEMA}?charset={settings.DATABASE_CHARSET}'
+    f"mysql+asyncmy://{settings.DATABASE_USER}:{mysql_password}@{settings.DATABASE_HOST}:"
+    f"{settings.DATABASE_PORT}/{settings.DATABASE_SCHEMA}?charset={settings.DATABASE_CHARSET}"
 )
 
 # 初始化数据库引擎和会话工厂

@@ -10,7 +10,7 @@ from backend.utils.timezone import timezone
 # MappedBase -> id: Mapped[id_key]
 # DataClassBase && Base -> id: Mapped[id_key] = mapped_column(init=False)
 id_key = Annotated[
-    int, mapped_column(primary_key=True, index=True, autoincrement=True, sort_order=-999, comment='主键id')
+    int, mapped_column(primary_key=True, index=True, autoincrement=True, sort_order=-999, comment="主键id")
 ]
 
 
@@ -18,18 +18,18 @@ id_key = Annotated[
 class UserMixin(MappedAsDataclass):
     """用户 Mixin 数据类"""
 
-    created_by: Mapped[int] = mapped_column(sort_order=998, comment='创建者')
-    updated_by: Mapped[int | None] = mapped_column(init=False, default=None, sort_order=998, comment='修改者')
+    created_by: Mapped[int] = mapped_column(sort_order=998, comment="创建者")
+    updated_by: Mapped[int | None] = mapped_column(init=False, default=None, sort_order=998, comment="修改者")
 
 
 class DateTimeMixin(MappedAsDataclass):
     """日期时间 Mixin 数据类"""
 
     created_time: Mapped[datetime] = mapped_column(
-        init=False, default_factory=timezone.now, sort_order=999, comment='创建时间'
+        init=False, default_factory=timezone.now, sort_order=999, comment="创建时间"
     )
     updated_time: Mapped[datetime | None] = mapped_column(
-        init=False, onupdate=timezone.now, sort_order=999, comment='更新时间'
+        init=False, onupdate=timezone.now, sort_order=999, comment="更新时间"
     )
 
 

@@ -15,17 +15,17 @@ class Auth2(Auth):
 
 
 class CreateUser(Auth):
-    email: EmailStr = Field(examples=['user@example.com'])
+    email: EmailStr = Field(examples=["user@example.com"])
 
 
 class UpdateUser(SchemaBase):
     username: str
-    email: EmailStr = Field(examples=['user@example.com'])
+    email: EmailStr = Field(examples=["user@example.com"])
     phone: CustomPhoneNumber | None = None
 
 
 class Avatar(SchemaBase):
-    url: HttpUrl = Field(..., description='头像 http 地址')
+    url: HttpUrl = Field(..., description="头像 http 地址")
 
 
 class GetUserInfo(UpdateUser):

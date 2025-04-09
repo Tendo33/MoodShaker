@@ -13,13 +13,13 @@ from backend.utils.serializers import select_as_dict
 router = APIRouter()
 
 
-@router.post('/register', summary='用户注册')
+@router.post("/register", summary="用户注册")
 async def user_register(obj: CreateUser) -> ResponseModel:
     await UserService.register(obj=obj)
     return response_base.success()
 
 
-@router.post('/password/reset', summary='密码重置', dependencies=[DependsJwtAuth])
+@router.post("/password/reset", summary="密码重置", dependencies=[DependsJwtAuth])
 async def password_reset(obj: ResetPassword) -> ResponseModel:
     count = await UserService.pwd_reset(obj=obj)
     if count > 0:
@@ -27,14 +27,14 @@ async def password_reset(obj: ResetPassword) -> ResponseModel:
     return response_base.fail()
 
 
-@router.get('/{username}', summary='查看用户信息', dependencies=[DependsJwtAuth])
+@router.get("/{username}", summary="查看用户信息", dependencies=[DependsJwtAuth])
 async def get_user(username: str) -> ResponseSchemaModel[GetUserInfo]:
     current_user = await UserService.get_userinfo(username=username)
     data = GetUserInfo(**select_as_dict(current_user))
     return response_base.success(data=data)
 
 
-@router.put('/{username}', summary='更新用户信息', dependencies=[DependsJwtAuth])
+@router.put("/{username}", summary="更新用户信息", dependencies=[DependsJwtAuth])
 async def update_userinfo(username: str, obj: UpdateUser) -> ResponseModel:
     count = await UserService.update(username=username, obj=obj)
     if count > 0:
@@ -42,7 +42,7 @@ async def update_userinfo(username: str, obj: UpdateUser) -> ResponseModel:
     return response_base.fail()
 
 
-@router.put('/{username}/avatar', summary='更新头像', dependencies=[DependsJwtAuth])
+@router.put("/{username}/avatar", summary="更新头像", dependencies=[DependsJwtAuth])
 async def update_avatar(username: str, avatar: Avatar) -> ResponseModel:
     count = await UserService.update_avatar(username=username, avatar=avatar)
     if count > 0:
@@ -51,8 +51,8 @@ async def update_avatar(username: str, avatar: Avatar) -> ResponseModel:
 
 
 @router.get(
-    '',
-    summary='（模糊条件）分页获取所有用户',
+    "",
+    summary="（模糊条件）分页获取所有用户",
     dependencies=[
         DependsJwtAuth,
         DependsPagination,
@@ -70,9 +70,9 @@ async def get_all_users(
 
 
 @router.delete(
-    path='/{username}',
-    summary='用户注销',
-    description='用户注销 != 用户登出，注销之后用户将从数据库删除',
+    path="/{username}",
+    summary="用户注销",
+    description="用户注销 != 用户登出，注销之后用户将从数据库删除",
     dependencies=[DependsJwtAuth],
 )
 async def delete_user(current_user: CurrentUser, username: str) -> ResponseModel:

@@ -50,7 +50,7 @@ class CRUDUser(CRUDPlus[User]):
         salt = bcrypt.gensalt()
         obj.password = get_hash_password(obj.password, salt)
         dict_obj = obj.model_dump()
-        dict_obj.update({'salt': salt})
+        dict_obj.update({"salt": salt})
         new_user = self.model(**dict_obj)
         db.add(new_user)
 
@@ -74,7 +74,7 @@ class CRUDUser(CRUDPlus[User]):
         :param avatar:
         :return:
         """
-        return await self.update_model(db, input_user, {'avatar': avatar.url})
+        return await self.update_model(db, input_user, {"avatar": avatar.url})
 
     async def delete(self, db: AsyncSession, user_id: int) -> int:
         """
@@ -105,7 +105,7 @@ class CRUDUser(CRUDPlus[User]):
         :param new_pwd:
         :return:
         """
-        return await self.update_model(db, pk, {'password': new_pwd})
+        return await self.update_model(db, pk, {"password": new_pwd})
 
     async def get_list(self, username: str = None, phone: str = None, status: int = None) -> Select:
         """
@@ -119,9 +119,9 @@ class CRUDUser(CRUDPlus[User]):
         stmt = select(self.model).order_by(desc(self.model.join_time))
         where_list = []
         if username:
-            where_list.append(self.model.username.like(f'%{username}%'))
+            where_list.append(self.model.username.like(f"%{username}%"))
         if phone:
-            where_list.append(self.model.phone.like(f'%{phone}%'))
+            where_list.append(self.model.phone.like(f"%{phone}%"))
         if status is not None:
             where_list.append(self.model.status == status)
         if where_list:
