@@ -18,20 +18,19 @@ class Settings(BaseSettings):
     # 环境配置
     ENVIRONMENT: Literal["dev", "pro"]  # 运行环境：开发或生产
     # 模型配置
-    # 模型
-    OPENAI_API_KEY = str
-    OPENAI_API_BASE = str
-    SIlICON_API_KEY = str
-    SILICON_BASE_URL = str
-    # 搜索
-    EXA_API_KEY = str
-    TAVILY_API_KEY = str
-    # 日志
-    LOGFIRE_TOKEN = str
-    # 天气
-    WEATHER_API_KEY = str
-    # 地理编码
-    GEO_API_KEY = str
+    OPENAI_API_KEY: str
+    OPENAI_API_BASE: str
+    SIlICON_API_KEY: str
+    SILICON_BASE_URL: str
+    # 搜索配置
+    EXA_API_KEY: str
+    TAVILY_API_KEY: str
+    # 日志配置
+    LOGFIRE_TOKEN: str
+    # 天气配置
+    WEATHER_API_KEY: str
+    # 地理编码配置
+    GEO_API_KEY: str
 
     # 数据库配置
     DATABASE_HOST: str  # 数据库主机
