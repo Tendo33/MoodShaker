@@ -27,11 +27,11 @@ class User(DataClassBase):
         TIMESTAMP(timezone=True),  # 显式声明为带时区的 TIMESTAMP
         init=False,
         default_factory=timezone.now,  # 使用 timezone.now 生成带时区的 datetime
-        comment="注册时间"
+        comment="注册时间",
     )
     last_login_time: Mapped[datetime | None] = mapped_column(
         TIMESTAMP(timezone=True),  # 显式声明为带时区的 TIMESTAMP
         init=False,
         onupdate=timezone.now,  # 使用 timezone.now 生成带时区的 datetime
-        comment="上次登录"
+        comment="上次登录",
     )
