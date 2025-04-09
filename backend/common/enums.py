@@ -1,4 +1,3 @@
-
 from enum import Enum
 from enum import IntEnum as SourceIntEnum
 from typing import Type

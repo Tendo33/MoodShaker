@@ -1,4 +1,3 @@
-
 from fast_captcha import img_captcha
 from fastapi import APIRouter, Depends, Request
 from fastapi_limiter.depends import RateLimiter

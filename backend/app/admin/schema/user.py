@@ -1,4 +1,3 @@
-
 import datetime
 
 from pydantic import UUID4, ConfigDict, EmailStr, Field, HttpUrl

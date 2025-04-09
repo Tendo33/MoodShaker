@@ -1,3 +1,4 @@
+from datetime import datetime
 from functools import lru_cache
 from typing import Literal
 
@@ -5,6 +6,8 @@ from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from backend.core.path_conf import BasePath
+
+current_date = datetime.now().strftime('%Y%m%d')
 
 
 class Settings(BaseSettings):
@@ -77,8 +80,8 @@ class Settings(BaseSettings):
     LOG_FILE_FORMAT: str = (
         '<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</> | <lvl>{level: <8}</> | <lvl>{message}</>'  # 文件日志格式
     )
-    LOG_ACCESS_FILENAME: str = 'moodshaker_access.log'  # 访问日志文件
-    LOG_ERROR_FILENAME: str = 'moodshaker_error.log'  # 错误日志文件
+    LOG_ACCESS_FILENAME: str = f'moodshaker_access_{current_date}.log'  # 访问日志文件
+    LOG_ERROR_FILENAME: str = f'moodshaker_error_{current_date}.log'  # 错误日志文件
 
     # 中间件配置
     MIDDLEWARE_CORS: bool = True  # CORS中间件

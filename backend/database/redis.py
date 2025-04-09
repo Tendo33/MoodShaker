@@ -1,4 +1,3 @@
-
 import sys
 
 from redis.asyncio import Redis

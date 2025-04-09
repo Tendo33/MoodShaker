@@ -1,4 +1,3 @@
-
 from sqlalchemy import Select
 
 from backend.app.admin.crud.crud_user import user_dao

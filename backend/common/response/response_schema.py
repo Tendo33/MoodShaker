@@ -1,4 +1,3 @@
-
 from typing import Any, Generic, TypeVar
 
 from fastapi import Response

@@ -1,4 +1,3 @@
-
 from fastapi import Request
 
 from backend.common.exception import errors
