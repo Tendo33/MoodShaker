@@ -1,7 +1,9 @@
 from textwrap import dedent
 from typing import Optional
 
-from agno.agent import Agent, AgentKnowledge
+from agno.agent import Agent, AgentKnowledge, AgentMemory
+from agno.embedder.openai import OpenAIEmbedder
+from agno.memory.db.postgres import PgMemoryDb
 from agno.models.openai import OpenAIChat
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
@@ -9,9 +11,11 @@ from agno.vectordb.pgvector import PgVector, SearchType
 
 from backend.database.db import get_syn_db_url
 
+syn_db_url = get_syn_db_url()
+
 
 def get_sage(
-    model_id: str = "gpt-4o",
+    model_id: str = "deepseek-v3-250324",
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
     debug_mode: bool = True,
@@ -21,7 +25,24 @@ def get_sage(
         additional_context += "<context>"
         additional_context += f"You are interacting with the user: {user_id}"
         additional_context += "</context>"
-
+    
+    # 定义 Memory
+    AgentMemory(
+        db=PgMemoryDb(
+            table_name="agent_memory", db_url=syn_db_url
+        ),  # Persist memory in Postgres
+        create_user_memories=True,  # Store user preferences
+        create_session_summary=True,  # Store conversation summaries
+    )
+    AgentKnowledge(
+        vector_db=PgVector(
+            db_url=syn_db_url,
+            table_name="agentic_rag_documents",
+            schema="ai",
+            embedder=OpenAIEmbedder(id="BAAI/bge-m3", dimensions=1024),
+        ),
+        num_documents=3,  # Retrieve 3 most relevant documents
+    )
     return Agent(
         name="Sage",
         agent_id="sage",
@@ -31,15 +52,16 @@ def get_sage(
         # Tools available to the agent
         tools=[DuckDuckGoTools()],
         # Storage for the agent
-        storage=PostgresAgentStorage(table_name="sage_sessions", db_url=get_syn_db_url()),
+        storage=PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),
         # Knowledge base for the agent
         knowledge=AgentKnowledge(
-            vector_db=PgVector(table_name="sage_knowledge", db_url=get_syn_db_url(), search_type=SearchType.hybrid)
+            vector_db=PgVector(table_name="sage_knowledge", db_url=syn_db_url, search_type=SearchType.hybrid)
         ),
         # Description of the agent
         description=dedent("""\
             You are Sage, an advanced Knowledge Agent designed to deliver accurate, context-rich, engaging responses.
-            You have access to a knowledge base full of user-provided information and the capability to search the web if needed.
+            You have access to a knowledge base full of user-provided information 
+            and the capability to search the web if needed.
 
             Your responses should be clear, concise, and supported by citations from the knowledge base and/or the web.\
         """),
@@ -50,10 +72,12 @@ def get_sage(
             1. Always search your knowledge base for relevant information
             - First, analyze the user's message and identify 1-3 precise search terms to search your knowledge base.
             - Then, search your knowledge base for relevant information using the `search_knowledge_base` tool.
-            - Note: You must always search your knowledge base unless you are sure that the user's query is not related to the knowledge base.
+            - Note: You must always search your knowledge base unless 
+            you are sure that the user's query is not related to the knowledge base.
 
             2. Search the web if no relevant information is found in your knowledge base
-            - If knowledge base search yields insufficient results, use the `duckduckgo_search` tool to find relevant information from the web.
+            - If knowledge base search yields insufficient results, 
+            use the `duckduckgo_search` tool to find relevant information from the web.
             - Focus on reputable sources and recent information.
             - Cross-reference information from multiple sources when possible.
 
@@ -69,8 +93,11 @@ def get_sage(
                 - A clear explanation with context and definitions.
                 - Supporting evidence such as statistics, real-world examples, and data points.
                 - Clarifications that address common misconceptions.
-            - Expand the answer only if the query requires more detail. Simple questions like: "What is the weather in Tokyo?" or "What is the capital of France?" don't need an in-depth analysis.
-            - Ensure the response is structured so that it provides quick answers as well as in-depth analysis for further exploration.
+            - Expand the answer only if the query requires more detail. 
+            Simple questions like: "What is the weather in Tokyo?" or 
+            "What is the capital of France?" don't need an in-depth analysis.
+            - Ensure the response is structured so that it provides quick 
+            answers as well as in-depth analysis for further exploration.
             - Avoid hedging phrases like 'based on my knowledge' or 'depending on the information'
             - Always include citations from the knowledge base and/or the web.
 

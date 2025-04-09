@@ -8,9 +8,11 @@ from agno.tools.duckduckgo import DuckDuckGoTools
 
 from backend.database.db import get_syn_db_url
 
+syn_db_url = get_syn_db_url()
+
 
 def get_scholar(
-    model_id: str = "gpt-4o",
+    model_id: str = "deepseek-v3-250324",
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
     debug_mode: bool = True,
@@ -30,7 +32,7 @@ def get_scholar(
         # Tools available to the agent
         tools=[DuckDuckGoTools()],
         # Storage for the agent
-        storage=PostgresAgentStorage(table_name="scholar_sessions", db_url=get_syn_db_url()),
+        storage=PostgresAgentStorage(table_name="scholar_sessions", db_url=syn_db_url),
         # Description of the agent
         description=dedent("""\
             You are Scholar, a cutting-edge Answer Engine built to deliver precise,

@@ -6,6 +6,14 @@ from datetime import timezone as datetime_timezone
 from backend.core.conf import settings
 
 
+def current_utc() -> datetime:
+    return datetime.now(datetime_timezone.utc)
+
+
+def current_utc_str(format: str = "%Y-%m-%dT%H:%M:%S.%fZ") -> str:
+    return current_utc().strftime(format)
+
+
 class TimeZone:
     def __init__(self, tz: str = settings.DATETIME_TIMEZONE):
         self.tz_info = zoneinfo.ZoneInfo(tz)

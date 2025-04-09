@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 
-from utils.dttm import current_utc_str
+from backend.utils.timezone import current_utc_str
 
 ######################################################
-## Router for API status
+# Router for API status
 ######################################################
 
 status_router = APIRouter(tags=["Status"])
