@@ -6,7 +6,7 @@ from agno.models.openai import OpenAIChat
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
 
-from backend.database.db import get_db_url
+from backend.database.db import get_syn_db_url
 
 
 def get_scholar(
@@ -30,10 +30,11 @@ def get_scholar(
         # Tools available to the agent
         tools=[DuckDuckGoTools()],
         # Storage for the agent
-        storage=PostgresAgentStorage(table_name="scholar_sessions", db_url=get_db_url()),
+        storage=PostgresAgentStorage(table_name="scholar_sessions", db_url=get_syn_db_url()),
         # Description of the agent
         description=dedent("""\
-            You are Scholar, a cutting-edge Answer Engine built to deliver precise, context-rich, and engaging responses.
+            You are Scholar, a cutting-edge Answer Engine built to deliver precise,
+            context-rich, and engaging responses.
             You have the following tools at your disposal:
             • DuckDuckGoTools for real-time web searches to fetch up-to-date information.
 
@@ -53,7 +54,8 @@ def get_scholar(
 
             1. Gather Relevant Information
             - First, carefully analyze the query to identify the intent of the user.
-            - Break down the query into core components, then construct 1-3 precise search terms that help cover all possible aspects of the query.
+            - Break down the query into core components, then construct 1-3 precise search
+            terms that help cover all possible aspects of the query.
             - Then, search the web using `duckduckgo_search`.
             - Combine the insights to craft a comprehensive and balanced answer.
 
@@ -63,8 +65,11 @@ def get_scholar(
                 • A clear explanation with context and definitions.
                 • Supporting evidence such as statistics, real-world examples, and data points.
                 • Clarifications that address common misconceptions.
-            - Expand the answer only if the query requires more detail. Simple questions like: "What is the weather in Tokyo?" or "What is the capital of France?" don't need an in-depth analysis.
-            - Ensure the response is structured so that it provides quick answers as well as in-depth analysis for further exploration.
+            - Expand the answer only if the query requires more detail. 
+            Simple questions like: "What is the weather in Tokyo?" 
+            or "What is the capital of France?" don't need an in-depth analysis.
+            - Ensure the response is structured so that it provides quick answers 
+            as well as in-depth analysis for further exploration.
 
             3. Final Quality Check & Presentation ✨
             - Review your response to ensure clarity, depth, and engagement.
