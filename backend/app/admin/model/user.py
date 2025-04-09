@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import LargeBinary, String
+from sqlalchemy import TIMESTAMP, LargeBinary, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from backend.common.model import DataClassBase, id_key
@@ -23,5 +23,15 @@ class User(DataClassBase):
     is_superuser: Mapped[bool] = mapped_column(default=False, comment="超级权限(0否 1是)")
     avatar: Mapped[str | None] = mapped_column(String(255), default=None, comment="头像")
     phone: Mapped[str | None] = mapped_column(String(11), default=None, comment="手机号")
-    join_time: Mapped[datetime] = mapped_column(init=False, default_factory=timezone.now, comment="注册时间")
-    last_login_time: Mapped[datetime | None] = mapped_column(init=False, onupdate=timezone.now, comment="上次登录")
+    join_time: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True),  # 显式声明为带时区的 TIMESTAMP
+        init=False,
+        default_factory=timezone.now,  # 使用 timezone.now 生成带时区的 datetime
+        comment="注册时间"
+    )
+    last_login_time: Mapped[datetime | None] = mapped_column(
+        TIMESTAMP(timezone=True),  # 显式声明为带时区的 TIMESTAMP
+        init=False,
+        onupdate=timezone.now,  # 使用 timezone.now 生成带时区的 datetime
+        comment="上次登录"
+    )

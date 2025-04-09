@@ -52,10 +52,10 @@ class Settings(BaseSettings):
             values["FASTAPI_STATIC_FILES"] = False
         return values
 
-    # MySQL配置
+    # Postgres配置
     DATABASE_ECHO: bool = False  # SQL语句打印
     DATABASE_POOL_ECHO: bool = False  # 连接池日志
-    DATABASE_SCHEMA: str = "fsm"  # 数据库名
+    DATABASE_SCHEMA: str = "moodshaker"  # 数据库名
     DATABASE_CHARSET: str = "utf8mb4"  # 字符集
 
     # Redis配置

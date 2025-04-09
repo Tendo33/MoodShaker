@@ -90,7 +90,7 @@ def set_custom_logfile():
         str(log_access_file),
         level=settings.LOG_ACCESS_FILE_LEVEL,
         filter=lambda record: record["level"].no <= 25,
-        backtrace=False,
+        backtrace=True,
         diagnose=False,
         **log_config,
     )
