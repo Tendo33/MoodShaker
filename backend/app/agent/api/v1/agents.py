@@ -6,8 +6,8 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
-from app.agent.service.operator import AgentType, get_agent, get_available_agents
-from common.log import logger
+from backend.app.agent.service.operator import AgentType, get_agent, get_available_agents
+from backend.common.log import logger
 
 ######################################################
 # Router for the Agent Interface

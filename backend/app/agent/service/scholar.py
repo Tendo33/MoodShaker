@@ -6,7 +6,7 @@ from agno.models.openai import OpenAIChat
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
 
-from database.db import get_db_url
+from backend.database.db import get_db_url
 
 
 def get_scholar(

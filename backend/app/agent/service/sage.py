@@ -7,7 +7,7 @@ from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
 
-from database.db import get_db_url
+from backend.database.db import get_db_url
 
 
 def get_sage(
