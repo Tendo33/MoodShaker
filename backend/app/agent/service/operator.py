@@ -1,8 +1,8 @@
 from enum import Enum
 from typing import List, Optional
 
-from agents.sage import get_sage
-from agents.scholar import get_scholar
+from app.agent.service.sage import get_sage
+from app.agent.service.scholar import get_scholar
 
 
 class AgentType(Enum):

@@ -106,4 +106,4 @@ def set_custom_logfile():
     )
 
 
-log = logger
+__all__ = ["logger"]

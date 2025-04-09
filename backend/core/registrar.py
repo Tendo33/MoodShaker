@@ -7,7 +7,7 @@ from fastapi.responses import RedirectResponse
 from fastapi_limiter import FastAPILimiter
 from fastapi_pagination import add_pagination
 
-from backend.app.router import route
+from backend.app.router import router
 from backend.common.exception.exception_handler import register_exception
 from backend.common.log import set_custom_logfile, setup_logging
 from backend.core.conf import settings
@@ -136,7 +136,7 @@ def register_router(app: FastAPI):
     dependencies = [Depends(demo_site)] if settings.DEMO_MODE else None
 
     # API
-    app.include_router(route, dependencies=dependencies)
+    app.include_router(router, dependencies=dependencies)
 
     # Extra
     ensure_unique_route_names(app)

@@ -8,7 +8,7 @@ from fastapi import Depends
 from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
-from backend.common.log import log
+from backend.common.log import logger
 from backend.common.model import MappedBase
 from backend.core.conf import settings
 
@@ -42,7 +42,7 @@ def create_async_engine_and_session(url: str | URL) -> tuple[AsyncEngine, async_
             pool_use_lifo=False,  # 是否使用LIFO（后进先出）策略
         )
     except Exception as e:
-        log.error("❌ 数据库链接失败 {}", e)
+        logger.error("❌ 数据库链接失败 {}", e)
         sys.exit()
     else:
         # 创建异步会话工厂
