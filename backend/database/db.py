@@ -84,16 +84,24 @@ def uuid4_str() -> str:
 
 
 # 对数据库密码进行URL编码，确保特殊字符正确处理
-mysql_password = quote_plus(settings.DATABASE_PASSWORD)
+postgres_password = quote_plus(settings.DATABASE_PASSWORD)
+
 
 # 构建数据库连接URL
-SQLALCHEMY_DATABASE_URL = (
-    f"mysql+asyncmy://{settings.DATABASE_USER}:{mysql_password}@{settings.DATABASE_HOST}:"
-    f"{settings.DATABASE_PORT}/{settings.DATABASE_SCHEMA}?charset={settings.DATABASE_CHARSET}"
-)
+def get_db_url() -> str:
+    db_url = (
+        f"postgresql+asyncpg://{settings.DATABASE_USER}:{postgres_password}@{settings.DATABASE_HOST}:"
+        f"{settings.DATABASE_PORT}/{settings.DATABASE_SCHEMA}"
+    )
+
+    # Validate database connection
+    if "None" in db_url or db_url is None:
+        raise ValueError("Could not build database connection")
+    return db_url
+
 
 # 初始化数据库引擎和会话工厂
-async_engine, async_db_session = create_async_engine_and_session(SQLALCHEMY_DATABASE_URL)
+async_engine, async_db_session = create_async_engine_and_session(get_db_url())
 
 # 定义FastAPI依赖注入使用的会话类型
 CurrentSession = Annotated[AsyncSession, Depends(get_db)]

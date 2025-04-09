@@ -11,7 +11,7 @@ from backend.app.admin.model import MappedBase as AdminModel
 from backend.core import path_conf
 
 # other values from the config, defined by the needs of env.py,
-from backend.database.db import SQLALCHEMY_DATABASE_URL
+from backend.database.db import get_db_url
 from sqlalchemy import engine_from_config, pool
 from sqlalchemy.ext.asyncio import AsyncEngine
 
@@ -37,7 +37,7 @@ target_metadata = [
 ]
 
 
-config.set_main_option("sqlalchemy.url", SQLALCHEMY_DATABASE_URL)
+config.set_main_option("sqlalchemy.url", get_db_url())
 
 
 def run_migrations_offline():
