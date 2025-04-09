@@ -1,10 +1,9 @@
 from os import getenv
 
 from agno.playground import Playground
-from workspace.dev_resources import dev_fastapi
 
-from app.agent.service.sage import get_sage
-from app.agent.service.scholar import get_scholar
+from backend.app.agent.service.sage import get_sage
+from backend.app.agent.service.scholar import get_scholar
 
 ######################################################
 # Router for the Playground Interface
@@ -18,6 +17,6 @@ playground = Playground(agents=[sage_agent, scholar_agent])
 
 # Register the endpoint where playground routes are served with agno.com
 if getenv("RUNTIME_ENV") == "dev":
-    playground.create_endpoint(f"http://localhost:{dev_fastapi.host_port}")
+    playground.create_endpoint(f"http://localhost:{6666}")
 
 playground_router = playground.get_async_router()
