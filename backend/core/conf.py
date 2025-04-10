@@ -20,8 +20,10 @@ class Settings(BaseSettings):
     # 模型配置
     OPENAI_API_KEY: str
     OPENAI_API_BASE: str
-    SIlICON_API_KEY: str
-    SILICON_BASE_URL: str
+    CHAT_MODEL_NAME: str
+    EMBEDDING_MODEL_NAME: str
+    EMBEDDING_API_KEY: str
+    EMBEDDING_BASE_URL: str
     # 搜索配置
     EXA_API_KEY: str
     TAVILY_API_KEY: str

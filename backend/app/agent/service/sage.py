@@ -9,6 +9,7 @@ from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
 
+from backend.core.conf import settings
 from backend.database.db import get_syn_db_url
 
 syn_db_url = get_syn_db_url()
@@ -25,24 +26,31 @@ def get_sage(
         additional_context += "<context>"
         additional_context += f"You are interacting with the user: {user_id}"
         additional_context += "</context>"
-    
+
     # 定义 Memory
     AgentMemory(
-        db=PgMemoryDb(
-            table_name="agent_memory", db_url=syn_db_url
-        ),  # Persist memory in Postgres
+        db=PgMemoryDb(table_name="agent_memory", db_url=syn_db_url),  # Persist memory in Postgres
         create_user_memories=True,  # Store user preferences
         create_session_summary=True,  # Store conversation summaries
     )
+    # 定义 Embedder
+    embedder = OpenAIEmbedder(
+        id=settings.EMBEDDING_MODEL_NAME,
+        dimensions=1024,
+        api_key=settings.EMBEDDING_API_KEY,
+        base_url=settings.EMBEDDING_BASE_URL,
+    )
+    # 定义 Knowledge
     AgentKnowledge(
         vector_db=PgVector(
             db_url=syn_db_url,
             table_name="agentic_rag_documents",
-            schema="ai",
-            embedder=OpenAIEmbedder(id="BAAI/bge-m3", dimensions=1024),
+            schema="public",
+            embedder=embedder,
         ),
         num_documents=3,  # Retrieve 3 most relevant documents
     )
+
     return Agent(
         name="Sage",
         agent_id="sage",
