@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     ENVIRONMENT: Literal["dev", "pro"]  # 运行环境：开发或生产
     # 模型配置
     OPENAI_API_KEY: str
-    OPENAI_API_BASE: str
+    OPENAI_BASE_URL: str
     CHAT_MODEL_NAME: str
     EMBEDDING_MODEL_NAME: str
     EMBEDDING_API_KEY: str
