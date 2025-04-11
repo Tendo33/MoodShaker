@@ -6,7 +6,7 @@ from agno.memory.db.postgres import PgMemoryDb
 from agno.models.openai.like import OpenAILike
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
-from agno.vectordb.pgvector import PgVector, SearchType
+from agno.vectordb.pgvector import PgVector
 from backend.core.conf import settings
 from backend.database.db import get_syn_db_url
 
@@ -26,15 +26,15 @@ def get_sage(
         additional_context += "<context>"
         additional_context += f"You are interacting with the user: {user_id}"
         additional_context += "</context>"
+        
     # 定义模型
-    
     model = OpenAILike(
         id="deepseek-v3-250324",
         api_key=settings.OPENAI_API_KEY,
         base_url=settings.OPENAI_BASE_URL,
     )
 
-    # 定义 Memory
+    # 定义 persistent memory for chat history
     AgentMemory(
         db=PgMemoryDb(table_name="agent_memory", db_url=syn_db_url),  # Persist memory in Postgres
         create_user_memories=True,  # Store user preferences
@@ -47,8 +47,8 @@ def get_sage(
         api_key=settings.EMBEDDING_API_KEY,
         base_url=settings.EMBEDDING_BASE_URL,
     )
-    # 定义 Knowledge
-    AgentKnowledge(
+    # 定义 knowledge base
+    knowledge = AgentKnowledge(
         vector_db=PgVector(
             db_url=syn_db_url,
             table_name="agentic_rag_documents",
@@ -57,7 +57,8 @@ def get_sage(
         ),
         num_documents=3,  # Retrieve 3 most relevant documents
     )
-
+    # 定义storage Persist session data
+    
     return Agent(
         name="Sage",
         agent_id="sage",
@@ -69,9 +70,7 @@ def get_sage(
         # Storage for the agent
         storage=PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),
         # Knowledge base for the agent
-        knowledge=AgentKnowledge(
-            vector_db=PgVector(table_name="sage_knowledge", db_url=syn_db_url, search_type=SearchType.hybrid)
-        ),
+        knowledge=knowledge,
         # Description of the agent
         description=sage_description,
         # Instructions for the agent
