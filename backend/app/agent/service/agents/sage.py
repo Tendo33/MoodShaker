@@ -26,7 +26,7 @@ def get_sage(
         additional_context += "<context>"
         additional_context += f"You are interacting with the user: {user_id}"
         additional_context += "</context>"
-        
+
     # 定义模型
     model = OpenAILike(
         id="deepseek-v3-250324",
@@ -58,6 +58,7 @@ def get_sage(
         num_documents=3,  # Retrieve 3 most relevant documents
     )
     # 定义storage Persist session data
+    storage = (PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),)
     
     return Agent(
         name="Sage",
@@ -68,7 +69,7 @@ def get_sage(
         # Tools available to the agent
         tools=[DuckDuckGoTools()],
         # Storage for the agent
-        storage=PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),
+        storage=storage,
         # Knowledge base for the agent
         knowledge=knowledge,
         # Description of the agent
