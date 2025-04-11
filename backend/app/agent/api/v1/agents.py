@@ -15,7 +15,7 @@ from backend.common.log import logger
 agents_router = APIRouter(prefix="/agents", tags=["Agents"])
 
 
-@agents_router.get("", response_model=List[str])
+@agents_router.get(path="", response_model=List[str])
 async def list_agents():
     """
     Returns a list of all available agent IDs.

@@ -4,6 +4,11 @@ from backend.common.enums import StrEnum
 from pydantic import BaseModel
 
 
+class AgentType(StrEnum):
+    SAGE = "sage"
+    SCHOLAR = "scholar"
+
+
 class Model(StrEnum):
     """模型枚举类"""
     GPT_4O = "gpt-4o"

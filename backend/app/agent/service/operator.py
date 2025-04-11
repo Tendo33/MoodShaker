@@ -1,13 +1,10 @@
-from enum import Enum
 from typing import List, Optional
 
+from agno.agent import Agent
+
+from backend.app.agent.schema.agent_request_shema import AgentType
 from backend.app.agent.service.agents.sage import get_sage
 from backend.app.agent.service.agents.scholar import get_scholar
-
-
-class AgentType(Enum):
-    SAGE = "sage"
-    SCHOLAR = "scholar"
 
 
 def get_available_agents() -> List[str]:
@@ -21,7 +18,7 @@ def get_agent(
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
     debug_mode: bool = True,
-):
+) -> Agent:
     if agent_id == AgentType.SAGE:
         return get_sage(model_id=model_id, user_id=user_id, session_id=session_id, debug_mode=debug_mode)
     else:

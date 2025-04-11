@@ -10,7 +10,7 @@ status_router = APIRouter(tags=["Status"])
 
 
 @status_router.get("/health")
-def get_health():
+def get_health() -> dict[str, str]:
     """Check the health of the Api"""
 
     return {
