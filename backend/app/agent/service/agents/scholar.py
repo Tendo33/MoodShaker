@@ -5,7 +5,6 @@ from agno.agent import Agent
 from agno.models.openai import OpenAIChat
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
-
 from backend.database.db import get_syn_db_url
 
 syn_db_url = get_syn_db_url()

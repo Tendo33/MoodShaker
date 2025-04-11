@@ -8,7 +8,6 @@ from agno.models.openai import OpenAIChat
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector, SearchType
-
 from backend.core.conf import settings
 from backend.database.db import get_syn_db_url
 

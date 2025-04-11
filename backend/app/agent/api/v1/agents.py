@@ -1,11 +1,10 @@
-from enum import Enum
-from typing import AsyncGenerator, List, Optional
+from typing import AsyncGenerator, List
 
 from agno.agent import Agent
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 
+from backend.app.agent.schema.agent_request_shema import RunRequest
 from backend.app.agent.service.operator import AgentType, get_agent, get_available_agents
 from backend.common.log import logger
 
@@ -14,11 +13,6 @@ from backend.common.log import logger
 ######################################################
 
 agents_router = APIRouter(prefix="/agents", tags=["Agents"])
-
-
-class Model(str, Enum):
-    gpt_4o = "gpt-4o"
-    o3_mini = "o3-mini"
 
 
 @agents_router.get("", response_model=List[str])
@@ -49,16 +43,6 @@ async def chat_response_streamer(agent: Agent, message: str) -> AsyncGenerator:
         # For advanced use cases, we should yield the entire chunk
         # that contains the tool calls and intermediate steps.
         yield chunk.content
-
-
-class RunRequest(BaseModel):
-    """Request model for an running an agent"""
-
-    message: str
-    stream: bool = True
-    model: Model = Model.gpt_4o
-    user_id: Optional[str] = None
-    session_id: Optional[str] = None
 
 
 @agents_router.post("/{agent_id}/runs", status_code=status.HTTP_200_OK)
