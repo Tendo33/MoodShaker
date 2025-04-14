@@ -98,5 +98,6 @@ def get_sage(
         read_chat_history=True,
         # Show debug logs
         debug_mode=debug_mode,
+        monitoring=True
     )
     return sage_agent

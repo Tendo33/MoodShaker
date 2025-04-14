@@ -63,6 +63,7 @@ def get_scholar(
         read_chat_history=True,
         # Show debug logs
         debug_mode=debug_mode,
+        monitoring=True
     )
     
     return scholar_agent

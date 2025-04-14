@@ -17,6 +17,6 @@ playground = Playground(agents=[sage_agent, scholar_agent])
 
 # Register the endpoint where playground routes are served with agno.com
 if settings.ENVIRONMENT == "dev":
-    playground.create_endpoint(f"http://localhost:{6666}")
+    playground.create_endpoint("http://127.0.0.1:6666")
 
 playground_router = playground.get_async_router()
