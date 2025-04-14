@@ -3,8 +3,8 @@ from typing import List, Optional
 from agno.agent import Agent
 
 from backend.app.agent.schema.agent_request_shema import AgentType
-from backend.app.agent.service.agents.sage import get_sage
-from backend.app.agent.service.agents.scholar import get_scholar
+from backend.app.agent.service.agents.sage_agent import get_sage
+from backend.app.agent.service.agents.scholar_agent import get_scholar
 
 
 def get_available_agents() -> List[str]:

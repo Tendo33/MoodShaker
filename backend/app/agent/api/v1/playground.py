@@ -2,8 +2,8 @@ from os import getenv
 
 from agno.playground import Playground
 
-from backend.app.agent.service.agents.sage import get_sage
-from backend.app.agent.service.agents.scholar import get_scholar
+from backend.app.agent.service.agents.sage_agent import get_sage
+from backend.app.agent.service.agents.scholar_agent import get_scholar
 
 ######################################################
 # Router for the Playground Interface
