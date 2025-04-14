@@ -9,10 +9,10 @@ class AgentType(StrEnum):
     SCHOLAR = "scholar"
 
 
-class Model(StrEnum):
+class ModelName(StrEnum):
     """模型枚举类"""
-    GPT_4O = "gpt-4o"
-    O3_MINI = "o3-mini"
+    DEEPSEEK_V3 = "deepseek-v3-250324"
+    DEEPSEEK_R1 = "deepseek-r1-250120"
 
 
 class RunRequest(BaseModel):
@@ -20,6 +20,6 @@ class RunRequest(BaseModel):
 
     message: str
     stream: bool = True
-    model: Model = Model.GPT_4O
+    model: ModelName = ModelName.DEEPSEEK_V3
     user_id: Optional[str] = None
     session_id: Optional[str] = None

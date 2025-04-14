@@ -16,7 +16,7 @@ agents_router = APIRouter(prefix="/agents", tags=["Agents"])
 
 
 @agents_router.get(path="", response_model=List[str])
-async def list_agents():
+async def list_agents() -> List[str]:
     """
     Returns a list of all available agent IDs.
 
