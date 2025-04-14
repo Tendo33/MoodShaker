@@ -1,5 +1,7 @@
-from typing import Optional
+from typing import Optional  # noqa: I001
 
+from agno.memory.v2.db.postgres import PostgresMemoryDb
+from agno.memory.v2.memory import Memory
 from agno.agent import Agent, AgentKnowledge, AgentMemory
 from agno.embedder.openai import OpenAIEmbedder
 from agno.memory.db.postgres import PgMemoryDb
@@ -21,6 +23,7 @@ def get_sage(
     session_id: Optional[str] = None,
     debug_mode: bool = True,
 ) -> Agent:
+    # 定义 additional context
     additional_context = ""
     if user_id:
         additional_context += "<context>"
@@ -29,7 +32,7 @@ def get_sage(
 
     # 定义模型
     model = OpenAILike(
-        id="deepseek-v3-250324",
+        id=model_id,
         api_key=settings.OPENAI_API_KEY,
         base_url=settings.OPENAI_BASE_URL,
     )
@@ -40,6 +43,13 @@ def get_sage(
         create_user_memories=True,  # Store user preferences
         create_session_summary=True,  # Store conversation summaries
     )
+    memory_db = PostgresMemoryDb(
+        table_name="agno_memory",  # Table name to use in the database
+        connection_string=syn_db_url,
+        schema_name="public",  # Schema name for the table (optional)
+    )
+    Memory(db=memory_db)
+    
     # 定义 Embedder
     embedder = OpenAIEmbedder(
         id=settings.EMBEDDING_MODEL_NAME,
@@ -57,9 +67,10 @@ def get_sage(
         ),
         num_documents=3,  # Retrieve 3 most relevant documents
     )
+    
     # 定义storage Persist session data
     storage = (PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),)
-    
+
     return Agent(
         name="Sage",
         agent_id="sage",
