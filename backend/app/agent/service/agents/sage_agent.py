@@ -1,8 +1,7 @@
 from typing import Optional
 
-from agno.agent import Agent, AgentKnowledge, AgentMemory
+from agno.agent import Agent, AgentKnowledge
 from agno.embedder.openai import OpenAIEmbedder
-from agno.memory.db.postgres import PgMemoryDb
 from agno.memory.v2.db.postgres import PostgresMemoryDb
 from agno.memory.v2.memory import Memory
 from agno.models.openai.like import OpenAILike
@@ -38,17 +37,13 @@ def get_sage(
     )
 
     # 定义 persistent memory for chat history
-    AgentMemory(
-        db=PgMemoryDb(table_name="agent_memory", db_url=syn_db_url),  # Persist memory in Postgres
-        create_user_memories=True,  # Store user preferences
-        create_session_summary=True,  # Store conversation summaries
-    )
+
     memory_db = PostgresMemoryDb(
-        table_name="agno_memory",  # Table name to use in the database
-        connection_string=syn_db_url,
-        schema_name="public",  # Schema name for the table (optional)
+        table_name="agent_memory",  # Table name to use in the database
+        db_url=syn_db_url,
+        schema="public",  # Schema name for the table (optional)
     )
-    Memory(db=memory_db)
+    memory = Memory(db=memory_db)
 
     # 定义 Embedder
     embedder = OpenAIEmbedder(
@@ -69,11 +64,11 @@ def get_sage(
     )
 
     # 定义storage Persist session data
-    storage = (PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),)
-    
+    storage = PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url, schema="public")
+
     # 定义 tools
     tools = [DuckDuckGoTools()]
-    
+
     # 组合成 agent
     sage_agent = Agent(
         name="Sage",

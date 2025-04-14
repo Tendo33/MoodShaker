@@ -32,7 +32,7 @@ def get_scholar(
     )
 
     # 定义storage Persist session data
-    storage = (PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),)
+    storage = PostgresAgentStorage(table_name="scholar_sessions", db_url=syn_db_url, schema="public")
     
     # 定义 tools
     tools = [DuckDuckGoTools()]
