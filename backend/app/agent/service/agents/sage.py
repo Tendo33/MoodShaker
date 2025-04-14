@@ -49,7 +49,7 @@ def get_sage(
         schema_name="public",  # Schema name for the table (optional)
     )
     Memory(db=memory_db)
-    
+
     # 定义 Embedder
     embedder = OpenAIEmbedder(
         id=settings.EMBEDDING_MODEL_NAME,
@@ -67,7 +67,7 @@ def get_sage(
         ),
         num_documents=3,  # Retrieve 3 most relevant documents
     )
-    
+
     # 定义storage Persist session data
     storage = (PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),)
 
