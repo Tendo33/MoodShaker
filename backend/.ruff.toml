@@ -1,7 +1,7 @@
 line-length = 120
 cache-dir = ".ruff_cache"
 target-version = "py310"
-unsafe-fixes = true
+unsafe-fixes = false
 show-fixes = true
 
 [lint]

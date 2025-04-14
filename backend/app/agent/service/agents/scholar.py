@@ -1,9 +1,10 @@
 from typing import Optional
 
 from agno.agent import Agent
-from agno.models.openai import OpenAIChat
+from agno.models.openai.like import OpenAILike
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
+from backend.core.conf import settings
 from backend.database.db import get_syn_db_url
 
 from .agent_prompt.scholar_prompt import scholar_description, scholar_instructions
@@ -22,17 +23,29 @@ def get_scholar(
         additional_context += "<context>"
         additional_context += f"You are interacting with the user: {user_id}"
         additional_context += "</context>"
+        # 定义模型
+    model = OpenAILike(
+        id=model_id,
+        api_key=settings.OPENAI_API_KEY,
+        base_url=settings.OPENAI_BASE_URL,
+    )
 
+    # 定义storage Persist session data
+    storage = (PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),)
+    
+    # 定义 tools
+    tools = [DuckDuckGoTools()]
+    
     return Agent(
         name="Scholar",
         agent_id="scholar",
         user_id=user_id,
         session_id=session_id,
-        model=OpenAIChat(id=model_id),
+        model=model,
         # Tools available to the agent
-        tools=[DuckDuckGoTools()],
+        tools=tools,
         # Storage for the agent
-        storage=PostgresAgentStorage(table_name="scholar_sessions", db_url=syn_db_url),
+        storage=storage,
         # Description of the agent
         description=scholar_description,
         # Instructions for the agent

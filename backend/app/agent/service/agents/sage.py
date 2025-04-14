@@ -1,10 +1,10 @@
-from typing import Optional  # noqa: I001
+from typing import Optional
 
-from agno.memory.v2.db.postgres import PostgresMemoryDb
-from agno.memory.v2.memory import Memory
 from agno.agent import Agent, AgentKnowledge, AgentMemory
 from agno.embedder.openai import OpenAIEmbedder
 from agno.memory.db.postgres import PgMemoryDb
+from agno.memory.v2.db.postgres import PostgresMemoryDb
+from agno.memory.v2.memory import Memory
 from agno.models.openai.like import OpenAILike
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.tools.duckduckgo import DuckDuckGoTools
@@ -70,15 +70,19 @@ def get_sage(
 
     # 定义storage Persist session data
     storage = (PostgresAgentStorage(table_name="sage_sessions", db_url=syn_db_url),)
-
-    return Agent(
+    
+    # 定义 tools
+    tools = [DuckDuckGoTools()]
+    
+    # 组合成 agent
+    sage_agent = Agent(
         name="Sage",
         agent_id="sage",
         user_id=user_id,
         session_id=session_id,
         model=model,
         # Tools available to the agent
-        tools=[DuckDuckGoTools()],
+        tools=tools,
         # Storage for the agent
         storage=storage,
         # Knowledge base for the agent
@@ -100,3 +104,4 @@ def get_sage(
         # Show debug logs
         debug_mode=debug_mode,
     )
+    return sage_agent
