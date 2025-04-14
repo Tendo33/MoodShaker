@@ -23,7 +23,8 @@ def get_scholar(
         additional_context += "<context>"
         additional_context += f"You are interacting with the user: {user_id}"
         additional_context += "</context>"
-        # 定义模型
+    
+    # 定义模型
     model = OpenAILike(
         id=model_id,
         api_key=settings.OPENAI_API_KEY,
@@ -36,7 +37,7 @@ def get_scholar(
     # 定义 tools
     tools = [DuckDuckGoTools()]
     
-    return Agent(
+    scholar_agent = Agent(
         name="Scholar",
         agent_id="scholar",
         user_id=user_id,
@@ -63,3 +64,5 @@ def get_scholar(
         # Show debug logs
         debug_mode=debug_mode,
     )
+    
+    return scholar_agent
