@@ -37,18 +37,21 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/stores/user'
+import { login, register } from '@/api/user'
 import Sidebar from './Sidebar.vue'
 import LoginForm from '../auth/LoginForm.vue'
 import RegisterForm from '../auth/RegisterForm.vue'
 
 const router = useRouter()
+const userStore = useUserStore()
 
 const isSidebarCollapsed = ref(false)
 const isDark = ref(false)
-const isAuthenticated = ref(false)
 const showAuthForm = ref<'login' | 'register'>('login')
-const username = ref('')
-const userAvatar = ref('')
+const username = computed(() => userStore.userInfo?.username || '')
+const userAvatar = computed(() => userStore.userInfo?.avatar || '')
+const isAuthenticated = computed(() => !!userStore.token)
 const userStats = ref({
   conversations: 0,
   favorites: 0
@@ -79,13 +82,13 @@ const showRegister = () => {
   showAuthForm.value = 'register'
 }
 
-const handleLogin = async (credentials: { username: string; password: string }) => {
+const handleLogin = async (credentials: { username: string; password: string; captcha: string }) => {
   try {
-    // 实现登录逻辑
-    isAuthenticated.value = true
-    username.value = credentials.username
+    const { data } = await login(credentials)
+    userStore.setToken(data.token)
+    userStore.setUserInfo(data.userInfo)
     ElMessage.success('登录成功')
-    router.push('/chat')
+    await router.push({ path: '/chat' })
   } catch (error) {
     ElMessage.error('登录失败，请检查用户名和密码')
   }
@@ -93,7 +96,7 @@ const handleLogin = async (credentials: { username: string; password: string }) 
 
 const handleRegister = async (data: { username: string; email: string; password: string }) => {
   try {
-    // 实现注册逻辑
+    await register(data)
     ElMessage.success('注册成功，请登录')
     showAuthForm.value = 'login'
   } catch (error) {

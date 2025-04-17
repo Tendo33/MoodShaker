@@ -93,7 +93,7 @@ const router = createRouter({
 // 路由守卫
 router.beforeEach((to, from, next) => {
 	const userStore = useUserStore();
-	const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true'
+	const isAuthenticated = !!userStore.token
 	const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
 	// 设置页面标题
@@ -102,7 +102,7 @@ router.beforeEach((to, from, next) => {
 	if (requiresAuth && !isAuthenticated) {
 		// 需要登录但未登录，重定向到登录页
 		next('/');
-	} else if ((to.path === '/login' || to.path === '/register') && !isAuthenticated) {
+	} else if ((to.path === '/login' || to.path === '/register') && isAuthenticated) {
 		// 已登录但访问登录页或注册页，重定向到首页
 		next('/');
 	} else {

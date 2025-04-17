@@ -25,6 +25,22 @@
           show-password
         />
       </el-form-item>
+
+      <el-form-item label="验证码" prop="captcha">
+        <div class="captcha-container">
+          <el-input
+            v-model="form.captcha"
+            placeholder="请输入验证码"
+            prefix-icon="Key"
+          />
+          <img
+            :src="captchaUrl"
+            alt="验证码"
+            class="captcha-image"
+            @click="refreshCaptcha"
+          />
+        </div>
+      </el-form-item>
       
       <div class="form-actions">
         <el-button type="primary" native-type="submit" :loading="loading">
@@ -41,19 +57,22 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { ElMessage } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
+import { User, Lock, Key } from '@element-plus/icons-vue'
+import { getCaptcha } from '@/api/user'
 
 const emit = defineEmits<{
-  (e: 'login', data: { username: string; password: string }): void
+  (e: 'login', data: { username: string; password: string; captcha: string }): void
   (e: 'switch-to-register'): void
 }>()
 
 const formRef = ref()
 const loading = ref(false)
+const captchaUrl = ref('')
 
 const form = reactive({
   username: '',
-  password: ''
+  password: '',
+  captcha: ''
 })
 
 const rules = {
@@ -64,7 +83,20 @@ const rules = {
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
     { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+  ],
+  captcha: [
+    { required: true, message: '请输入验证码', trigger: 'blur' },
+    { len: 4, message: '验证码长度为4位', trigger: 'blur' }
   ]
+}
+
+const refreshCaptcha = async () => {
+  try {
+    const { data } = await getCaptcha()
+    captchaUrl.value = data.url
+  } catch (error) {
+    ElMessage.error('获取验证码失败')
+  }
 }
 
 const handleSubmit = async () => {
@@ -80,6 +112,9 @@ const handleSubmit = async () => {
     loading.value = false
   }
 }
+
+// 初始化时获取验证码
+refreshCaptcha()
 </script>
 
 <style scoped>
@@ -103,6 +138,17 @@ const handleSubmit = async () => {
   display: flex;
   justify-content: space-between;
   margin-top: 24px;
+}
+
+.captcha-container {
+  display: flex;
+  gap: 12px;
+}
+
+.captcha-image {
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 :deep(.el-form-item__label) {
