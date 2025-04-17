@@ -6,10 +6,6 @@ const router = createRouter({
 	routes: [
 		{
 			path: "/",
-			redirect: "/bartender"
-		},
-		{
-			path: "/bartender",
 			name: "bartender",
 			component: BartenderView,
 			meta: {
@@ -18,7 +14,7 @@ const router = createRouter({
 		},
 		{
 			path: "/:pathMatch(.*)*",
-			redirect: "/bartender"
+			redirect: "/"
 		}
 	],
 });
