@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class AgentType(StrEnum):
     SAGE = "sage"
     SCHOLAR = "scholar"
+    BARTENDER = "bartender"
 
 
 class ModelName(StrEnum):
