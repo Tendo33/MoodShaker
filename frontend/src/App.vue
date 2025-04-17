@@ -9,18 +9,13 @@
         mode="horizontal"
         :style="{ lineHeight: '64px', flex: 1 }"
       >
-        <a-menu-item key="home">
-          <router-link to="/">首页</router-link>
-        </a-menu-item>
         <a-menu-item v-if="userStore.token" key="user">
           <router-link to="/user">用户管理</router-link>
         </a-menu-item>
       </a-menu>
       
-      <!-- 未登录时显示游客提示和登录注册按钮 -->
+      <!-- 未登录时显示登录注册按钮 -->
       <div v-if="!userStore.token" class="auth-buttons">
-        <span class="guest-tip">游客模式</span>
-        <a-divider type="vertical" style="border-color: rgba(255, 255, 255, 0.3)" />
         <a-button type="link" @click="goToLogin">登录</a-button>
         <a-divider type="vertical" style="border-color: rgba(255, 255, 255, 0.3)" />
         <a-button type="primary" @click="goToRegister">注册</a-button>
@@ -131,7 +126,7 @@ const handleCommand = async (command: string) => {
 
 .logo {
   color: white;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   margin-right: 30px;
 }
@@ -145,6 +140,7 @@ const handleCommand = async (command: string) => {
 .auth-buttons {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .ant-dropdown-link {
@@ -164,11 +160,6 @@ const handleCommand = async (command: string) => {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.guest-tip {
-  color: rgba(255, 255, 255, 0.65);
-  margin-right: 8px;
 }
 
 .main-content {

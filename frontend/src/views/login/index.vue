@@ -1,23 +1,23 @@
 <template>
-  <div class="login-container">
-    <div class="login-box">
+  <div class="auth-container">
+    <div class="auth-box">
       <h2>用户登录</h2>
-      <a-form
+      <el-form
+        ref="formRef"
         :model="form"
         :rules="rules"
-        @finish="handleLogin"
-        layout="vertical"
-        class="login-form"
+        label-width="80px"
+        class="auth-form"
       >
-        <a-form-item name="username" label="用户名">
-          <a-input v-model:value="form.username" placeholder="请输入用户名" />
-        </a-form-item>
-        <a-form-item name="password" label="密码">
-          <a-input-password v-model:value="form.password" placeholder="请输入密码" />
-        </a-form-item>
-        <a-form-item name="captcha" label="验证码">
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="form.username" placeholder="请输入用户名" />
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="form.password" type="password" placeholder="请输入密码" show-password />
+        </el-form-item>
+        <el-form-item name="captcha" label="验证码">
           <div class="captcha-container">
-            <a-input v-model:value="form.captcha" placeholder="请输入验证码" />
+            <el-input v-model:value="form.captcha" placeholder="请输入验证码" />
             <img
               :src="captchaUrl"
               alt="验证码"
@@ -25,11 +25,12 @@
               @click="refreshCaptcha"
             />
           </div>
-        </a-form-item>
-        <a-form-item>
-          <a-button type="primary" html-type="submit" block>登录</a-button>
-        </a-form-item>
-      </a-form>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleLogin" block>登录</el-button>
+          <el-button @click="goToRegister" block style="margin-top: 10px">注册账号</el-button>
+        </el-form-item>
+      </el-form>
     </div>
   </div>
 </template>
@@ -70,6 +71,10 @@ const refreshCaptcha = async () => {
   }
 }
 
+const goToRegister = () => {
+  router.push('/register')
+}
+
 const handleLogin = async (values: any) => {
   try {
     const res = await login(values)
@@ -99,19 +104,19 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.login-container {
+.auth-container {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f0f2f5;
+  background-color: var(--bg-color);
   background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
   background-repeat: no-repeat;
   background-position: center 110px;
   background-size: 100%;
 }
 
-.login-box {
+.auth-box {
   width: 400px;
   padding: 40px;
   background-color: #fff;
@@ -119,14 +124,14 @@ onMounted(() => {
   box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
 }
 
-.login-box h2 {
+.auth-box h2 {
   text-align: center;
   margin-bottom: 30px;
-  color: #333;
+  color: var(--text-color);
   font-weight: 600;
 }
 
-.login-form {
+.auth-form {
   margin-top: 20px;
 }
 
@@ -139,5 +144,30 @@ onMounted(() => {
   height: 32px;
   cursor: pointer;
   border-radius: 4px;
+}
+
+:deep(.el-form-item__label) {
+  font-weight: 500;
+}
+
+:deep(.el-input__inner) {
+  border-radius: var(--border-radius);
+}
+
+:deep(.el-button) {
+  border-radius: var(--border-radius);
+  height: 40px;
+  font-size: 14px;
+}
+
+:deep(.el-button--primary) {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+:deep(.el-button--primary:hover) {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  opacity: 0.9;
 }
 </style> 
