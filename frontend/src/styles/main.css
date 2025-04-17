@@ -46,3 +46,52 @@ html.dark {
   --el-border-color-light: #414243;
   --el-color-primary-light-9: #1d1e1f;
 }
+
+/* 全局对话框样式 */
+.el-dialog {
+  z-index: 2000 !important;
+}
+
+.el-dialog__wrapper {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  overflow: auto;
+  margin: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.el-dialog__header {
+  padding: 20px;
+  border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.el-dialog__body {
+  padding: 20px;
+}
+
+.el-dialog__footer {
+  padding: 20px;
+  border-top: 1px solid var(--el-border-color-light);
+}
+
+/* 防止滚动穿透 */
+.el-dialog__wrapper {
+  overflow: hidden;
+}
+
+/* 确保对话框内容可以滚动 */
+.el-dialog__body {
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+}
+
+/* 优化移动端显示 */
+@media (max-width: 768px) {
+  .el-dialog {
+    width: 90% !important;
+    margin: 0 auto;
+  }
+}

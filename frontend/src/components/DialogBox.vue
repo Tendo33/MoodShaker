@@ -20,55 +20,58 @@
     </div>
 
     <!-- 登录对话框 -->
-    <div v-if="showLogin" class="modal">
-      <div class="modal-content">
-        <h2>登录</h2>
-        <form @submit.prevent="handleLogin">
-          <div class="form-group">
-            <label>用户名</label>
-            <input v-model="loginForm.username" type="text" required>
-          </div>
-          <div class="form-group">
-            <label>密码</label>
-            <input v-model="loginForm.password" type="password" required>
-          </div>
-          <div class="form-actions">
-            <button type="submit">登录</button>
-            <button type="button" @click="showLogin = false">取消</button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <el-dialog
+      v-model="showLogin"
+      title="登录"
+      width="400px"
+      :close-on-click-modal="true"
+      :close-on-press-escape="true"
+      @close="handleLoginClose"
+    >
+      <el-form @submit.prevent="handleLogin">
+        <el-form-item label="用户名">
+          <el-input v-model="loginForm.username" type="text" required />
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="loginForm.password" type="password" required />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleLogin">登录</el-button>
+          <el-button @click="showLogin = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
 
     <!-- 注册对话框 -->
-    <div v-if="showRegister" class="modal">
-      <div class="modal-content">
-        <h2>注册</h2>
-        <form @submit.prevent="handleRegister">
-          <div class="form-group">
-            <label>用户名</label>
-            <input v-model="registerForm.username" type="text" required>
-          </div>
-          <div class="form-group">
-            <label>密码</label>
-            <input v-model="registerForm.password" type="password" required>
-          </div>
-          <div class="form-group">
-            <label>确认密码</label>
-            <input v-model="registerForm.confirmPassword" type="password" required>
-          </div>
-          <div class="form-actions">
-            <button type="submit">注册</button>
-            <button type="button" @click="showRegister = false">取消</button>
-          </div>
-        </form>
-      </div>
-    </div>
+    <el-dialog
+      v-model="showRegister"
+      title="注册"
+      width="400px"
+      :close-on-click-modal="true"
+      :close-on-press-escape="true"
+      @close="handleRegisterClose"
+    >
+      <el-form @submit.prevent="handleRegister">
+        <el-form-item label="用户名">
+          <el-input v-model="registerForm.username" type="text" required />
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input v-model="registerForm.password" type="password" required />
+        </el-form-item>
+        <el-form-item label="确认密码">
+          <el-input v-model="registerForm.confirmPassword" type="password" required />
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleRegister">注册</el-button>
+          <el-button @click="showRegister = false">取消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, onUnmounted } from 'vue'
 
 const isLoggedIn = ref(false)
 const username = ref('')
@@ -88,7 +91,6 @@ const registerForm = reactive({
 })
 
 const handleLogin = async () => {
-  // TODO: 实现登录逻辑
   try {
     // 调用登录API
     isLoggedIn.value = true
@@ -100,7 +102,6 @@ const handleLogin = async () => {
 }
 
 const handleRegister = async () => {
-  // TODO: 实现注册逻辑
   try {
     // 调用注册API
     showRegister.value = false
@@ -108,6 +109,17 @@ const handleRegister = async () => {
   } catch (error) {
     console.error('注册失败:', error)
   }
+}
+
+const handleLoginClose = () => {
+  loginForm.username = ''
+  loginForm.password = ''
+}
+
+const handleRegisterClose = () => {
+  registerForm.username = ''
+  registerForm.password = ''
+  registerForm.confirmPassword = ''
 }
 
 const logout = () => {
@@ -118,6 +130,11 @@ const logout = () => {
 const toggleTheme = () => {
   currentStyle.value = currentStyle.value === 'light' ? 'dark' : 'light'
 }
+
+onUnmounted(() => {
+  showLogin.value = false
+  showRegister.value = false
+})
 </script>
 
 <style scoped>
@@ -168,51 +185,21 @@ button:hover {
   background: #e0e0e0;
 }
 
-.modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.modal-content {
-  background: #fff;
-  padding: 20px;
-  border-radius: 8px;
-  width: 300px;
-}
-
-.form-group {
-  margin-bottom: 15px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  margin-top: 20px;
-}
-
 .user-info {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+:deep(.el-dialog) {
+  z-index: 2000 !important;
+}
+
+:deep(.el-dialog__body) {
+  padding: 20px;
+}
+
+:deep(.el-form-item) {
+  margin-bottom: 20px;
 }
 </style> 

@@ -78,8 +78,9 @@
       :title="dialogType === 'add' ? '添加用户' : '编辑用户'"
       width="500px"
       class="user-dialog"
-      :close-on-click-modal="false"
-      :close-on-press-escape="false"
+      :close-on-click-modal="true"
+      :close-on-press-escape="true"
+      @close="handleDialogClose"
     >
       <el-form
         ref="formRef"
@@ -277,6 +278,12 @@ const handleSubmit = async () => {
       }
     }
   })
+}
+
+const handleDialogClose = () => {
+  if (formRef.value) {
+    formRef.value.resetFields()
+  }
 }
 
 onMounted(() => {

@@ -125,7 +125,7 @@ class Settings(BaseSettings):
     REQUEST_LIMITER_REDIS_PREFIX: str = "moodshaker:limiter"  # 限流器键前缀
 
     # 演示模式配置
-    DEMO_MODE: bool = True  # 演示模式开关
+    DEMO_MODE: bool = False  # 演示模式开关
     DEMO_MODE_EXCLUDE: set[tuple[str, str]] = {  # 演示模式例外接口
         ("POST", f"{FASTAPI_API_V1_PATH}/auth/login"),
         ("POST", f"{FASTAPI_API_V1_PATH}/auth/logout"),
