@@ -58,42 +58,99 @@ defineProps<{
 
 <style scoped>
 .cocktail-details {
-  margin-top: 16px;
+  margin-top: var(--spacing-md);
+  border-radius: var(--border-radius-large);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.cocktail-details:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-light);
 }
 
 .cocktail-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--background-color-light);
+}
+
+.cocktail-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
 }
 
 .cocktail-image {
   width: 100%;
   height: 200px;
-  border-radius: 4px;
-  margin-bottom: 16px;
+  border-radius: var(--border-radius-base);
+  margin: var(--spacing-md) 0;
+  transition: all 0.3s ease;
+}
+
+.cocktail-image:hover {
+  transform: scale(1.02);
 }
 
 .cocktail-info {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
 }
 
 .ingredients h4,
 .instructions h4 {
-  margin-bottom: 8px;
-  font-weight: bold;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 14px;
 }
 
 .ingredients-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .ingredient-tag {
-  margin-right: 8px;
-  margin-bottom: 8px;
+  margin-right: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  border-radius: var(--border-radius-base);
+  transition: all 0.3s ease;
+}
+
+.ingredient-tag:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-base);
+}
+
+:deep(.el-steps) {
+  padding: var(--spacing-sm);
+}
+
+:deep(.el-step__title) {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+:deep(.el-step__description) {
+  font-size: 13px;
+  color: var(--text-regular);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .cocktail-image {
+    height: 160px;
+  }
+
+  .ingredients-list {
+    justify-content: center;
+  }
 }
 </style> 

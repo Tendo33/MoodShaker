@@ -141,7 +141,9 @@ onMounted(() => {
 .bartender-container {
 	display: flex;
 	height: 100vh;
-	background-color: var(--el-bg-color-page);
+	background-color: var(--background-color-base);
+	position: relative;
+	overflow: hidden;
 }
 
 .main-content {
@@ -149,10 +151,12 @@ onMounted(() => {
 	display: flex;
 	flex-direction: column;
 	transition: margin-left 0.3s ease;
+	position: relative;
+	overflow: hidden;
 }
 
 .main-content-expanded {
-	margin-left: -186px;
+	margin-left: -216px;
 }
 
 .chat-container {
@@ -160,16 +164,41 @@ onMounted(() => {
 	display: flex;
 	flex-direction: column;
 	overflow: hidden;
+	position: relative;
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
 }
 
 .chat-messages {
 	flex: 1;
 	overflow-y: auto;
-	padding: 24px;
+	padding: var(--spacing-lg);
+	scroll-behavior: smooth;
+}
+
+.chat-messages::-webkit-scrollbar {
+	width: 6px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+	background: var(--background-color-light);
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+	background: var(--border-color-light);
+	border-radius: var(--border-radius-base);
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+	background: var(--text-secondary);
 }
 
 .loading-indicator {
-	padding: 16px;
+	padding: var(--spacing-md);
+	background-color: var(--background-color-light);
+	border-radius: var(--border-radius-base);
+	margin: var(--spacing-md) 0;
 }
 
 .message-fade-enter-active,
@@ -181,5 +210,25 @@ onMounted(() => {
 .message-fade-leave-to {
 	opacity: 0;
 	transform: translateY(10px);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+	.main-content {
+		margin-left: 0;
+	}
+
+	.main-content-expanded {
+		margin-left: 0;
+	}
+
+	.chat-messages {
+		padding: var(--spacing-sm);
+	}
+
+	.loading-indicator {
+		padding: var(--spacing-sm);
+		margin: var(--spacing-sm) 0;
+	}
 }
 </style>

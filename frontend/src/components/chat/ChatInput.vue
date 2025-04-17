@@ -45,13 +45,55 @@ const handleSend = () => {
 <style scoped>
 .input-container {
   display: flex;
-  gap: 12px;
-  padding: 16px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
   background-color: var(--el-bg-color);
-  border-top: 1px solid var(--el-border-color-light);
+  border-top: 1px solid var(--border-color-light);
+  position: relative;
+}
+
+:deep(.el-textarea__inner) {
+  border-radius: var(--border-radius-large);
+  padding: var(--spacing-sm);
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  transition: all 0.3s ease;
+}
+
+:deep(.el-textarea__inner:focus) {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.1);
+}
+
+:deep(.el-textarea__inner::placeholder) {
+  color: var(--text-placeholder);
 }
 
 .send-button {
   flex-shrink: 0;
+  border-radius: var(--border-radius-large);
+  padding: var(--spacing-sm) var(--spacing-md);
+  transition: all 0.3s ease;
+}
+
+.send-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--box-shadow-base);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .input-container {
+    padding: var(--spacing-sm);
+  }
+
+  :deep(.el-textarea__inner) {
+    font-size: 13px;
+  }
+
+  .send-button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
 }
 </style> 

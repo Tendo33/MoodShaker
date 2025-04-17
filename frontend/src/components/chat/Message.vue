@@ -64,15 +64,23 @@ const formatMessage = (content: string) => {
 
 <style scoped>
 .message {
-  margin-bottom: 24px;
-  padding: 16px;
-  border-radius: 8px;
+  margin-bottom: var(--spacing-lg);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-large);
   background-color: var(--el-bg-color);
+  box-shadow: var(--box-shadow-base);
+  transition: all 0.3s ease;
+  max-width: 80%;
+}
+
+.message:hover {
+  box-shadow: var(--box-shadow-light);
 }
 
 .user-message {
   margin-left: 20%;
-  background-color: var(--el-color-primary-light-9);
+  background-color: var(--primary-color);
+  color: white;
 }
 
 .assistant-message {
@@ -83,11 +91,20 @@ const formatMessage = (content: string) => {
 .message-header {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .message-avatar {
-  margin-right: 12px;
+  margin-right: var(--spacing-sm);
+}
+
+.message-avatar :deep(.el-avatar) {
+  border: 2px solid var(--border-color-light);
+  transition: all 0.3s ease;
+}
+
+.message-avatar :deep(.el-avatar):hover {
+  transform: scale(1.1);
 }
 
 .message-info {
@@ -96,30 +113,59 @@ const formatMessage = (content: string) => {
 }
 
 .message-role {
-  font-weight: bold;
+  font-weight: 600;
   font-size: 14px;
+  color: var(--text-primary);
+}
+
+.user-message .message-role {
+  color: white;
 }
 
 .message-time {
   font-size: 12px;
-  color: var(--el-text-color-secondary);
+  color: var(--text-secondary);
+}
+
+.user-message .message-time {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .message-content {
   line-height: 1.6;
 }
 
+.message-text {
+  word-break: break-word;
+}
+
+.message-text :deep(p) {
+  margin: 0;
+}
+
+.message-text :deep(a) {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+.message-text :deep(a):hover {
+  text-decoration: underline;
+}
+
 .typing-indicator {
   display: flex;
-  gap: 4px;
-  margin-top: 8px;
+  gap: var(--spacing-xs);
+  margin-top: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  background-color: var(--background-color-light);
+  border-radius: var(--border-radius-base);
 }
 
 .typing-indicator span {
   width: 8px;
   height: 8px;
-  background-color: var(--el-text-color-secondary);
-  border-radius: 50%;
+  background-color: var(--text-secondary);
+  border-radius: var(--border-radius-circle);
   animation: typing 1s infinite;
 }
 
@@ -137,6 +183,21 @@ const formatMessage = (content: string) => {
   }
   50% {
     transform: translateY(-4px);
+  }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .message {
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .user-message,
+  .assistant-message {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 </style> 

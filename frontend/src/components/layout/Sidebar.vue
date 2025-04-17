@@ -49,13 +49,16 @@ defineEmits<{
 
 <style scoped>
 .sidebar {
-  width: 250px;
+  width: 280px;
   height: 100%;
   background-color: var(--el-bg-color);
-  border-right: 1px solid var(--el-border-color-light);
-  transition: width 0.3s ease;
+  border-right: 1px solid var(--border-color-light);
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--box-shadow-light);
+  position: relative;
+  z-index: 10;
 }
 
 .sidebar-collapsed {
@@ -63,39 +66,99 @@ defineEmits<{
 }
 
 .sidebar-header {
-  padding: 16px;
+  padding: var(--spacing-md);
   display: flex;
   align-items: center;
-  gap: 12px;
-  border-bottom: 1px solid var(--el-border-color-light);
+  gap: var(--spacing-sm);
+  border-bottom: 1px solid var(--border-color-light);
+  background-color: var(--background-color-light);
 }
 
 .logo {
   width: 32px;
   height: 32px;
+  border-radius: var(--border-radius-circle);
+  object-fit: cover;
+}
+
+.sidebar-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .sidebar-content {
-  padding: 16px;
+  padding: var(--spacing-md);
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: var(--spacing-lg);
+  overflow-y: auto;
 }
 
 .user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--border-radius-base);
+  background-color: var(--background-color-light);
+  transition: background-color 0.3s ease;
+}
+
+.user-info:hover {
+  background-color: var(--border-color-lighter);
+}
+
+.username {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
 }
 
 .quick-actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--spacing-sm);
+}
+
+.quick-actions h3 {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin: 0;
 }
 
 .collapse-btn {
   margin-left: auto;
+  padding: 4px;
+  border-radius: var(--border-radius-circle);
+  transition: all 0.3s ease;
+}
+
+.collapse-btn:hover {
+  background-color: var(--border-color-lighter);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transform: translateX(0);
+  }
+
+  .sidebar-collapsed {
+    transform: translateX(-100%);
+  }
+
+  .sidebar-header h2,
+  .username,
+  .quick-actions {
+    display: none;
+  }
 }
 </style> 
