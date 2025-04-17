@@ -108,10 +108,14 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",  # 允许的跨域源
         "http://localhost:5173",  # 前端开发服务器
         "http://localhost:8080",  # 后端服务
+        "http://localhost:3000",  # 其他可能的开发端口
+        "http://127.0.0.1:5173",  # Vite默认开发服务器
+        "http://127.0.0.1:3000",  # 其他可能的开发端口
     ]
-    CORS_EXPOSE_HEADERS: list[str] = [
-        "*",  # 允许暴露的响应头
-    ]
+    CORS_ALLOW_METHODS: list[str] = ["*"]  # 允许所有HTTP方法
+    CORS_ALLOW_HEADERS: list[str] = ["*"]  # 允许所有请求头
+    CORS_EXPOSE_HEADERS: list[str] = ["*"]  # 允许暴露的响应头
+    CORS_ALLOW_CREDENTIALS: bool = True  # 允许携带认证信息
 
     # 日期时间配置
     DATETIME_TIMEZONE: str = "Asia/Shanghai"  # 时区
@@ -121,11 +125,14 @@ class Settings(BaseSettings):
     REQUEST_LIMITER_REDIS_PREFIX: str = "moodshaker:limiter"  # 限流器键前缀
 
     # 演示模式配置
-    DEMO_MODE: bool = False  # 演示模式开关
+    DEMO_MODE: bool = True  # 演示模式开关
     DEMO_MODE_EXCLUDE: set[tuple[str, str]] = {  # 演示模式例外接口
         ("POST", f"{FASTAPI_API_V1_PATH}/auth/login"),
         ("POST", f"{FASTAPI_API_V1_PATH}/auth/logout"),
         ("GET", f"{FASTAPI_API_V1_PATH}/auth/captcha"),
+        ("POST", f"{FASTAPI_API_V1_PATH}/auth/register"),  # 允许注册
+        ("GET", f"{FASTAPI_API_V1_PATH}/agents"),  # 允许获取agent列表
+        ("POST", f"{FASTAPI_API_V1_PATH}/agents/bartender/runs"),  # 允许调用调酒师agent
     }
 
 

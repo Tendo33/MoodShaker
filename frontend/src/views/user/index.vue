@@ -62,7 +62,7 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogType === 'add' ? '添加用户' : '编辑用户'"
-      width="500px"
+      width="400px"
     >
       <el-form
         ref="formRef"

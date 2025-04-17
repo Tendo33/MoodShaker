@@ -8,7 +8,10 @@ console.log("API基础URL:", baseURL);
 
 const request = axios.create({
 	baseURL,
-	timeout: 10000,
+	timeout: 30000,
+	headers: {
+		'Content-Type': 'application/json',
+	},
 });
 
 // 请求拦截器
@@ -52,12 +55,16 @@ request.interceptors.response.use(
 			request: error.request,
 			config: error.config
 		});
+
 		// 处理401错误
 		if (error.response?.status === 401) {
 			const userStore = useUserStore();
 			userStore.clearUserInfo();
 			ElMessage.error('登录已过期，请重新登录');
-			// 这里可以添加路由跳转到登录页
+		} else if (error.code === 'ECONNABORTED') {
+			ElMessage.error('请求超时，请稍后重试');
+		} else if (!error.response) {
+			ElMessage.error('网络错误，请检查网络连接');
 		} else {
 			ElMessage.error(error.response?.data?.message || "请求失败");
 		}

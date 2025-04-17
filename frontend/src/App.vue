@@ -2,7 +2,7 @@
   <a-layout class="app-container">
     <!-- 导航栏 -->
     <a-layout-header class="header">
-      <div class="logo">调酒师助手</div>
+      <div class="logo">MoodShaker</div>
       <a-menu
         v-model:selectedKeys="selectedKeys"
         theme="dark"
@@ -17,8 +17,10 @@
         </a-menu-item>
       </a-menu>
       
-      <!-- 未登录时显示登录和注册按钮 -->
+      <!-- 未登录时显示游客提示和登录注册按钮 -->
       <div v-if="!userStore.token" class="auth-buttons">
+        <span class="guest-tip">游客模式</span>
+        <a-divider type="vertical" style="border-color: rgba(255, 255, 255, 0.3)" />
         <a-button type="link" @click="goToLogin">登录</a-button>
         <a-divider type="vertical" style="border-color: rgba(255, 255, 255, 0.3)" />
         <a-button type="primary" @click="goToRegister">注册</a-button>
@@ -56,16 +58,12 @@
     
     <!-- 页脚 -->
     <a-layout-footer style="text-align: center">
-      调酒师助手 ©2024 Created by MoodShaker
+      MoodShaker ©2024 Created by MoodShaker
     </a-layout-footer>
   </a-layout>
 </template>
 
 <script setup lang="ts">
-// https://github.com/vueuse/head
-// you can use this to manipulate the document head in any components,
-// they will be rendered correctly in the html results with vite-ssg
-import { useHead } from '@vueuse/head'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { Modal } from 'ant-design-vue'
@@ -76,16 +74,6 @@ import { logout } from '@/api/user'
 const router = useRouter()
 const userStore = useUserStore()
 const selectedKeys = ref<string[]>(['home'])
-
-useHead({
-  title: '调酒师助手',
-  meta: [
-    {
-      name: 'description',
-      content: '智能调酒师助手，为您提供专业的调酒建议',
-    },
-  ],
-})
 
 const goToLogin = () => {
   router.push('/login')
@@ -164,5 +152,10 @@ const handleCommand = async (command: string) => {
   padding: 24px;
   background-color: #f0f2f5;
   min-height: calc(100vh - 64px - 70px);
+}
+
+.guest-tip {
+  color: rgba(255, 255, 255, 0.65);
+  margin-right: 8px;
 }
 </style>

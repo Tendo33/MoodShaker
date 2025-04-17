@@ -14,7 +14,7 @@ const router = createRouter({
 			component: BartenderView,
 			meta: {
 				title: "调酒师助手",
-				requiresAuth: true
+				requiresAuth: false
 			},
 		},
 		{

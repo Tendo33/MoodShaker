@@ -1,4 +1,5 @@
 import request from "@/utils/request";
+import { useUserStore } from "@/stores/user";
 
 interface ChatRequest {
 	message: string;
@@ -23,33 +24,53 @@ interface Cocktail {
 interface ChatResponse {
 	content: string;
 	cocktail?: Cocktail;
+	timestamp: string;
 }
 
 export const chatWithBartender = async (data: ChatRequest): Promise<ChatResponse> => {
 	try {
-		console.log("开始调用调酒师助手API，请求数据:", {
+		const userStore = useUserStore();
+		const sessionId = userStore.sessionId || 'guest';
+		const userId = userStore.userInfo?.id?.toString() || 'guest';
+
+		const requestData = {
 			...data,
 			model: "deepseek-v3-250324",
-			stream: false
-		});
+			stream: true,
+			user_id: userId,
+			session_id: sessionId
+		};
 
-		const response = await request<ChatResponse>({
-			url: "/api/v1/agents/bartender/runs",
-			method: "post",
-			data: {
-				...data,
-				model: "deepseek-v3-250324",
-				stream: false
+		console.log("开始调用调酒师助手API，请求数据:", requestData);
+
+		const response = await fetch('http://localhost:8080/api/v1/agents/bartender/runs', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
 			},
+			body: JSON.stringify(requestData)
 		});
 
-		console.log("调酒师助手API响应:", response);
-
-		if (!response || !response.data) {
-			throw new Error("API响应格式错误");
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
 		}
 
-		return response.data;
+		const reader = response.body?.getReader();
+		if (!reader) {
+			throw new Error('No reader available');
+		}
+
+		let content = '';
+		while (true) {
+			const { done, value } = await reader.read();
+			if (done) break;
+			content += new TextDecoder().decode(value);
+		}
+
+		return {
+			content,
+			timestamp: new Date().toISOString()
+		};
 	} catch (error: any) {
 		console.error("调酒师助手API调用失败，详细错误信息:", {
 			message: error.message,
