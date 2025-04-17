@@ -202,9 +202,9 @@ const handleEdit = (row: UserInfo) => {
   dialogType.value = 'edit'
   dialogVisible.value = true
   form.username = row.username
-  form.nickname = row.nickname
+  form.nickname = row.nickname || ''
   form.email = row.email
-  form.phone = row.phone
+  form.phone = row.phone || ''
   form.status = row.status
 }
 
@@ -235,8 +235,8 @@ const handleSubmit = async () => {
           await register(form)
           ElMessage.success('添加成功')
         } else {
-          const { username, ...updateData } = form
-          await updateUserInfo(username, updateData)
+          const { password, ...updateData } = form
+          await updateUserInfo(form.username, updateData)
           ElMessage.success('更新成功')
         }
         dialogVisible.value = false

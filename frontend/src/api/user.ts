@@ -11,18 +11,24 @@ export interface UserInfo {
   is_superuser: boolean
   join_time: string
   last_login_time: string | null
+  nickname?: string
 }
 
 export interface CreateUserDto {
   username: string
   password: string
   email: string
+  nickname?: string
+  phone?: string
+  status?: number
 }
 
 export interface UpdateUserDto {
   username: string
   email: string
   phone?: string
+  nickname?: string
+  status?: number
 }
 
 export interface ResetPasswordDto {
