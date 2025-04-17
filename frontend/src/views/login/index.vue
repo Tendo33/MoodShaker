@@ -33,7 +33,6 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleLogin">登录</el-button>
-          <el-button @click="handleRegister">注册</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -46,7 +45,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import { useUserStore } from '@/stores/user'
-import { login, register, getCaptcha } from '@/api/user'
+import { login, getCaptcha } from '@/api/user'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -88,27 +87,6 @@ const handleLogin = async () => {
       } catch (error) {
         console.error('登录失败:', error)
         refreshCaptcha() // 登录失败刷新验证码
-      }
-    }
-  })
-}
-
-const handleRegister = async () => {
-  if (!formRef.value) return
-  await formRef.value.validate(async (valid) => {
-    if (valid) {
-      try {
-        await register({
-          username: form.username,
-          password: form.password,
-          email: ''
-        })
-        ElMessage.success('注册成功，请登录')
-        form.password = ''
-        form.captcha = ''
-        refreshCaptcha()
-      } catch (error) {
-        console.error('注册失败:', error)
       }
     }
   })

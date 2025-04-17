@@ -5,29 +5,38 @@
       mode="horizontal"
       :router="true"
       class="nav-menu"
-      v-if="userStore.token"
     >
       <el-menu-item index="/">调酒师助手</el-menu-item>
-      <el-menu-item index="/user">用户管理</el-menu-item>
       
-      <!-- 用户菜单 -->
-      <div class="user-menu">
-        <el-dropdown @command="handleCommand">
-          <span class="el-dropdown-link">
-            {{ userStore.userInfo?.username }}
-            <el-icon class="el-icon--right">
-              <arrow-down />
-            </el-icon>
-          </span>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item command="profile">个人信息</el-dropdown-item>
-              <el-dropdown-item command="resetPwd">修改密码</el-dropdown-item>
-              <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+      <!-- 未登录时显示登录和注册按钮 -->
+      <div v-if="!userStore.token" class="auth-buttons">
+        <el-button type="primary" @click="goToLogin">登录</el-button>
+        <el-button @click="goToRegister">注册</el-button>
       </div>
+      
+      <!-- 已登录时显示菜单 -->
+      <template v-if="userStore.token">
+        <el-menu-item index="/user">用户管理</el-menu-item>
+        
+        <!-- 用户菜单 -->
+        <div class="user-menu">
+          <el-dropdown @command="handleCommand">
+            <span class="el-dropdown-link">
+              {{ userStore.userInfo?.username }}
+              <el-icon class="el-icon--right">
+                <arrow-down />
+              </el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="profile">个人信息</el-dropdown-item>
+                <el-dropdown-item command="resetPwd">修改密码</el-dropdown-item>
+                <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
+      </template>
     </el-menu>
 
     <!-- 主要内容 -->
@@ -60,6 +69,14 @@ useHead({
     },
   ],
 })
+
+const goToLogin = () => {
+  router.push('/login')
+}
+
+const goToRegister = () => {
+  router.push('/register')
+}
 
 const handleCommand = async (command: string) => {
   switch (command) {
@@ -104,6 +121,15 @@ const handleCommand = async (command: string) => {
   right: 20px;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.auth-buttons {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 10px;
 }
 
 .el-dropdown-link {

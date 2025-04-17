@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import BartenderView from "@/views/bartender/index.vue";
 import UserView from "@/views/user/index.vue";
 import LoginView from "@/views/login/index.vue";
+import RegisterView from "@/views/login/register.vue";
 import { useUserStore } from "@/stores/user";
 
 const router = createRouter({
@@ -34,6 +35,14 @@ const router = createRouter({
 			},
 		},
 		{
+			path: "/register",
+			name: "register",
+			component: RegisterView,
+			meta: {
+				title: "注册",
+			},
+		},
+		{
 			path: "/:pathMatch(.*)*",
 			redirect: "/"
 		}
@@ -54,8 +63,8 @@ router.beforeEach((to, from, next) => {
 			path: '/login',
 			query: { redirect: to.fullPath }
 		});
-	} else if (to.path === '/login' && userStore.token) {
-		// 已登录但访问登录页，重定向到首页
+	} else if ((to.path === '/login' || to.path === '/register') && userStore.token) {
+		// 已登录但访问登录页或注册页，重定向到首页
 		next('/');
 	} else {
 		next();
