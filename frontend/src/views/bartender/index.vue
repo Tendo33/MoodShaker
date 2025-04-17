@@ -1,172 +1,282 @@
 <template>
 	<div class="bartender-container">
-		<el-card class="chat-container">
-			<template #header>
-				<div class="card-header">
-					<h2>调酒师助手</h2>
-					<el-button type="primary" @click="startNewSession">开始新的对话</el-button>
+		<!-- 侧边栏 -->
+		<div class="sidebar" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
+			<div class="sidebar-header">
+				<img src="/logo.png" alt="Logo" class="logo" />
+				<h2>调酒师助手</h2>
+				<el-button
+					class="collapse-btn"
+					:icon="isSidebarCollapsed ? ArrowRight : ArrowLeft"
+					@click="toggleSidebar"
+				/>
+			</div>
+			<div class="sidebar-content">
+				<div class="user-info">
+					<el-avatar :size="40" :src="userAvatar" />
+					<span class="username">{{ username }}</span>
 				</div>
-			</template>
+				<div class="quick-actions">
+					<h3>快捷操作</h3>
+					<el-button-group>
+						<el-button @click="clearChat">
+							<el-icon><Delete /></el-icon>
+							清空对话
+						</el-button>
+						<el-button @click="toggleTheme">
+							<el-icon><component :is="isDark ? Sunny : Moon" /></el-icon>
+						</el-button>
+					</el-button-group>
+				</div>
+			</div>
+		</div>
 
-			<div class="chat-messages" ref="messagesContainer">
-				<div
-					v-for="(message, index) in messages"
-					:key="index"
-					:class="['message', message.role === 'user' ? 'user-message' : 'assistant-message']"
-				>
-					<div class="message-content">
-						<div class="message-header">
-							<span class="message-role">{{ message.role === "user" ? "你" : "调酒师" }}</span>
-							<span class="message-time">{{ message.timestamp }}</span>
+		<!-- 主聊天区域 -->
+		<div class="main-content" :class="{ 'main-content-expanded': isSidebarCollapsed }">
+			<div class="chat-container">
+				<div class="chat-messages" ref="messagesContainer">
+					<transition-group name="message-fade">
+						<div
+							v-for="(message, index) in messages"
+							:key="index"
+							class="message"
+							:class="message.role === 'user' ? 'user-message' : 'assistant-message'"
+						>
+							<div class="message-header">
+								<span class="message-role">{{ message.role === 'user' ? '我' : '调酒师' }}</span>
+								<span class="message-time">{{ formatTime(message.timestamp) }}</span>
+							</div>
+							<div class="message-content">
+								<div class="message-text" v-html="formatMessage(message.content)"></div>
+								<div v-if="message.cocktail" class="cocktail-card">
+									<el-card class="cocktail-details">
+										<template #header>
+											<div class="cocktail-header">
+												<h3>{{ message.cocktail.name }}</h3>
+											</div>
+										</template>
+										<el-image
+											:src="message.cocktail.image"
+											fit="cover"
+											class="cocktail-image"
+											:preview-src-list="[message.cocktail.image]"
+										/>
+										<div class="cocktail-info">
+											<div class="ingredients">
+												<h4>配料</h4>
+												<el-tag
+													v-for="ingredient in message.cocktail.ingredients"
+													:key="ingredient.name"
+													class="ingredient-tag"
+												>
+													{{ ingredient.name }}: {{ ingredient.amount }}
+												</el-tag>
+											</div>
+											<div class="instructions">
+												<h4>制作步骤</h4>
+												<el-steps direction="vertical" :active="message.cocktail.instructions.length">
+													<el-step
+														v-for="(step, stepIndex) in message.cocktail.instructions"
+														:key="stepIndex"
+														:title="`步骤 ${stepIndex + 1}`"
+														:description="step"
+													/>
+												</el-steps>
+											</div>
+										</div>
+									</el-card>
+								</div>
+							</div>
 						</div>
-						<div class="message-text" v-html="formatMessage(message.content)"></div>
+					</transition-group>
+					<div v-if="isLoading" class="loading-indicator">
+						<el-skeleton :rows="3" animated />
 					</div>
 				</div>
-			</div>
 
-			<div class="input-container">
-				<el-input
-					v-model="userInput"
-					type="textarea"
-					:rows="3"
-					placeholder="告诉我你的心情和喜好，让我为你推荐合适的鸡尾酒..."
-					@keyup.enter.ctrl="sendMessage"
-				/>
-				<el-button type="primary" @click="sendMessage" :loading="isLoading">发送</el-button>
-			</div>
-		</el-card>
-
-		<el-dialog v-model="showCocktailDetails" title="鸡尾酒详情" width="50%">
-			<div v-if="currentCocktail" class="cocktail-details">
-				<h3>{{ currentCocktail.name }}</h3>
-				<el-image :src="currentCocktail.image" fit="cover" class="cocktail-image" />
-				<div class="ingredients">
-					<h4>原料：</h4>
-					<ul>
-						<li v-for="(ingredient, index) in currentCocktail.ingredients" :key="index">
-							{{ ingredient.name }} - {{ ingredient.amount }}
-						</li>
-					</ul>
-				</div>
-				<div class="instructions">
-					<h4>调制步骤：</h4>
-					<ol>
-						<li v-for="(step, index) in currentCocktail.instructions" :key="index">
-							{{ step }}
-						</li>
-					</ol>
+				<div class="input-container">
+					<el-input
+						v-model="userInput"
+						type="textarea"
+						:rows="3"
+						placeholder="请输入您的问题..."
+						@keyup.enter.ctrl="sendMessage"
+					/>
+					<el-button
+						type="primary"
+						:loading="isLoading"
+						@click="sendMessage"
+						:disabled="!userInput.trim()"
+					>
+						<el-icon><Position /></el-icon>
+						发送
+					</el-button>
 				</div>
 			</div>
-		</el-dialog>
+		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, nextTick } from "vue";
-import { ElMessage } from "element-plus";
-import { useUserStore } from "@/stores/user";
-import { chatWithBartender } from "@/api/bartender";
+import { ref, onMounted, nextTick, watch } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { chatWithBartender } from '@/api/bartender'
+import { ElMessage } from 'element-plus'
+import { formatDistanceToNow } from 'date-fns'
+import { zhCN } from 'date-fns/locale'
+import { marked } from 'marked'
+import { ArrowRight, ArrowLeft, Sunny, Moon, Delete, Position } from '@element-plus/icons-vue'
 
-const userStore = useUserStore();
-const messages = ref<Array<{ role: string; content: string; timestamp: string }>>([]);
-const userInput = ref("");
-const isLoading = ref(false);
-const messagesContainer = ref<HTMLElement | null>(null);
-const showCocktailDetails = ref(false);
-const currentCocktail = ref<any>(null);
+const userStore = useUserStore()
+const username = ref(userStore.userInfo?.username || '游客')
+const userAvatar = ref(userStore.userInfo?.avatar || '/default-avatar.png')
+const isDark = ref(false)
+const isSidebarCollapsed = ref(false)
+const messages = ref<Array<{
+	role: 'user' | 'assistant'
+	content: string
+	timestamp: Date
+	cocktail?: any
+}>>([])
+const userInput = ref('')
+const isLoading = ref(false)
+const messagesContainer = ref<HTMLElement | null>(null)
+
+const toggleSidebar = () => {
+	isSidebarCollapsed.value = !isSidebarCollapsed.value
+}
+
+const toggleTheme = () => {
+	isDark.value = !isDark.value
+	document.documentElement.classList.toggle('dark')
+}
+
+const formatTime = (date: Date) => {
+	return formatDistanceToNow(date, { addSuffix: true, locale: zhCN })
+}
 
 const formatMessage = (content: string) => {
-	return content.replace(/\n/g, "<br>");
-};
+	return marked(content)
+}
 
 const scrollToBottom = async () => {
-	await nextTick();
+	await nextTick()
 	if (messagesContainer.value) {
-		messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
+		messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
 	}
-};
+}
+
+const clearChat = () => {
+	messages.value = []
+}
 
 const sendMessage = async () => {
-	if (!userInput.value.trim()) return;
+	if (!userInput.value.trim() || isLoading.value) return
 
-	const userMessage = userInput.value;
-	userInput.value = "";
-
+	const userMessage = userInput.value
 	messages.value.push({
-		role: "user",
+		role: 'user',
 		content: userMessage,
-		timestamp: new Date().toLocaleTimeString(),
-	});
+		timestamp: new Date()
+	})
 
-	await scrollToBottom();
+	userInput.value = ''
+	await scrollToBottom()
 
 	try {
-		isLoading.value = true;
+		isLoading.value = true
 		const response = await chatWithBartender({
 			message: userMessage,
-			user_id: userStore.userInfo?.username,
-			session_id: userStore.sessionId || Date.now().toString(),
-		});
+			user_id: userStore.userInfo?.id?.toString(),
+			session_id: userStore.sessionId
+		})
 
 		messages.value.push({
-			role: "assistant",
+			role: 'assistant',
 			content: response.content,
-			timestamp: new Date().toLocaleTimeString(),
-		});
-
-		if (response.cocktail) {
-			currentCocktail.value = response.cocktail;
-			showCocktailDetails.value = true;
-		}
+			timestamp: new Date(),
+			cocktail: response.cocktail
+		})
 	} catch (error) {
-		ElMessage.error("发送消息失败，请重试");
+		ElMessage.error('发送消息失败，请重试')
 	} finally {
-		isLoading.value = false;
-		await scrollToBottom();
+		isLoading.value = false
+		await scrollToBottom()
 	}
-};
+}
 
-const startNewSession = () => {
-	messages.value = [];
-	const newSessionId = Date.now().toString();
-	userStore.setSessionId(newSessionId);
-};
+watch(messages, () => {
+	scrollToBottom()
+}, { deep: true })
 
 onMounted(() => {
-	if (!userStore.sessionId) {
-		const newSessionId = Date.now().toString();
-		userStore.setSessionId(newSessionId);
-	}
-});
+	isDark.value = document.documentElement.classList.contains('dark')
+})
 </script>
 
 <style scoped>
 .bartender-container {
-	max-width: 800px;
-	margin: 0 auto;
-	padding: 20px;
+	display: flex;
 	height: 100vh;
+	background-color: var(--el-bg-color-page);
+}
+
+.sidebar {
+	width: 280px;
+	background-color: var(--el-bg-color);
+	border-right: 1px solid var(--el-border-color-light);
+	transition: all 0.3s ease;
 	display: flex;
 	flex-direction: column;
+}
+
+.sidebar-collapsed {
+	width: 80px;
+}
+
+.sidebar-header {
+	padding: 20px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	border-bottom: 1px solid var(--el-border-color-light);
+}
+
+.logo {
+	width: 40px;
+	height: 40px;
+	object-fit: contain;
+}
+
+.sidebar-content {
+	padding: 20px;
+	flex: 1;
+}
+
+.user-info {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 20px;
+}
+
+.quick-actions {
+	margin-top: 20px;
+}
+
+.main-content {
+	flex: 1;
+	transition: all 0.3s ease;
+}
+
+.main-content-expanded {
+	margin-left: -200px;
 }
 
 .chat-container {
-	flex: 1;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
-	background-color: var(--el-bg-color);
-}
-
-.card-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 0 10px;
-}
-
-.card-header h2 {
-	margin: 0;
-	color: var(--el-text-color-primary);
 }
 
 .chat-messages {
@@ -176,14 +286,14 @@ onMounted(() => {
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
-	background-color: var(--el-bg-color-page);
 }
 
 .message {
 	max-width: 80%;
-	padding: 12px 16px;
+	padding: 16px;
 	border-radius: 12px;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+	transition: all 0.3s ease;
 }
 
 .user-message {
@@ -204,45 +314,80 @@ onMounted(() => {
 	color: var(--el-text-color-secondary);
 }
 
-.message-text {
+.message-content {
 	line-height: 1.6;
-	color: var(--el-text-color-primary);
 }
 
-.input-container {
-	padding: 20px;
+.cocktail-card {
+	margin-top: 16px;
+}
+
+.cocktail-header {
 	display: flex;
-	gap: 10px;
-	background-color: var(--el-bg-color);
-	border-top: 1px solid var(--el-border-color-light);
-}
-
-.cocktail-details {
-	padding: 20px;
+	justify-content: space-between;
+	align-items: center;
 }
 
 .cocktail-image {
 	width: 100%;
-	height: 300px;
+	height: 200px;
 	object-fit: cover;
-	margin: 20px 0;
 	border-radius: 8px;
-	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	margin: 12px 0;
 }
 
-.ingredients,
+.cocktail-info {
+	margin-top: 16px;
+}
+
+.ingredients {
+	margin-bottom: 20px;
+}
+
+.ingredient-tag {
+	margin: 4px;
+}
+
 .instructions {
-	margin: 20px 0;
+	margin-top: 20px;
 }
 
-.ingredients ul,
-.instructions ol {
-	padding-left: 20px;
+.input-container {
+	padding: 20px;
+	background-color: var(--el-bg-color);
+	border-top: 1px solid var(--el-border-color-light);
+	display: flex;
+	gap: 12px;
 }
 
-.ingredients li,
-.instructions li {
-	margin: 8px 0;
-	line-height: 1.6;
+.input-container .el-input {
+	flex: 1;
+}
+
+.loading-indicator {
+	padding: 20px;
+	max-width: 80%;
+	align-self: flex-start;
+}
+
+/* 动画效果 */
+.message-fade-enter-active,
+.message-fade-leave-active {
+	transition: all 0.3s ease;
+}
+
+.message-fade-enter-from,
+.message-fade-leave-to {
+	opacity: 0;
+	transform: translateY(20px);
+}
+
+/* 深色模式适配 */
+:root[class~="dark"] .user-message {
+	background-color: var(--el-color-primary-dark-2);
+}
+
+:root[class~="dark"] .assistant-message {
+	background-color: var(--el-bg-color-overlay);
 }
 </style>

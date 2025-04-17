@@ -56,7 +56,7 @@ export interface LoginResponse {
 // 获取验证码
 export function getCaptcha() {
   return request({
-    url: '/admin/auth/captcha',
+    url: '/api/v1/auth/captcha',
     method: 'get'
   })
 }
@@ -64,7 +64,7 @@ export function getCaptcha() {
 // 用户登录
 export function login(data: LoginDto) {
   return request<LoginResponse>({
-    url: '/admin/auth/login',
+    url: '/api/v1/auth/login',
     method: 'post',
     data
   })
@@ -73,7 +73,7 @@ export function login(data: LoginDto) {
 // 用户登出
 export function logout() {
   return request({
-    url: '/admin/auth/logout',
+    url: '/api/v1/auth/logout',
     method: 'post'
   })
 }
@@ -81,7 +81,7 @@ export function logout() {
 // 用户注册
 export function register(data: CreateUserDto) {
   return request({
-    url: '/admin/user/register',
+    url: '/api/v1/user/register',
     method: 'post',
     data
   })
@@ -90,7 +90,7 @@ export function register(data: CreateUserDto) {
 // 密码重置
 export function resetPassword(data: ResetPasswordDto) {
   return request({
-    url: '/admin/user/password/reset',
+    url: '/api/v1/user/password/reset',
     method: 'post',
     data
   })
@@ -99,7 +99,7 @@ export function resetPassword(data: ResetPasswordDto) {
 // 获取用户信息
 export function getUserInfo(username: string) {
   return request({
-    url: `/admin/user/${username}`,
+    url: `/api/v1/user/${username}`,
     method: 'get'
   })
 }
@@ -107,16 +107,16 @@ export function getUserInfo(username: string) {
 // 更新用户信息
 export function updateUserInfo(username: string, data: UpdateUserDto) {
   return request({
-    url: `/admin/user/${username}`,
+    url: `/api/v1/user/${username}`,
     method: 'put',
     data
   })
 }
 
-// 更新头像
+// 更新用户头像
 export function updateAvatar(username: string, data: AvatarDto) {
   return request({
-    url: `/admin/user/${username}/avatar`,
+    url: `/api/v1/user/${username}/avatar`,
     method: 'put',
     data
   })
@@ -131,7 +131,7 @@ export function getUserList(params: {
   pageSize?: number
 }) {
   return request({
-    url: '/admin/user',
+    url: '/api/v1/user',
     method: 'get',
     params
   })
@@ -140,7 +140,7 @@ export function getUserList(params: {
 // 删除用户
 export function deleteUser(username: string) {
   return request({
-    url: `/admin/user/${username}`,
+    url: `/api/v1/user/${username}`,
     method: 'delete'
   })
 } 

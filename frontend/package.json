@@ -19,12 +19,15 @@
     "sizecheck": "npx vite-bundle-visualizer"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "@unhead/vue": "catalog:frontend",
     "@unocss/reset": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
     "@vueuse/head": "^2.0.0",
     "axios": "^1.6.7",
+    "date-fns": "^4.1.0",
     "element-plus": "^2.5.6",
+    "marked": "^15.0.8",
     "nprogress": "catalog:frontend",
     "pinia": "^2.1.7",
     "vue": "^3.4.15",
