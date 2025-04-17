@@ -4,7 +4,7 @@
 		<div class="sidebar" :class="{ 'sidebar-collapsed': isSidebarCollapsed }">
 			<div class="sidebar-header">
 				<img src="/logo.png" alt="Logo" class="logo" />
-				<h2 v-if="!isSidebarCollapsed">调酒师助手</h2>
+				<h2 v-if="!isSidebarCollapsed">MoodShaker</h2>
 				<el-button
 					class="collapse-btn"
 					:icon="isSidebarCollapsed ? ArrowRight : ArrowLeft"

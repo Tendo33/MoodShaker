@@ -41,7 +41,7 @@ export const chatWithBartender = async (data: ChatRequest): Promise<ChatResponse
 			session_id: sessionId
 		};
 
-		console.log("开始调用调酒师助手API，请求数据:", requestData);
+		console.log("开始调用MoodShakerAPI，请求数据:", requestData);
 
 		const response = await fetch('http://localhost:8080/api/v1/agents/bartender/runs', {
 			method: 'POST',
@@ -108,7 +108,7 @@ export const chatWithBartender = async (data: ChatRequest): Promise<ChatResponse
 			timestamp: new Date().toISOString()
 		};
 	} catch (error: any) {
-		console.error("调酒师助手API调用失败，详细错误信息:", {
+		console.error("MoodShakerAPI调用失败，详细错误信息:", {
 			message: error.message,
 			response: error.response,
 			request: error.request,

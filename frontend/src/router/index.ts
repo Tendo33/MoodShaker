@@ -13,7 +13,7 @@ const router = createRouter({
 			name: "bartender",
 			component: BartenderView,
 			meta: {
-				title: "调酒师助手",
+				title: "MoodShaker",
 				requiresAuth: false
 			},
 		},
@@ -55,7 +55,7 @@ router.beforeEach((to, from, next) => {
 	const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
 
 	// 设置页面标题
-	document.title = to.meta.title as string || '调酒师助手';
+	document.title = to.meta.title as string || 'MoodShaker';
 
 	if (requiresAuth && !userStore.token) {
 		// 需要登录但未登录，重定向到登录页
