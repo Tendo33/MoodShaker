@@ -15,7 +15,7 @@ class ModelName(StrEnum):
     DEEPSEEK_R1 = "deepseek-r1-250120"
 
 
-class RunRequest(BaseModel):
+class AgentRequest(BaseModel):
     """Request model for an running an agent"""
 
     message: str

@@ -43,7 +43,7 @@ def get_sage(
         db_url=syn_db_url,
         schema="public",  # Schema name for the table (optional)
     )
-    memory = Memory(db=memory_db)
+    memory = Memory(model=model, db=memory_db)
 
     # 定义 Embedder
     embedder = OpenAIEmbedder(
@@ -82,6 +82,8 @@ def get_sage(
         storage=storage,
         # Knowledge base for the agent
         knowledge=knowledge,
+        search_knowledge=True,
+        memory=memory,
         # Description of the agent
         description=sage_description,
         # Instructions for the agent

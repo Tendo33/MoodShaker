@@ -1,12 +1,16 @@
+import uuid
+
+from datetime import datetime, timedelta
 from typing import AsyncGenerator, List
 
 from agno.agent import Agent
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
 
-from backend.app.agent.schema.agent_request_shema import RunRequest
+from backend.app.agent.schema.agent_request_shema import AgentRequest
 from backend.app.agent.service.operator import AgentType, get_agent, get_available_agents
 from backend.common.log import logger
+from backend.database.redis import redis_client
 
 ######################################################
 # Router for the Agent Interface
@@ -46,7 +50,7 @@ async def chat_response_streamer(agent: Agent, message: str) -> AsyncGenerator:
 
 
 @agents_router.post("/{agent_id}/runs", status_code=status.HTTP_200_OK)
-async def run_agent(agent_id: AgentType, body: RunRequest):
+async def run_agent(agent_id: AgentType, body: AgentRequest):
     """
     Sends a message to a specific agent and returns the response.
 
@@ -57,7 +61,7 @@ async def run_agent(agent_id: AgentType, body: RunRequest):
     Returns:
         Either a streaming response or the complete agent response
     """
-    logger.debug(f"RunRequest: {body}")
+    logger.debug(f"AgentRequest: {body}")
 
     try:
         agent: Agent = get_agent(
@@ -80,3 +84,19 @@ async def run_agent(agent_id: AgentType, body: RunRequest):
         # For advanced use cases, we should yield the entire response
         # that contains the tool calls and intermediate steps.
         return response.content
+
+
+async def create_user_session(user_id: int):
+    session_id = str(uuid.uuid4())
+    # 将 session_id 存储在 Redis 中，设置过期时间（例如 24 小时）
+    await redis_client.setex(f"user_session:{user_id}:{session_id}", timedelta(hours=24), datetime.now().isoformat())
+    return session_id
+
+
+async def verify_session(user_id: int, session_id: str):
+    # 检查 session 是否有效
+    session_key = f"user_session:{user_id}:{session_id}"
+    session_data = await redis_client.get(session_key)
+    if not session_data:
+        raise HTTPException(status_code=401, detail="Session expired")
+    return True
