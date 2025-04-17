@@ -1,49 +1,64 @@
 <template>
-  <div class="app-container">
+  <a-layout class="app-container">
     <!-- 导航栏 -->
-    <el-menu
-      mode="horizontal"
-      :router="true"
-      class="nav-menu"
-    >
-      <el-menu-item index="/">调酒师助手</el-menu-item>
+    <a-layout-header class="header">
+      <div class="logo">调酒师助手</div>
+      <a-menu
+        v-model:selectedKeys="selectedKeys"
+        theme="dark"
+        mode="horizontal"
+        :style="{ lineHeight: '64px', flex: 1 }"
+      >
+        <a-menu-item key="home">
+          <router-link to="/">首页</router-link>
+        </a-menu-item>
+        <a-menu-item v-if="userStore.token" key="user">
+          <router-link to="/user">用户管理</router-link>
+        </a-menu-item>
+      </a-menu>
       
       <!-- 未登录时显示登录和注册按钮 -->
       <div v-if="!userStore.token" class="auth-buttons">
-        <el-button type="primary" @click="goToLogin">登录</el-button>
-        <el-button @click="goToRegister">注册</el-button>
+        <a-button type="link" @click="goToLogin">登录</a-button>
+        <a-divider type="vertical" style="border-color: rgba(255, 255, 255, 0.3)" />
+        <a-button type="primary" @click="goToRegister">注册</a-button>
       </div>
       
-      <!-- 已登录时显示菜单 -->
-      <template v-if="userStore.token">
-        <el-menu-item index="/user">用户管理</el-menu-item>
-        
-        <!-- 用户菜单 -->
-        <div class="user-menu">
-          <el-dropdown @command="handleCommand">
-            <span class="el-dropdown-link">
-              {{ userStore.userInfo?.username }}
-              <el-icon class="el-icon--right">
-                <arrow-down />
-              </el-icon>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="profile">个人信息</el-dropdown-item>
-                <el-dropdown-item command="resetPwd">修改密码</el-dropdown-item>
-                <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
-        </div>
-      </template>
-    </el-menu>
+      <!-- 已登录时显示用户菜单 -->
+      <div v-else class="user-menu">
+        <a-dropdown>
+          <a class="ant-dropdown-link" @click.prevent>
+            {{ userStore.userInfo?.username }}
+            <down-outlined />
+          </a>
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="profile" @click="handleCommand('profile')">
+                个人信息
+              </a-menu-item>
+              <a-menu-item key="resetPwd" @click="handleCommand('resetPwd')">
+                修改密码
+              </a-menu-item>
+              <a-menu-divider />
+              <a-menu-item key="logout" @click="handleCommand('logout')">
+                退出登录
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </div>
+    </a-layout-header>
 
     <!-- 主要内容 -->
-    <div class="main-content">
+    <a-layout-content class="main-content">
       <router-view />
-    </div>
-  </div>
+    </a-layout-content>
+    
+    <!-- 页脚 -->
+    <a-layout-footer style="text-align: center">
+      调酒师助手 ©2024 Created by MoodShaker
+    </a-layout-footer>
+  </a-layout>
 </template>
 
 <script setup lang="ts">
@@ -53,12 +68,14 @@
 import { useHead } from '@vueuse/head'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
-import { ElMessageBox } from 'element-plus'
-import { ArrowDown } from '@element-plus/icons-vue'
+import { Modal } from 'ant-design-vue'
+import { DownOutlined } from '@ant-design/icons-vue'
+import { ref } from 'vue'
 import { logout } from '@/api/user'
 
 const router = useRouter()
 const userStore = useUserStore()
+const selectedKeys = ref<string[]>(['home'])
 
 useHead({
   title: '调酒师助手',
@@ -88,14 +105,17 @@ const handleCommand = async (command: string) => {
       break
     case 'logout':
       try {
-        await ElMessageBox.confirm('确定要退出登录吗？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+        await Modal.confirm({
+          title: '提示',
+          content: '确定要退出登录吗？',
+          okText: '确定',
+          cancelText: '取消',
+          onOk: async () => {
+            await logout()
+            userStore.clearUserInfo()
+            router.push('/login')
+          }
         })
-        await logout()
-        userStore.clearUserInfo()
-        router.push('/login')
       } catch {
         // 用户取消操作
       }
@@ -107,41 +127,42 @@ const handleCommand = async (command: string) => {
 <style scoped>
 .app-container {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 
-.nav-menu {
+.header {
+  display: flex;
+  align-items: center;
   padding: 0 20px;
   position: relative;
+  z-index: 10;
+}
+
+.logo {
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  margin-right: 30px;
 }
 
 .user-menu {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
+  margin-left: 20px;
 }
 
 .auth-buttons {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
-  gap: 10px;
+  align-items: center;
 }
 
-.el-dropdown-link {
+.ant-dropdown-link {
+  color: white;
   cursor: pointer;
   display: flex;
   align-items: center;
-  color: var(--el-text-color-primary);
 }
 
 .main-content {
-  flex: 1;
-  padding: 20px;
-  background-color: var(--el-bg-color-page);
+  padding: 24px;
+  background-color: #f0f2f5;
+  min-height: calc(100vh - 64px - 70px);
 }
 </style>

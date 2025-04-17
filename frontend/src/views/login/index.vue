@@ -2,27 +2,22 @@
   <div class="login-container">
     <div class="login-box">
       <h2>用户登录</h2>
-      <el-form
-        ref="formRef"
+      <a-form
         :model="form"
         :rules="rules"
-        label-width="80px"
+        @finish="handleLogin"
+        layout="vertical"
         class="login-form"
       >
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input
-            v-model="form.password"
-            type="password"
-            placeholder="请输入密码"
-            show-password
-          />
-        </el-form-item>
-        <el-form-item label="验证码" prop="captcha">
+        <a-form-item name="username" label="用户名">
+          <a-input v-model:value="form.username" placeholder="请输入用户名" />
+        </a-form-item>
+        <a-form-item name="password" label="密码">
+          <a-input-password v-model:value="form.password" placeholder="请输入密码" />
+        </a-form-item>
+        <a-form-item name="captcha" label="验证码">
           <div class="captcha-container">
-            <el-input v-model="form.captcha" placeholder="请输入验证码" />
+            <a-input v-model:value="form.captcha" placeholder="请输入验证码" />
             <img
               :src="captchaUrl"
               alt="验证码"
@@ -30,11 +25,11 @@
               @click="refreshCaptcha"
             />
           </div>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleLogin">登录</el-button>
-        </el-form-item>
-      </el-form>
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" html-type="submit" block>登录</a-button>
+        </a-form-item>
+      </a-form>
     </div>
   </div>
 </template>
@@ -42,14 +37,12 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import type { FormInstance } from 'element-plus'
+import { message } from 'ant-design-vue'
 import { useUserStore } from '@/stores/user'
 import { login, getCaptcha } from '@/api/user'
 
 const router = useRouter()
 const userStore = useUserStore()
-const formRef = ref<FormInstance>()
 const captchaUrl = ref('')
 
 const form = reactive({
@@ -74,22 +67,17 @@ const refreshCaptcha = async () => {
   }
 }
 
-const handleLogin = async () => {
-  if (!formRef.value) return
-  await formRef.value.validate(async (valid) => {
-    if (valid) {
-      try {
-        const res = await login(form)
-        userStore.setToken(res.data.token)
-        userStore.setUserInfo(res.data.userInfo)
-        ElMessage.success('登录成功')
-        router.push('/')
-      } catch (error) {
-        console.error('登录失败:', error)
-        refreshCaptcha() // 登录失败刷新验证码
-      }
-    }
-  })
+const handleLogin = async (values: any) => {
+  try {
+    const res = await login(values)
+    userStore.setToken(res.data.token)
+    userStore.setUserInfo(res.data.userInfo)
+    message.success('登录成功')
+    router.push('/')
+  } catch (error) {
+    console.error('登录失败:', error)
+    refreshCaptcha() // 登录失败刷新验证码
+  }
 }
 
 onMounted(() => {
@@ -103,7 +91,11 @@ onMounted(() => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f0f2f5;
+  background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
+  background-repeat: no-repeat;
+  background-position: center 110px;
+  background-size: 100%;
 }
 
 .login-box {
@@ -118,6 +110,7 @@ onMounted(() => {
   text-align: center;
   margin-bottom: 30px;
   color: #333;
+  font-weight: 600;
 }
 
 .login-form {
@@ -132,13 +125,6 @@ onMounted(() => {
 .captcha-img {
   height: 32px;
   cursor: pointer;
-}
-
-:deep(.el-form-item__content) {
-  justify-content: center;
-}
-
-:deep(.el-button) {
-  margin: 0 10px;
+  border-radius: 4px;
 }
 </style> 

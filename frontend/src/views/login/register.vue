@@ -2,56 +2,44 @@
   <div class="register-container">
     <div class="register-box">
       <h2>用户注册</h2>
-      <el-form
-        ref="formRef"
+      <a-form
         :model="form"
         :rules="rules"
-        label-width="80px"
+        @finish="handleRegister"
+        layout="vertical"
         class="register-form"
       >
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" placeholder="请输入用户名" />
-        </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input
-            v-model="form.password"
-            type="password"
-            placeholder="请输入密码"
-            show-password
-          />
-        </el-form-item>
-        <el-form-item label="确认密码" prop="confirmPassword">
-          <el-input
-            v-model="form.confirmPassword"
-            type="password"
-            placeholder="请再次输入密码"
-            show-password
-          />
-        </el-form-item>
-        <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" placeholder="请输入邮箱" />
-        </el-form-item>
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="form.nickname" placeholder="请输入昵称（选填）" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleRegister">注册</el-button>
-          <el-button @click="goToLogin">返回登录</el-button>
-        </el-form-item>
-      </el-form>
+        <a-form-item name="username" label="用户名">
+          <a-input v-model:value="form.username" placeholder="请输入用户名" />
+        </a-form-item>
+        <a-form-item name="password" label="密码">
+          <a-input-password v-model:value="form.password" placeholder="请输入密码" />
+        </a-form-item>
+        <a-form-item name="confirmPassword" label="确认密码">
+          <a-input-password v-model:value="form.confirmPassword" placeholder="请再次输入密码" />
+        </a-form-item>
+        <a-form-item name="email" label="邮箱">
+          <a-input v-model:value="form.email" placeholder="请输入邮箱" />
+        </a-form-item>
+        <a-form-item name="nickname" label="昵称">
+          <a-input v-model:value="form.nickname" placeholder="请输入昵称（选填）" />
+        </a-form-item>
+        <a-form-item>
+          <a-button type="primary" html-type="submit" block>注册</a-button>
+          <a-button @click="goToLogin" block style="margin-top: 10px">返回登录</a-button>
+        </a-form-item>
+      </a-form>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
-import type { FormInstance } from 'element-plus'
+import { message } from 'ant-design-vue'
 import { register } from '@/api/user'
 
 const router = useRouter()
-const formRef = ref<FormInstance>()
 
 const form = reactive({
   username: '',
@@ -61,26 +49,19 @@ const form = reactive({
   nickname: ''
 })
 
-const validatePass = (rule: any, value: string, callback: any) => {
+const validatePass = async (_rule: any, value: string) => {
   if (value === '') {
-    callback(new Error('请输入密码'))
-  } else {
-    if (form.confirmPassword !== '') {
-      if (formRef.value) {
-        formRef.value.validateField('confirmPassword')
-      }
-    }
-    callback()
+    throw new Error('请输入密码')
+  } else if (value.length < 6) {
+    throw new Error('密码长度不能小于6位')
   }
 }
 
-const validatePass2 = (rule: any, value: string, callback: any) => {
+const validatePass2 = async (_rule: any, value: string) => {
   if (value === '') {
-    callback(new Error('请再次输入密码'))
+    throw new Error('请再次输入密码')
   } else if (value !== form.password) {
-    callback(new Error('两次输入密码不一致'))
-  } else {
-    callback()
+    throw new Error('两次输入密码不一致')
   }
 }
 
@@ -90,8 +71,7 @@ const rules = {
     { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
   ],
   password: [
-    { required: true, validator: validatePass, trigger: 'blur' },
-    { min: 6, message: '密码长度不能小于6位', trigger: 'blur' }
+    { required: true, validator: validatePass, trigger: 'blur' }
   ],
   confirmPassword: [
     { required: true, validator: validatePass2, trigger: 'blur' }
@@ -102,24 +82,19 @@ const rules = {
   ]
 }
 
-const handleRegister = async () => {
-  if (!formRef.value) return
-  await formRef.value.validate(async (valid) => {
-    if (valid) {
-      try {
-        await register({
-          username: form.username,
-          password: form.password,
-          email: form.email,
-          nickname: form.nickname || undefined
-        })
-        ElMessage.success('注册成功，请登录')
-        router.push('/login')
-      } catch (error) {
-        console.error('注册失败:', error)
-      }
-    }
-  })
+const handleRegister = async (values: any) => {
+  try {
+    await register({
+      username: values.username,
+      password: values.password,
+      email: values.email,
+      nickname: values.nickname || undefined
+    })
+    message.success('注册成功，请登录')
+    router.push('/login')
+  } catch (error) {
+    console.error('注册失败:', error)
+  }
 }
 
 const goToLogin = () => {
@@ -133,7 +108,11 @@ const goToLogin = () => {
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-color: #f5f5f5;
+  background-color: #f0f2f5;
+  background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
+  background-repeat: no-repeat;
+  background-position: center 110px;
+  background-size: 100%;
 }
 
 .register-box {
@@ -148,17 +127,10 @@ const goToLogin = () => {
   text-align: center;
   margin-bottom: 30px;
   color: #333;
+  font-weight: 600;
 }
 
 .register-form {
   margin-top: 20px;
-}
-
-:deep(.el-form-item__content) {
-  justify-content: center;
-}
-
-:deep(.el-button) {
-  margin: 0 10px;
 }
 </style> 

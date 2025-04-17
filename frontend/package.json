@@ -24,6 +24,7 @@
     "@unocss/reset": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
     "@vueuse/head": "^2.0.0",
+    "ant-design-vue": "4.x",
     "axios": "^1.6.7",
     "date-fns": "^4.1.0",
     "element-plus": "^2.5.6",
