@@ -76,42 +76,49 @@
     <el-dialog
       v-model="dialogVisible"
       :title="dialogType === 'add' ? '添加用户' : '编辑用户'"
-      width="400px"
+      width="500px"
+      class="user-dialog"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
     >
       <el-form
         ref="formRef"
         :model="form"
         :rules="rules"
-        label-width="80px"
+        label-width="100px"
+        class="dialog-form"
       >
         <el-form-item label="用户名" prop="username">
-          <el-input v-model="form.username" :disabled="dialogType === 'edit'" />
+          <el-input v-model="form.username" :disabled="dialogType === 'edit'" placeholder="请输入用户名" />
         </el-form-item>
         <el-form-item label="密码" prop="password" v-if="dialogType === 'add'">
-          <el-input v-model="form.password" type="password" />
+          <el-input v-model="form.password" type="password" placeholder="请输入密码" show-password />
         </el-form-item>
         <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="form.nickname" />
+          <el-input v-model="form.nickname" placeholder="请输入昵称" />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="form.email" />
+          <el-input v-model="form.email" placeholder="请输入邮箱" />
         </el-form-item>
         <el-form-item label="手机号" prop="phone">
-          <el-input v-model="form.phone" />
+          <el-input v-model="form.phone" placeholder="请输入手机号" />
         </el-form-item>
         <el-form-item label="状态" prop="status">
           <el-switch
             v-model="form.status"
             :active-value="1"
             :inactive-value="0"
+            active-text="正常"
+            inactive-text="禁用"
+            inline-prompt
           />
         </el-form-item>
       </el-form>
       <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button type="primary" @click="handleSubmit">确定</el-button>
-        </span>
+        <div class="dialog-footer">
+          <el-button @click="dialogVisible = false" class="cancel-btn">取消</el-button>
+          <el-button type="primary" @click="handleSubmit" class="submit-btn">确定</el-button>
+        </div>
       </template>
     </el-dialog>
   </div>
@@ -306,5 +313,88 @@ onMounted(() => {
 
 .user-tabs {
   margin-top: 20px;
+}
+
+:deep(.user-dialog) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+:deep(.user-dialog .el-dialog__header) {
+  margin: 0;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+:deep(.user-dialog .el-dialog__title) {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+:deep(.user-dialog .el-dialog__headerbtn) {
+  top: 20px;
+  right: 20px;
+}
+
+:deep(.user-dialog .el-dialog__headerbtn .el-dialog__close) {
+  color: white;
+}
+
+:deep(.user-dialog .el-dialog__body) {
+  padding: 30px;
+}
+
+:deep(.user-dialog .el-dialog__footer) {
+  padding: 20px;
+  border-top: 1px solid var(--border-color-light);
+}
+
+.dialog-form {
+  max-width: 100%;
+}
+
+:deep(.dialog-form .el-input__inner) {
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+:deep(.dialog-form .el-input__inner:focus) {
+  border-color: #667eea;
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.1);
+}
+
+:deep(.dialog-form .el-switch) {
+  --el-switch-on-color: #667eea;
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-btn {
+  border-radius: 8px;
+  padding: 10px 20px;
+  transition: all 0.3s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #f5f5f5;
+  transform: translateY(-2px);
+}
+
+.submit-btn {
+  border-radius: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
 }
 </style> 

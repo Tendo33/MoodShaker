@@ -118,26 +118,24 @@ const goToLogin = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: var(--bg-color);
-  background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
-  background-repeat: no-repeat;
-  background-position: center 110px;
-  background-size: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .auth-box {
-  width: 400px;
+  width: 420px;
   padding: 40px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .auth-box h2 {
   text-align: center;
   margin-bottom: 30px;
-  color: var(--text-color);
+  color: #333;
+  font-size: 24px;
   font-weight: 600;
 }
 
@@ -150,23 +148,34 @@ const goToLogin = () => {
 }
 
 :deep(.el-input__inner) {
-  border-radius: var(--border-radius);
+  height: 40px;
+  border-radius: 8px;
 }
 
 :deep(.el-button) {
-  border-radius: var(--border-radius);
   height: 40px;
-  font-size: 14px;
+  border-radius: 8px;
+  font-weight: 500;
 }
 
 :deep(.el-button--primary) {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  background-color: #667eea;
+  border-color: #667eea;
 }
 
 :deep(.el-button--primary:hover) {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  opacity: 0.9;
+  background-color: #764ba2;
+  border-color: #764ba2;
+}
+
+:deep(.el-button--default) {
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+  color: #333;
+}
+
+:deep(.el-button--default:hover) {
+  background-color: #e6e6e6;
+  border-color: #d9d9d9;
 }
 </style> 

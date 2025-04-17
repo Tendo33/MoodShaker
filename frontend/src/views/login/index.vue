@@ -108,26 +108,24 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-color: var(--bg-color);
-  background-image: url('https://gw.alipayobjects.com/zos/rmsportal/TVYTbAXWheQpRcWDaDMu.svg');
-  background-repeat: no-repeat;
-  background-position: center 110px;
-  background-size: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
 .auth-box {
-  width: 400px;
+  width: 420px;
   padding: 40px;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
 }
 
 .auth-box h2 {
   text-align: center;
   margin-bottom: 30px;
-  color: var(--text-color);
+  color: #333;
+  font-size: 24px;
   font-weight: 600;
 }
 
@@ -135,39 +133,45 @@ onMounted(() => {
   margin-top: 20px;
 }
 
-.captcha-container {
-  display: flex;
-  gap: 10px;
-}
-
-.captcha-img {
-  height: 32px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
 :deep(.el-form-item__label) {
   font-weight: 500;
 }
 
 :deep(.el-input__inner) {
-  border-radius: var(--border-radius);
+  height: 40px;
+  border-radius: 8px;
 }
 
 :deep(.el-button) {
-  border-radius: var(--border-radius);
   height: 40px;
-  font-size: 14px;
+  border-radius: 8px;
+  font-weight: 500;
 }
 
 :deep(.el-button--primary) {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
+  background-color: #667eea;
+  border-color: #667eea;
 }
 
 :deep(.el-button--primary:hover) {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  opacity: 0.9;
+  background-color: #764ba2;
+  border-color: #764ba2;
+}
+
+.captcha-container {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.captcha-img {
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.captcha-img:hover {
+  transform: scale(1.05);
 }
 </style> 
