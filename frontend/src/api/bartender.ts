@@ -6,23 +6,33 @@ interface ChatRequest {
 	session_id?: string;
 }
 
-interface ChatResponse {
-	content: string;
-	cocktail?: {
-		name: string;
-		image: string;
-		ingredients: Array<{
-			name: string;
-			amount: string;
-		}>;
-		instructions: string[];
-	};
+interface CocktailIngredient {
+	name: string;
+	amount: string;
 }
 
-export const chatWithBartender = (data: ChatRequest) => {
-	return request<ChatResponse>({
-		url: "/api/v1/agents/bartender/runs",
-		method: "post",
-		data,
-	});
+interface Cocktail {
+	name: string;
+	image: string;
+	ingredients: CocktailIngredient[];
+	instructions: string[];
+}
+
+interface ChatResponse {
+	content: string;
+	cocktail?: Cocktail;
+}
+
+export const chatWithBartender = async (data: ChatRequest): Promise<ChatResponse> => {
+	try {
+		const response = await request<ChatResponse>({
+			url: "/api/v1/agents/bartender/runs",
+			method: "post",
+			data,
+		});
+		return response.data;
+	} catch (error) {
+		console.error("调酒师助手API调用失败:", error);
+		throw error;
+	}
 };

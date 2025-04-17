@@ -32,7 +32,7 @@
 					placeholder="告诉我你的心情和喜好，让我为你推荐合适的鸡尾酒..."
 					@keyup.enter.ctrl="sendMessage"
 				/>
-				<el-button type="primary" @click="sendMessage" :loading="isLoading"> 发送 </el-button>
+				<el-button type="primary" @click="sendMessage" :loading="isLoading">发送</el-button>
 			</div>
 		</el-card>
 
@@ -76,7 +76,6 @@ const showCocktailDetails = ref(false);
 const currentCocktail = ref<any>(null);
 
 const formatMessage = (content: string) => {
-	// 将换行符转换为HTML换行
 	return content.replace(/\n/g, "<br>");
 };
 
@@ -93,7 +92,6 @@ const sendMessage = async () => {
 	const userMessage = userInput.value;
 	userInput.value = "";
 
-	// 添加用户消息
 	messages.value.push({
 		role: "user",
 		content: userMessage,
@@ -110,14 +108,12 @@ const sendMessage = async () => {
 			session_id: userStore.sessionId,
 		});
 
-		// 添加助手消息
 		messages.value.push({
 			role: "assistant",
 			content: response.content,
 			timestamp: new Date().toLocaleTimeString(),
 		});
 
-		// 检查是否包含鸡尾酒配方
 		if (response.cocktail) {
 			currentCocktail.value = response.cocktail;
 			showCocktailDetails.value = true;
@@ -147,18 +143,28 @@ onMounted(() => {
 	max-width: 800px;
 	margin: 0 auto;
 	padding: 20px;
+	height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
 .chat-container {
-	height: calc(100vh - 200px);
+	flex: 1;
 	display: flex;
 	flex-direction: column;
+	background-color: var(--el-bg-color);
 }
 
 .card-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	padding: 0 10px;
+}
+
+.card-header h2 {
+	margin: 0;
+	color: var(--el-text-color-primary);
 }
 
 .chat-messages {
@@ -168,40 +174,45 @@ onMounted(() => {
 	display: flex;
 	flex-direction: column;
 	gap: 20px;
+	background-color: var(--el-bg-color-page);
 }
 
 .message {
 	max-width: 80%;
-	padding: 10px 15px;
-	border-radius: 10px;
+	padding: 12px 16px;
+	border-radius: 12px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .user-message {
 	align-self: flex-end;
-	background-color: #e3f2fd;
+	background-color: var(--el-color-primary-light-9);
 }
 
 .assistant-message {
 	align-self: flex-start;
-	background-color: #f5f5f5;
+	background-color: var(--el-bg-color);
 }
 
 .message-header {
 	display: flex;
 	justify-content: space-between;
-	margin-bottom: 5px;
-	font-size: 0.8em;
-	color: #666;
+	margin-bottom: 8px;
+	font-size: 0.85em;
+	color: var(--el-text-color-secondary);
 }
 
 .message-text {
-	line-height: 1.5;
+	line-height: 1.6;
+	color: var(--el-text-color-primary);
 }
 
 .input-container {
 	padding: 20px;
 	display: flex;
 	gap: 10px;
+	background-color: var(--el-bg-color);
+	border-top: 1px solid var(--el-border-color-light);
 }
 
 .cocktail-details {
@@ -214,6 +225,7 @@ onMounted(() => {
 	object-fit: cover;
 	margin: 20px 0;
 	border-radius: 8px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .ingredients,
@@ -224,5 +236,11 @@ onMounted(() => {
 .ingredients ul,
 .instructions ol {
 	padding-left: 20px;
+}
+
+.ingredients li,
+.instructions li {
+	margin: 8px 0;
+	line-height: 1.6;
 }
 </style>

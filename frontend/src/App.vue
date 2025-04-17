@@ -1,29 +1,18 @@
+<template>
+  <RouterView />
+</template>
+
 <script setup lang="ts">
 // https://github.com/vueuse/head
 // you can use this to manipulate the document head in any components,
 // they will be rendered correctly in the html results with vite-ssg
 useHead({
-  title: 'Vitesse',
+  title: '调酒师助手',
   meta: [
     {
       name: 'description',
-      content: 'Opinionated Vite Starter Template',
-    },
-    {
-      name: 'theme-color',
-      content: () => isDark.value ? '#00aba9' : '#ffffff',
-    },
-  ],
-  link: [
-    {
-      rel: 'icon',
-      type: 'image/svg+xml',
-      href: () => preferredDark.value ? '/favicon-dark.svg' : '/favicon.svg',
+      content: '智能调酒师助手，为您提供专业的调酒建议',
     },
   ],
 })
 </script>
-
-<template>
-  <RouterView />
-</template>
