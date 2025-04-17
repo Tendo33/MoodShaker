@@ -1,14 +1,29 @@
 <template>
-  <router-view />
+  <div class="app-container">
+    <router-view />
+  </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
+import { useUserStore } from '@/stores/user'
 
-onMounted(() => {
-  // 初始化主题
+const userStore = useUserStore()
+
+// 初始化主题
+const initTheme = () => {
   const isDark = localStorage.getItem('isDark') === 'true'
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light')
+}
+
+// 监听主题变化
+watch(() => userStore.isDark, (newValue) => {
+  document.documentElement.setAttribute('data-theme', newValue ? 'dark' : 'light')
+  localStorage.setItem('isDark', String(newValue))
+})
+
+onMounted(() => {
+  initTheme()
 })
 </script>
 

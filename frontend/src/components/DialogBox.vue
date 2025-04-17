@@ -3,19 +3,19 @@
     <div class="dialog-header">
       <div class="dialog-title">MoodShaker</div>
       <div class="dialog-actions">
-        <button @click="toggleTheme" class="theme-toggle">
-          <i class="fas fa-palette"></i>
-        </button>
-        <button v-if="!isLoggedIn" @click="showLogin = true" class="login-btn">
-          登录
-        </button>
-        <button v-if="!isLoggedIn" @click="showRegister = true" class="register-btn">
-          注册
-        </button>
-        <div v-else class="user-info">
-          <span>{{ username }}</span>
-          <button @click="logout" class="logout-btn">退出</button>
-        </div>
+        <el-button @click="toggleTheme" class="theme-toggle">
+          <el-icon><component :is="currentStyle === 'light' ? 'Sunny' : 'Moon'" /></el-icon>
+        </el-button>
+        <template v-if="!isLoggedIn">
+          <el-button type="primary" @click="handleOpenLogin">登录</el-button>
+          <el-button @click="handleOpenRegister">注册</el-button>
+        </template>
+        <template v-else>
+          <div class="user-info">
+            <span>{{ username }}</span>
+            <el-button @click="logout">退出</el-button>
+          </div>
+        </template>
       </div>
     </div>
 
@@ -28,15 +28,20 @@
       :close-on-press-escape="true"
       @close="handleLoginClose"
     >
-      <el-form @submit.prevent="handleLogin">
-        <el-form-item label="用户名">
-          <el-input v-model="loginForm.username" type="text" required />
+      <el-form 
+        ref="loginFormRef"
+        :model="loginForm"
+        :rules="loginRules"
+        label-width="80px"
+      >
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="loginForm.username" />
         </el-form-item>
-        <el-form-item label="密码">
-          <el-input v-model="loginForm.password" type="password" required />
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="loginForm.password" type="password" show-password />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleLogin">登录</el-button>
+          <el-button type="primary" @click="handleLogin" :loading="isLoading">登录</el-button>
           <el-button @click="showLogin = false">取消</el-button>
         </el-form-item>
       </el-form>
@@ -51,18 +56,23 @@
       :close-on-press-escape="true"
       @close="handleRegisterClose"
     >
-      <el-form @submit.prevent="handleRegister">
-        <el-form-item label="用户名">
-          <el-input v-model="registerForm.username" type="text" required />
+      <el-form 
+        ref="registerFormRef"
+        :model="registerForm"
+        :rules="registerRules"
+        label-width="80px"
+      >
+        <el-form-item label="用户名" prop="username">
+          <el-input v-model="registerForm.username" />
         </el-form-item>
-        <el-form-item label="密码">
-          <el-input v-model="registerForm.password" type="password" required />
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="registerForm.password" type="password" show-password />
         </el-form-item>
-        <el-form-item label="确认密码">
-          <el-input v-model="registerForm.confirmPassword" type="password" required />
+        <el-form-item label="确认密码" prop="confirmPassword">
+          <el-input v-model="registerForm.confirmPassword" type="password" show-password />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleRegister">注册</el-button>
+          <el-button type="primary" @click="handleRegister" :loading="isLoading">注册</el-button>
           <el-button @click="showRegister = false">取消</el-button>
         </el-form-item>
       </el-form>
@@ -72,12 +82,18 @@
 
 <script setup lang="ts">
 import { ref, reactive, onUnmounted } from 'vue'
+import { ElMessage } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
+import { Sunny, Moon } from '@element-plus/icons-vue'
 
 const isLoggedIn = ref(false)
 const username = ref('')
 const showLogin = ref(false)
 const showRegister = ref(false)
 const currentStyle = ref('light')
+const isLoading = ref(false)
+const loginFormRef = ref<FormInstance>()
+const registerFormRef = ref<FormInstance>()
 
 const loginForm = reactive({
   username: '',
@@ -90,45 +106,117 @@ const registerForm = reactive({
   confirmPassword: ''
 })
 
+const validatePass = (rule: any, value: string, callback: any) => {
+  if (value === '') {
+    callback(new Error('请输入密码'))
+  } else if (value.length < 6) {
+    callback(new Error('密码长度不能小于6位'))
+  } else {
+    callback()
+  }
+}
+
+const validatePass2 = (rule: any, value: string, callback: any) => {
+  if (value === '') {
+    callback(new Error('请再次输入密码'))
+  } else if (value !== registerForm.password) {
+    callback(new Error('两次输入密码不一致'))
+  } else {
+    callback()
+  }
+}
+
+const loginRules: FormRules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, validator: validatePass, trigger: 'blur' }
+  ]
+}
+
+const registerRules: FormRules = {
+  username: [
+    { required: true, message: '请输入用户名', trigger: 'blur' },
+    { min: 3, max: 20, message: '长度在 3 到 20 个字符', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, validator: validatePass, trigger: 'blur' }
+  ],
+  confirmPassword: [
+    { required: true, validator: validatePass2, trigger: 'blur' }
+  ]
+}
+
+const handleOpenLogin = () => {
+  showLogin.value = true
+  showRegister.value = false
+}
+
+const handleOpenRegister = () => {
+  showRegister.value = true
+  showLogin.value = false
+}
+
 const handleLogin = async () => {
+  if (!loginFormRef.value) return
+  
   try {
+    await loginFormRef.value.validate()
+    isLoading.value = true
     // 调用登录API
     isLoggedIn.value = true
     username.value = loginForm.username
     showLogin.value = false
+    ElMessage.success('登录成功')
   } catch (error) {
     console.error('登录失败:', error)
+    ElMessage.error('登录失败，请检查用户名和密码')
+  } finally {
+    isLoading.value = false
   }
 }
 
 const handleRegister = async () => {
+  if (!registerFormRef.value) return
+  
   try {
+    await registerFormRef.value.validate()
+    isLoading.value = true
     // 调用注册API
     showRegister.value = false
     showLogin.value = true
+    ElMessage.success('注册成功，请登录')
   } catch (error) {
     console.error('注册失败:', error)
+    ElMessage.error('注册失败，请检查输入信息')
+  } finally {
+    isLoading.value = false
   }
 }
 
 const handleLoginClose = () => {
-  loginForm.username = ''
-  loginForm.password = ''
+  if (loginFormRef.value) {
+    loginFormRef.value.resetFields()
+  }
 }
 
 const handleRegisterClose = () => {
-  registerForm.username = ''
-  registerForm.password = ''
-  registerForm.confirmPassword = ''
+  if (registerFormRef.value) {
+    registerFormRef.value.resetFields()
+  }
 }
 
 const logout = () => {
   isLoggedIn.value = false
   username.value = ''
+  ElMessage.success('已退出登录')
 }
 
 const toggleTheme = () => {
   currentStyle.value = currentStyle.value === 'light' ? 'dark' : 'light'
+  document.documentElement.classList.toggle('dark')
 }
 
 onUnmounted(() => {
@@ -143,16 +231,16 @@ onUnmounted(() => {
   top: 0;
   right: 0;
   width: 300px;
-  background: #fff;
+  background: var(--el-bg-color);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--el-box-shadow-light);
   z-index: 1000;
   margin: 20px;
 }
 
 .dialog-box.dark {
-  background: #333;
-  color: #fff;
+  background: var(--el-bg-color-overlay);
+  color: var(--el-text-color-primary);
 }
 
 .dialog-header {
@@ -160,7 +248,7 @@ onUnmounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 15px;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--el-border-color-light);
 }
 
 .dialog-title {
@@ -171,18 +259,7 @@ onUnmounted(() => {
 .dialog-actions {
   display: flex;
   gap: 10px;
-}
-
-button {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  background: #f0f0f0;
-}
-
-button:hover {
-  background: #e0e0e0;
+  align-items: center;
 }
 
 .user-info {

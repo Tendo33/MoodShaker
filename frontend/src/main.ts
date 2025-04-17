@@ -14,7 +14,10 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
   app.component(key, component)
 }
 
-app.use(ElementPlus)
+// 使用默认配置
+app.use(ElementPlus, {
+  size: 'default'
+})
 app.use(router)
 app.use(createPinia())
 

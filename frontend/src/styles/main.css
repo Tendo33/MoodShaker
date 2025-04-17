@@ -50,6 +50,13 @@ html.dark {
 /* 全局对话框样式 */
 .el-dialog {
   z-index: 2000 !important;
+  position: relative;
+  margin: 0 auto;
+  background: var(--el-bg-color);
+  border-radius: var(--el-border-radius-base);
+  box-shadow: var(--el-box-shadow-light);
+  box-sizing: border-box;
+  width: 50%;
 }
 
 .el-dialog__wrapper {
@@ -61,19 +68,28 @@ html.dark {
   overflow: auto;
   margin: 0;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 2000;
 }
 
 .el-dialog__header {
   padding: 20px;
+  padding-bottom: 10px;
+  margin-right: 16px;
   border-bottom: 1px solid var(--el-border-color-light);
 }
 
 .el-dialog__body {
   padding: 20px;
+  color: var(--el-text-color-regular);
+  font-size: var(--el-font-size-base);
+  word-break: break-all;
 }
 
 .el-dialog__footer {
   padding: 20px;
+  padding-top: 10px;
+  text-align: right;
+  box-sizing: border-box;
   border-top: 1px solid var(--el-border-color-light);
 }
 
@@ -94,4 +110,29 @@ html.dark {
     width: 90% !important;
     margin: 0 auto;
   }
+}
+
+/* 修复对话框动画 */
+.el-dialog-enter-active,
+.el-dialog-leave-active {
+  transition: all 0.3s ease;
+}
+
+.el-dialog-enter-from,
+.el-dialog-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+/* 修复遮罩层 */
+.el-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 2000;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow: auto;
 }
