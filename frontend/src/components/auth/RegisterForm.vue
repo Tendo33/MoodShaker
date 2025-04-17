@@ -4,7 +4,7 @@
     <el-form
       ref="formRef"
       :model="form"
-      :rules="rules"
+      :rules="rules as any"
       label-position="top"
       @submit.prevent="handleSubmit"
     >
