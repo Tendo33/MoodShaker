@@ -104,8 +104,8 @@ const sendMessage = async () => {
 		isLoading.value = true;
 		const response = await chatWithBartender({
 			message: userMessage,
-			user_id: userStore.userId,
-			session_id: userStore.sessionId,
+			user_id: userStore.userInfo?.username,
+			session_id: userStore.sessionId || Date.now().toString(),
 		});
 
 		messages.value.push({
@@ -128,12 +128,14 @@ const sendMessage = async () => {
 
 const startNewSession = () => {
 	messages.value = [];
-	userStore.sessionId = Date.now().toString();
+	const newSessionId = Date.now().toString();
+	userStore.setSessionId(newSessionId);
 };
 
 onMounted(() => {
 	if (!userStore.sessionId) {
-		userStore.sessionId = Date.now().toString();
+		const newSessionId = Date.now().toString();
+		userStore.setSessionId(newSessionId);
 	}
 });
 </script>

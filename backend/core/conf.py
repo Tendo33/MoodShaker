@@ -106,6 +106,8 @@ class Settings(BaseSettings):
     # CORS配置
     CORS_ALLOWED_ORIGINS: list[str] = [
         "http://127.0.0.1:8000",  # 允许的跨域源
+        "http://localhost:5173",  # 前端开发服务器
+        "http://localhost:8080",  # 后端服务
     ]
     CORS_EXPOSE_HEADERS: list[str] = [
         "*",  # 允许暴露的响应头
