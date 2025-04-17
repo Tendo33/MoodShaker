@@ -9,12 +9,12 @@ interface ChatRequest {
 	stream?: boolean;
 }
 
-interface CocktailIngredient {
+export interface CocktailIngredient {
 	name: string;
 	amount: string;
 }
 
-interface Cocktail {
+export interface Cocktail {
 	name: string;
 	image: string;
 	ingredients: CocktailIngredient[];
@@ -61,14 +61,50 @@ export const chatWithBartender = async (data: ChatRequest): Promise<ChatResponse
 		}
 
 		let content = '';
+		let cocktail: Cocktail | undefined;
+		let isCocktailData = false;
+		let cocktailData = '';
+
 		while (true) {
 			const { done, value } = await reader.read();
 			if (done) break;
-			content += new TextDecoder().decode(value);
+			
+			const chunk = new TextDecoder().decode(value);
+			const lines = chunk.split('\n');
+			
+			for (const line of lines) {
+				if (line.startsWith('data: ')) {
+					const data = line.slice(6);
+					if (data === '[DONE]') {
+						continue;
+					}
+					
+					try {
+						const parsed = JSON.parse(data);
+						if (parsed.type === 'cocktail') {
+							isCocktailData = true;
+							cocktailData = parsed.data;
+						} else {
+							content += parsed.content || '';
+						}
+					} catch (e) {
+						console.error('解析响应数据失败:', e);
+					}
+				}
+			}
+		}
+
+		if (isCocktailData) {
+			try {
+				cocktail = JSON.parse(cocktailData);
+			} catch (e) {
+				console.error('解析鸡尾酒数据失败:', e);
+			}
 		}
 
 		return {
 			content,
+			cocktail,
 			timestamp: new Date().toISOString()
 		};
 	} catch (error: any) {

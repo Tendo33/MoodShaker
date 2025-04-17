@@ -61,7 +61,10 @@ const rules = {
 const refreshCaptcha = async () => {
   try {
     const res = await getCaptcha()
-    captchaUrl.value = res.data.url
+    // 从返回的JSON中获取base64图片数据
+    if (res.data && res.data.image) {
+      captchaUrl.value = `data:image/jpeg;base64,${res.data.image}`
+    }
   } catch (error) {
     console.error('获取验证码失败:', error)
   }
@@ -74,8 +77,18 @@ const handleLogin = async (values: any) => {
     userStore.setUserInfo(res.data.userInfo)
     message.success('登录成功')
     router.push('/')
-  } catch (error) {
+  } catch (error: any) {
     console.error('登录失败:', error)
+    if (error.response) {
+      const { status, data } = error.response
+      if (status === 401) {
+        message.error(data?.msg || '用户名、密码或验证码错误')
+      } else {
+        message.error(data?.msg || '登录失败，请稍后重试')
+      }
+    } else {
+      message.error('网络错误，请检查网络连接')
+    }
     refreshCaptcha() // 登录失败刷新验证码
   }
 }

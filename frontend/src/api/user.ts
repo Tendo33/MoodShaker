@@ -81,7 +81,7 @@ export function logout() {
 // 用户注册
 export function register(data: CreateUserDto) {
   return request({
-    url: '/api/v1/user/register',
+    url: '/api/v1/users/register',
     method: 'post',
     data
   })
