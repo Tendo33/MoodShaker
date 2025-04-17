@@ -30,19 +30,23 @@
       <div v-else class="user-menu">
         <a-dropdown>
           <a class="ant-dropdown-link" @click.prevent>
-            {{ userStore.userInfo?.username }}
+            <a-avatar :size="32" :src="userStore.userInfo?.avatar || '/default-avatar.png'" />
+            <span class="username">{{ userStore.userInfo?.nickname || userStore.userInfo?.username }}</span>
             <down-outlined />
           </a>
           <template #overlay>
             <a-menu>
               <a-menu-item key="profile" @click="handleCommand('profile')">
+                <template #icon><user-outlined /></template>
                 个人信息
               </a-menu-item>
               <a-menu-item key="resetPwd" @click="handleCommand('resetPwd')">
+                <template #icon><key-outlined /></template>
                 修改密码
               </a-menu-item>
               <a-menu-divider />
               <a-menu-item key="logout" @click="handleCommand('logout')">
+                <template #icon><logout-outlined /></template>
                 退出登录
               </a-menu-item>
             </a-menu>
@@ -67,7 +71,7 @@
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 import { Modal } from 'ant-design-vue'
-import { DownOutlined } from '@ant-design/icons-vue'
+import { DownOutlined, UserOutlined, KeyOutlined, LogoutOutlined } from '@ant-design/icons-vue'
 import { ref } from 'vue'
 import { logout } from '@/api/user'
 
@@ -134,6 +138,8 @@ const handleCommand = async (command: string) => {
 
 .user-menu {
   margin-left: 20px;
+  display: flex;
+  align-items: center;
 }
 
 .auth-buttons {
@@ -146,16 +152,28 @@ const handleCommand = async (command: string) => {
   cursor: pointer;
   display: flex;
   align-items: center;
+  gap: 8px;
+}
+
+.username {
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+:deep(.ant-dropdown-menu-item) {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.guest-tip {
+  color: rgba(255, 255, 255, 0.65);
+  margin-right: 8px;
 }
 
 .main-content {
   padding: 24px;
   background-color: #f0f2f5;
   min-height: calc(100vh - 64px - 70px);
-}
-
-.guest-tip {
-  color: rgba(255, 255, 255, 0.65);
-  margin-right: 8px;
 }
 </style>

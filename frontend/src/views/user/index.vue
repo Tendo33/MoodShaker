@@ -2,61 +2,75 @@
   <div class="user-container">
     <div class="header">
       <h2>用户管理</h2>
-      <el-button type="primary" @click="handleAdd">添加用户</el-button>
+      <div class="header-buttons">
+        <el-button type="primary" @click="handleAdd">添加用户</el-button>
+      </div>
     </div>
 
-    <div class="search">
-      <el-form :inline="true" :model="searchForm">
-        <el-form-item label="用户名">
-          <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable />
-        </el-form-item>
-        <el-form-item label="手机号">
-          <el-input v-model="searchForm.phone" placeholder="请输入手机号" clearable />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
-            <el-option label="正常" :value="1" />
-            <el-option label="禁用" :value="0" />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">搜索</el-button>
-          <el-button @click="resetSearch">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
+    <el-tabs v-model="activeTab" class="user-tabs" @tab-click="handleTabClick">
+      <el-tab-pane label="用户列表" name="list">
+        <div class="search">
+          <el-form :inline="true" :model="searchForm">
+            <el-form-item label="用户名">
+              <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable />
+            </el-form-item>
+            <el-form-item label="手机号">
+              <el-input v-model="searchForm.phone" placeholder="请输入手机号" clearable />
+            </el-form-item>
+            <el-form-item label="状态">
+              <el-select v-model="searchForm.status" placeholder="请选择状态" clearable>
+                <el-option label="正常" :value="1" />
+                <el-option label="禁用" :value="0" />
+              </el-select>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="handleSearch">搜索</el-button>
+              <el-button @click="resetSearch">重置</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
 
-    <el-table :data="userList" border style="width: 100%">
-      <el-table-column prop="username" label="用户名" />
-      <el-table-column prop="nickname" label="昵称" />
-      <el-table-column prop="email" label="邮箱" />
-      <el-table-column prop="phone" label="手机号" />
-      <el-table-column prop="status" label="状态">
-        <template #default="{ row }">
-          <el-tag :type="row.status === 1 ? 'success' : 'danger'">
-            {{ row.status === 1 ? '正常' : '禁用' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作" width="200">
-        <template #default="{ row }">
-          <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
-          <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+        <el-table :data="userList" border style="width: 100%">
+          <el-table-column prop="username" label="用户名" />
+          <el-table-column prop="nickname" label="昵称" />
+          <el-table-column prop="email" label="邮箱" />
+          <el-table-column prop="phone" label="手机号" />
+          <el-table-column prop="status" label="状态">
+            <template #default="{ row }">
+              <el-tag :type="row.status === 1 ? 'success' : 'danger'">
+                {{ row.status === 1 ? '正常' : '禁用' }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="200">
+            <template #default="{ row }">
+              <el-button type="primary" link @click="handleEdit(row)">编辑</el-button>
+              <el-button type="danger" link @click="handleDelete(row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
-    <div class="pagination">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
-    </div>
+        <div class="pagination">
+          <el-pagination
+            v-model:current-page="currentPage"
+            v-model:page-size="pageSize"
+            :page-sizes="[10, 20, 50, 100]"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="total"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+          />
+        </div>
+      </el-tab-pane>
+
+      <el-tab-pane label="个人信息" name="profile">
+        <profile-view v-if="activeTab === 'profile'" />
+      </el-tab-pane>
+
+      <el-tab-pane label="修改密码" name="password">
+        <change-password-view v-if="activeTab === 'password'" />
+      </el-tab-pane>
+    </el-tabs>
 
     <!-- 添加/编辑用户对话框 -->
     <el-dialog
@@ -109,6 +123,16 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import { getUserList, deleteUser, register, updateUserInfo } from '@/api/user'
 import type { UserInfo, CreateUserDto, UpdateUserDto } from '@/api/user'
+import ProfileView from './profile.vue'
+import ChangePasswordView from './change-password.vue'
+
+// 当前激活的标签页
+const activeTab = ref('list')
+
+// 标签页切换处理
+const handleTabClick = (tab: any) => {
+  activeTab.value = tab.props.name
+}
 
 // 搜索表单
 const searchForm = reactive({
@@ -265,6 +289,11 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
+.header-buttons {
+  display: flex;
+  gap: 10px;
+}
+
 .search {
   margin-bottom: 20px;
 }
@@ -273,5 +302,9 @@ onMounted(() => {
   margin-top: 20px;
   display: flex;
   justify-content: flex-end;
+}
+
+.user-tabs {
+  margin-top: 20px;
 }
 </style> 

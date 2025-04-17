@@ -3,6 +3,8 @@ import BartenderView from "@/views/bartender/index.vue";
 import UserView from "@/views/user/index.vue";
 import LoginView from "@/views/login/index.vue";
 import RegisterView from "@/views/login/register.vue";
+import ProfileView from "@/views/user/profile.vue";
+import ChangePasswordView from "@/views/user/change-password.vue";
 import { useUserStore } from "@/stores/user";
 
 const router = createRouter({
@@ -23,6 +25,24 @@ const router = createRouter({
 			component: UserView,
 			meta: {
 				title: "用户管理",
+				requiresAuth: true
+			},
+		},
+		{
+			path: "/profile",
+			name: "profile",
+			component: ProfileView,
+			meta: {
+				title: "个人信息",
+				requiresAuth: true
+			},
+		},
+		{
+			path: "/change-password",
+			name: "changePassword",
+			component: ChangePasswordView,
+			meta: {
+				title: "修改密码",
 				requiresAuth: true
 			},
 		},

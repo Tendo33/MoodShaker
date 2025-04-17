@@ -49,10 +49,18 @@ export const useUserStore = defineStore("user", () => {
 
 	// 初始化用户信息
 	const initUserInfo = () => {
-		const storedUserInfo = localStorage.getItem('userInfo');
-		if (storedUserInfo) {
-			userInfo.value = JSON.parse(storedUserInfo);
+		try {
+			const storedUserInfo = localStorage.getItem('userInfo');
+			if (storedUserInfo) {
+				userInfo.value = JSON.parse(storedUserInfo);
+			}
+		} catch (error) {
+			console.error('解析用户信息失败:', error);
+			// 如果解析失败，清除无效的用户信息
+			localStorage.removeItem('userInfo');
+			userInfo.value = null;
 		}
+
 		const storedSessionId = localStorage.getItem('sessionId');
 		if (storedSessionId) {
 			sessionId.value = storedSessionId;
