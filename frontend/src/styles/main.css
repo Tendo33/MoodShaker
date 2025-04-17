@@ -6,6 +6,7 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
 html.dark {
@@ -26,4 +27,22 @@ html.dark {
   left: 0;
   width: 100%;
   height: 2px;
+}
+
+:root {
+  --el-bg-color-page: #f5f7fa;
+  --el-text-color-primary: #303133;
+  --el-text-color-regular: #606266;
+  --el-text-color-secondary: #909399;
+  --el-border-color-light: #e4e7ed;
+  --el-color-primary-light-9: #ecf5ff;
+}
+
+html.dark {
+  --el-bg-color-page: #0a0a0a;
+  --el-text-color-primary: #e5eaf3;
+  --el-text-color-regular: #cfd3dc;
+  --el-text-color-secondary: #a3a6ad;
+  --el-border-color-light: #414243;
+  --el-color-primary-light-9: #1d1e1f;
 }
