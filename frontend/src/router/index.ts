@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import BartenderView from "@/views/bartender/index.vue";
 import UserView from "@/views/user/index.vue";
 import LoginView from "@/views/login/index.vue";
 import RegisterView from "@/views/login/register.vue";
@@ -13,28 +12,7 @@ const routes = [
 	{
 		path: "/",
 		component: MainLayout,
-		children: [
-			{
-				path: "",
-				redirect: "/chat"
-			},
-			{
-				path: "chat",
-				component: ChatWindow,
-				meta: {
-					requiresAuth: true
-				}
-			}
-		]
-	},
-	{
-		path: "/bartender",
-		name: "bartender",
-		component: BartenderView,
-		meta: {
-			title: "MoodShaker",
-			requiresAuth: false
-		},
+		
 	},
 	{
 		path: "/user",

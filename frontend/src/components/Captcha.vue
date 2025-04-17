@@ -13,24 +13,29 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { getCaptcha } from '@/api/auth'
+import { getCaptcha } from '@/api/user'
 
-const captchaUrl = ref('')
+// 默认值为 null，表示尚未加载
+const captchaUrl = ref<string | null>(null)
 
 const refreshCaptcha = async () => {
   try {
     const response = await getCaptcha()
-    // 将 blob 数据转换为 base64 URL
-    const reader = new FileReader()
-    reader.onload = () => {
-      captchaUrl.value = reader.result as string
+    if (response.data?.data?.image) {
+      // 如果 API 返回的 image 字段不包含前缀，则手动添加
+      const base64Prefix = response.data.data.image.startsWith('data:image') ? '' : 'data:image/png;base64,'
+      captchaUrl.value = `${base64Prefix}${response.data.data.image}`
+    } else {
+      console.error('验证码数据格式错误:', response.data)
+      captchaUrl.value = null
     }
-    reader.readAsDataURL(response.data)
   } catch (error) {
     console.error('获取验证码失败:', error)
+    captchaUrl.value = null // 重置为 null，显示加载状态
   }
 }
 
+// 组件挂载时加载验证码
 onMounted(() => {
   refreshCaptcha()
 })
@@ -57,4 +62,4 @@ defineExpose({
   line-height: 40px;
   color: #999;
 }
-</style> 
+</style>
