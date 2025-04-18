@@ -10,12 +10,12 @@ from agno.vectordb.pgvector import PgVector
 from backend.core.conf import settings
 from backend.database.db import get_syn_db_url
 
-from .agent_prompt.chat_prompt import chat_description, chat_instructions
+from .agent_prompt.casual_chat_prompt import casual_chat_description, casual_chat_instructions
 
 syn_db_url = get_syn_db_url()
 
 
-def get_chat_agent(
+def get_casual_chat_agent(
     model_id: str = "deepseek-v3-250324",
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
@@ -64,15 +64,15 @@ def get_chat_agent(
 
     # 定义 storage
     storage = PostgresAgentStorage(
-        table_name="chat_sessions",
+        table_name="casual_chat_sessions",
         db_url=syn_db_url,
         schema="public"
     )
 
     # 组合成 agent
-    chat_agent = Agent(
-        name="Chat",
-        agent_id="chat",
+    casual_chat_agent = Agent(
+        name="Casual_chat",
+        agent_id="casual_chat",
         user_id=user_id,
         session_id=session_id,
         model=model,
@@ -80,8 +80,8 @@ def get_chat_agent(
         knowledge=knowledge,
         search_knowledge=True,
         memory=memory,
-        description=chat_description,
-        instructions=chat_instructions,
+        description=casual_chat_description,
+        instructions=casual_chat_instructions,
         additional_context=additional_context,
         markdown=True,
         add_datetime_to_instructions=True,
@@ -92,4 +92,4 @@ def get_chat_agent(
         monitoring=True
     )
 
-    return chat_agent 
+    return casual_chat_agent 

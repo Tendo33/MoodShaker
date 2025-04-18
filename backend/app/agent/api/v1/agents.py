@@ -19,6 +19,22 @@ from backend.database.redis import redis_client
 agents_router = APIRouter(prefix="/agents", tags=["Agents"])
 
 
+async def create_user_session(user_id: int):
+    session_id = str(uuid.uuid4())
+    # 将 session_id 存储在 Redis 中，设置过期时间（例如 24 小时）
+    await redis_client.setex(f"user_session:{user_id}:{session_id}", timedelta(hours=24), datetime.now().isoformat())
+    return session_id
+
+
+async def verify_session(user_id: int, session_id: str):
+    # 检查 session 是否有效
+    session_key = f"user_session:{user_id}:{session_id}"
+    session_data = await redis_client.get(session_key)
+    if not session_data:
+        raise HTTPException(status_code=401, detail="Session expired")
+    return True
+
+
 @agents_router.get(path="", response_model=List[str])
 async def list_agents() -> List[str]:
     """
@@ -151,10 +167,10 @@ async def run_bartender_agent(body: AgentRequest):
         return response.content
 
 
-@agents_router.post("/chat/runs", status_code=status.HTTP_200_OK)
-async def run_chat_agent(body: AgentRequest):
+@agents_router.post("/casual_chat/runs", status_code=status.HTTP_200_OK)
+async def run_casual_chat_agent(body: AgentRequest):
     """
-    Sends a message to the Chat agent and returns the response.
+    Sends a message to the Casual Chat agent and returns the response.
 
     Args:
         body: Request parameters including the message
@@ -162,17 +178,17 @@ async def run_chat_agent(body: AgentRequest):
     Returns:
         Either a streaming response or the complete agent response
     """
-    logger.debug(f"Chat AgentRequest: {body}")
+    logger.debug(f"Casual Chat AgentRequest: {body}")
 
     try:
         agent: Agent = get_agent(
             model_id=body.model.value,
-            agent_id=AgentType.CHAT,
+            agent_id=AgentType.CASUAL_CHAT,
             user_id=body.user_id,
             session_id=body.session_id,
         )
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Chat agent not found: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Casual Chat agent not found: {str(e)}")
 
     if body.stream:
         return StreamingResponse(
@@ -184,17 +200,4 @@ async def run_chat_agent(body: AgentRequest):
         return response.content
 
 
-async def create_user_session(user_id: int):
-    session_id = str(uuid.uuid4())
-    # 将 session_id 存储在 Redis 中，设置过期时间（例如 24 小时）
-    await redis_client.setex(f"user_session:{user_id}:{session_id}", timedelta(hours=24), datetime.now().isoformat())
-    return session_id
 
-
-async def verify_session(user_id: int, session_id: str):
-    # 检查 session 是否有效
-    session_key = f"user_session:{user_id}:{session_id}"
-    session_data = await redis_client.get(session_key)
-    if not session_data:
-        raise HTTPException(status_code=401, detail="Session expired")
-    return True

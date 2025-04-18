@@ -8,7 +8,7 @@ class AgentType(StrEnum):
     SAGE = "sage"
     SCHOLAR = "scholar"
     BARTENDER = "bartender"
-    CHAT = "chat"
+    CASUAL_CHAT = "casual_chat"
 
 
 class ModelName(StrEnum):
