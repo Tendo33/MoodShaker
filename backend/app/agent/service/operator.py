@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from agno.agent import Agent
 
-from backend.app.agent.schema.agent_request_shema import AgentType
+from backend.app.agent.schema.agent_request_schema import AgentType
 from backend.app.agent.service.agents.bartender_agent import get_bartender
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
 from backend.app.agent.service.agents.sage_agent import get_sage

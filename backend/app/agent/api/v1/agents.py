@@ -7,7 +7,7 @@ from agno.agent import Agent
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
 
-from backend.app.agent.schema.agent_request_shema import AgentRequest, AgentType
+from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType
 from backend.app.agent.service.operator import get_agent
 from backend.common.log import logger
 from backend.database.redis import redis_client
