@@ -61,6 +61,7 @@ class Ingredient(BaseModel):
     amount: str = Field(..., description="原料用量")
     unit: Optional[str] = Field(None, description="计量单位")
     substitute: Optional[str] = Field(None, description="替代品")
+    is_garnish: bool = Field(False, description="是否为装饰物")
 
 
 class Step(BaseModel):
@@ -69,6 +70,7 @@ class Step(BaseModel):
     step_number: int = Field(..., description="步骤序号")
     description: str = Field(..., description="步骤描述")
     tips: Optional[str] = Field(None, description="小贴士")
+    time_required: Optional[str] = Field(None, description="所需时间")
 
 
 class Tool(BaseModel):
@@ -81,38 +83,28 @@ class Tool(BaseModel):
 class CocktailRecommendation(BaseModel):
     """鸡尾酒推荐信息"""
 
-    # 核心信息（第一屏展示）
+    # 基本信息
     name: str = Field(..., description="鸡尾酒名称")
-    english_name: Optional[str] = Field(None, description="英文名称")
     description: str = Field(..., description="鸡尾酒描述")
     image_url: Optional[str] = Field(None, description="鸡尾酒图片URL")
     match_reason: str = Field(..., description="推荐理由")
 
-    # 关键特征（第二屏展示）
+    # 关键特征
     base_spirit: BaseSpirit = Field(..., description="基酒类型")
     alcohol_level: AlcoholLevel = Field(..., description="酒精浓度")
     flavor_profiles: List[FlavorProfile] = Field(..., description="口味特征")
-    difficulty: str = Field(..., description="制作难度", examples=["简单", "中等", "困难"])
-    preparation_time: str = Field(..., description="准备时间")
 
-    # 制作信息（第三屏展示）
+    # 制作信息
     ingredients: List[Ingredient] = Field(..., description="原料列表")
     steps: List[Step] = Field(..., description="制作步骤")
     tools: List[Tool] = Field(..., description="所需工具")
     serving_glass: str = Field(..., description="建议使用的酒杯")
-    garnish: Optional[str] = Field(None, description="装饰物")
-
-    # 扩展信息（可折叠展示）
-    occasions: Optional[List[Occasion]] = Field(None, description="适合场合")
-    food_pairing: Optional[List[str]] = Field(None, description="食物搭配建议")
-    variations: Optional[List[str]] = Field(None, description="变体配方")
-    history: Optional[str] = Field(None, description="历史背景")
 
 
 class BartenderResponse(BaseModel):
     """调酒师响应"""
 
-    cocktail: CocktailRecommendation = Field(..., description="推荐的鸡尾酒")
-    conversation: Optional[str] = Field(None, description="调酒师的对话内容")
+    cocktail: Optional[CocktailRecommendation] = Field(None, description="推荐的鸡尾酒")
+    conversation: str = Field(..., description="调酒师的对话内容")
     next_question: Optional[str] = Field(None, description="下一个问题（如果有）")
     is_final: bool = Field(..., description="是否为最终推荐")

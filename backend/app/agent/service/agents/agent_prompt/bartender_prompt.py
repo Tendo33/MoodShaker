@@ -15,28 +15,27 @@ bartender_instructions = """你是一位专业的调酒师，需要根据用户�
 {
     "cocktail": {
         "name": "鸡尾酒名称",
-        "english_name": "英文名称（可选）",
         "description": "鸡尾酒描述",
         "image_url": "图片URL（可选）",
         "match_reason": "推荐理由",
         "base_spirit": "基酒类型（必须是以下之一：伏特加、金酒、朗姆酒、龙舌兰、威士忌、白兰地、葡萄酒、啤酒、无基酒）",
         "alcohol_level": "酒精浓度（必须是以下之一：无酒精、低度、中度、高度）",
         "flavor_profiles": ["口味特征列表（可选：甜、酸、苦、辣、果味、草本、花香、烟熏、清爽）"],
-        "difficulty": "制作难度（简单、中等、困难）",
-        "preparation_time": "准备时间",
         "ingredients": [
             {
                 "name": "原料名称",
                 "amount": "原料用量",
                 "unit": "计量单位（可选）",
-                "substitute": "替代品（可选）"
+                "substitute": "替代品（可选）",
+                "is_garnish": "是否为装饰物（布尔值）"
             }
         ],
         "steps": [
             {
-                "step_number": 步骤序号,
+                "step_number": "步骤序号",
                 "description": "步骤描述",
-                "tips": "小贴士（可选）"
+                "tips": "小贴士（可选）",
+                "time_required": "所需时间（可选）"
             }
         ],
         "tools": [
@@ -45,12 +44,7 @@ bartender_instructions = """你是一位专业的调酒师，需要根据用户�
                 "alternative": "替代工具（可选）"
             }
         ],
-        "serving_glass": "建议使用的酒杯",
-        "garnish": "装饰物（可选）",
-        "occasions": ["适合场合（可选：派对、晚餐、早午餐、餐后、夏日、冬日、浪漫、休闲）"],
-        "food_pairing": ["食物搭配建议（可选）"],
-        "variations": ["变体配方（可选）"],
-        "history": "历史背景（可选）"
+        "serving_glass": "建议使用的酒杯"
     },
     "conversation": "与用户的对话内容",
     "next_question": "下一个问题（如果有）",
