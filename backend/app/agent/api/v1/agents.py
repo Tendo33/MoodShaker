@@ -158,7 +158,7 @@ async def run_bartender_agent(body: AgentRequest):
         body: Request parameters including the message
 
     Returns:
-        Either a streaming response or the complete agent response
+        The agent response containing cocktail recommendation
     """
     logger.debug(f"Bartender AgentRequest: {body}")
 
@@ -172,14 +172,8 @@ async def run_bartender_agent(body: AgentRequest):
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Bartender agent not found: {str(e)}")
 
-    if body.stream:
-        return StreamingResponse(
-            chat_response_streamer(agent, body.message),
-            media_type="text/event-stream",
-        )
-    else:
-        response = await agent.arun(body.message, stream=False)
-        return response.content
+    response = await agent.arun(body.message, stream=False)
+    return response.content
 
 
 @agents_router.post("/casual_chat/runs", status_code=status.HTTP_200_OK)

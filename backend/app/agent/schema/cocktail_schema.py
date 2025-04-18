@@ -41,19 +41,6 @@ class FlavorProfile(str, Enum):
     REFRESHING = "清爽"
 
 
-class Occasion(str, Enum):
-    """适合场合"""
-
-    PARTY = "派对"
-    DINNER = "晚餐"
-    BRUNCH = "早午餐"
-    AFTER_DINNER = "餐后"
-    SUMMER = "夏日"
-    WINTER = "冬日"
-    ROMANTIC = "浪漫"
-    CASUAL = "休闲"
-
-
 class Ingredient(BaseModel):
     """鸡尾酒原料"""
 
@@ -105,6 +92,3 @@ class BartenderResponse(BaseModel):
     """调酒师响应"""
 
     cocktail: Optional[CocktailRecommendation] = Field(None, description="推荐的鸡尾酒")
-    conversation: str = Field(..., description="调酒师的对话内容")
-    next_question: Optional[str] = Field(None, description="下一个问题（如果有）")
-    is_final: bool = Field(..., description="是否为最终推荐")
