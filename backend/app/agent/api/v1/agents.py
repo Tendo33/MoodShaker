@@ -7,8 +7,8 @@ from agno.agent import Agent
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
 
-from backend.app.agent.schema.agent_request_shema import AgentRequest
-from backend.app.agent.service.operator import AgentType, get_agent, get_available_agents
+from backend.app.agent.schema.agent_request_shema import AgentRequest, AgentType
+from backend.app.agent.service.operator import get_agent
 from backend.common.log import logger
 from backend.database.redis import redis_client
 
@@ -27,7 +27,7 @@ async def list_agents() -> List[str]:
     Returns:
         List[str]: List of agent identifiers
     """
-    return get_available_agents()
+    return [agent.value for agent in AgentType]
 
 
 async def chat_response_streamer(agent: Agent, message: str) -> AsyncGenerator:
@@ -49,29 +49,28 @@ async def chat_response_streamer(agent: Agent, message: str) -> AsyncGenerator:
         yield chunk.content
 
 
-@agents_router.post("/{agent_id}/runs", status_code=status.HTTP_200_OK)
-async def run_agent(agent_id: AgentType, body: AgentRequest):
+@agents_router.post("/sage/runs", status_code=status.HTTP_200_OK)
+async def run_sage_agent(body: AgentRequest):
     """
-    Sends a message to a specific agent and returns the response.
+    Sends a message to the Sage agent and returns the response.
 
     Args:
-        agent_id: The ID of the agent to interact with
         body: Request parameters including the message
 
     Returns:
         Either a streaming response or the complete agent response
     """
-    logger.debug(f"AgentRequest: {body}")
+    logger.debug(f"Sage AgentRequest: {body}")
 
     try:
         agent: Agent = get_agent(
             model_id=body.model.value,
-            agent_id=agent_id,
+            agent_id=AgentType.SAGE,
             user_id=body.user_id,
             session_id=body.session_id,
         )
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Agent not found: {str(e)}")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Sage agent not found: {str(e)}")
 
     if body.stream:
         return StreamingResponse(
@@ -83,6 +82,105 @@ async def run_agent(agent_id: AgentType, body: AgentRequest):
         # response.content only contains the text response from the Agent.
         # For advanced use cases, we should yield the entire response
         # that contains the tool calls and intermediate steps.
+        return response.content
+
+
+@agents_router.post("/scholar/runs", status_code=status.HTTP_200_OK)
+async def run_scholar_agent(body: AgentRequest):
+    """
+    Sends a message to the Scholar agent and returns the response.
+
+    Args:
+        body: Request parameters including the message
+
+    Returns:
+        Either a streaming response or the complete agent response
+    """
+    logger.debug(f"Scholar AgentRequest: {body}")
+
+    try:
+        agent: Agent = get_agent(
+            model_id=body.model.value,
+            agent_id=AgentType.SCHOLAR,
+            user_id=body.user_id,
+            session_id=body.session_id,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scholar agent not found: {str(e)}")
+
+    if body.stream:
+        return StreamingResponse(
+            chat_response_streamer(agent, body.message),
+            media_type="text/event-stream",
+        )
+    else:
+        response = await agent.arun(body.message, stream=False)
+        return response.content
+
+
+@agents_router.post("/bartender/runs", status_code=status.HTTP_200_OK)
+async def run_bartender_agent(body: AgentRequest):
+    """
+    Sends a message to the Bartender agent and returns the response.
+
+    Args:
+        body: Request parameters including the message
+
+    Returns:
+        Either a streaming response or the complete agent response
+    """
+    logger.debug(f"Bartender AgentRequest: {body}")
+
+    try:
+        agent: Agent = get_agent(
+            model_id=body.model.value,
+            agent_id=AgentType.BARTENDER,
+            user_id=body.user_id,
+            session_id=body.session_id,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Bartender agent not found: {str(e)}")
+
+    if body.stream:
+        return StreamingResponse(
+            chat_response_streamer(agent, body.message),
+            media_type="text/event-stream",
+        )
+    else:
+        response = await agent.arun(body.message, stream=False)
+        return response.content
+
+
+@agents_router.post("/chat/runs", status_code=status.HTTP_200_OK)
+async def run_chat_agent(body: AgentRequest):
+    """
+    Sends a message to the Chat agent and returns the response.
+
+    Args:
+        body: Request parameters including the message
+
+    Returns:
+        Either a streaming response or the complete agent response
+    """
+    logger.debug(f"Chat AgentRequest: {body}")
+
+    try:
+        agent: Agent = get_agent(
+            model_id=body.model.value,
+            agent_id=AgentType.CHAT,
+            user_id=body.user_id,
+            session_id=body.session_id,
+        )
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Chat agent not found: {str(e)}")
+
+    if body.stream:
+        return StreamingResponse(
+            chat_response_streamer(agent, body.message),
+            media_type="text/event-stream",
+        )
+    else:
+        response = await agent.arun(body.message, stream=False)
         return response.content
 
 

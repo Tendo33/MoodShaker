@@ -10,7 +10,8 @@ __pycache__/
 logs/
 *.py[cod]
 *$py.class
-
+.ruff_cache/
+.cursor/
 # C extensions
 *.so
 
