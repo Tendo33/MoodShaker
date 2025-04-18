@@ -1,7 +1,5 @@
 import json
-import uuid
 
-from datetime import datetime, timedelta
 from typing import AsyncGenerator, List
 
 from agno.agent import Agent
@@ -9,6 +7,10 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 
+from backend.app.admin.service.session_manager import (
+    create_user_session,
+    verify_session,
+)
 from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType
 from backend.app.agent.service.agents.bartender_agent import get_bartender
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
@@ -16,7 +18,6 @@ from backend.app.agent.service.agents.sage_agent import get_sage
 from backend.app.agent.service.agents.scholar_agent import get_scholar
 from backend.common.log import logger
 from backend.core.conf import settings
-from backend.database.redis import redis_client
 
 ######################################################
 # Router for the Agent Interface
@@ -31,38 +32,23 @@ class SessionRequest(BaseModel):
 
 class SessionResponse(BaseModel):
     session_id: str
-
-
-async def create_user_session(user_id: int):
-    session_id = str(uuid.uuid4())
-    # 将 session_id 存储在 Redis 中,设置过期时间(例如 24 小时)
-    await redis_client.setex(f"user_session:{user_id}:{session_id}", timedelta(hours=24), datetime.now().isoformat())
-    return session_id
-
-
-async def verify_session(user_id: int, session_id: str):
-    # 检查 session 是否有效
-    session_key = f"user_session:{user_id}:{session_id}"
-    session_data = await redis_client.get(session_key)
-    if not session_data:
-        raise HTTPException(status_code=401, detail="Session expired")
-    return True
+    expires_in: int  # 会话过期时间(秒)
 
 
 @agents_router.post("/session", response_model=SessionResponse)
 async def create_session(request: SessionRequest):
     """
-    Creates a new session for the user.
+    创建新会话
 
     Args:
-        request: Request containing user_id
+        request: 包含用户ID的请求
 
     Returns:
-        SessionResponse containing the session_id
+        SessionResponse: 包含会话ID和过期时间的响应
     """
     try:
         session_id = await create_user_session(request.user_id)
-        return SessionResponse(session_id=session_id)
+        return SessionResponse(session_id=session_id, expires_in=24 * 60 * 60)  # 24小时
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to create session: {str(e)}"
