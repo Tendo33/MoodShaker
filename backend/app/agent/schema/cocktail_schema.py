@@ -1,44 +1,6 @@
-from enum import Enum
 from typing import List, Optional
 
 from pydantic import BaseModel, Field
-
-
-class AlcoholLevel(str, Enum):
-    """酒精浓度等级"""
-
-    NON_ALCOHOLIC = "无酒精"
-    LOW = "低度"
-    MEDIUM = "中度"
-    HIGH = "高度"
-
-
-class BaseSpirit(str, Enum):
-    """基酒类型"""
-
-    VODKA = "伏特加"
-    GIN = "金酒"
-    RUM = "朗姆酒"
-    TEQUILA = "龙舌兰"
-    WHISKEY = "威士忌"
-    BRANDY = "白兰地"
-    WINE = "葡萄酒"
-    BEER = "啤酒"
-    NONE = "无基酒"
-
-
-class FlavorProfile(str, Enum):
-    """口味特征"""
-
-    SWEET = "甜"
-    SOUR = "酸"
-    BITTER = "苦"
-    SPICY = "辣"
-    FRUITY = "果味"
-    HERBAL = "草本"
-    FLORAL = "花香"
-    SMOKY = "烟熏"
-    REFRESHING = "清爽"
 
 
 class Ingredient(BaseModel):
@@ -77,9 +39,9 @@ class CocktailRecommendation(BaseModel):
     match_reason: str = Field(..., description="推荐理由")
 
     # 关键特征
-    base_spirit: BaseSpirit = Field(..., description="基酒类型")
-    alcohol_level: AlcoholLevel = Field(..., description="酒精浓度")
-    flavor_profiles: List[FlavorProfile] = Field(..., description="口味特征")
+    base_spirit: str = Field(..., description="基酒类型")
+    alcohol_level: str = Field(..., description="酒精浓度")
+    flavor_profiles: List[str] = Field(..., description="口味特征")
 
     # 制作信息
     ingredients: List[Ingredient] = Field(..., description="原料列表")

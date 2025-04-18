@@ -35,8 +35,8 @@ class SessionResponse(BaseModel):
     expires_in: int  # 会话过期时间(秒)
 
 
-@agents_router.post("/session", response_model_id=SessionResponse)
-async def create_session(request: SessionRequest):
+@agents_router.post("/session")
+async def create_session(request: SessionRequest) -> SessionResponse:
     """
     创建新会话
 
@@ -55,7 +55,7 @@ async def create_session(request: SessionRequest):
         )
 
 
-@agents_router.get(path="", response_model_id=List[str])
+@agents_router.get(path="", response_model=List[str])
 async def list_agents() -> List[str]:
     """
     Returns a list of all available agent IDs.
