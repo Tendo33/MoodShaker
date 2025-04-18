@@ -15,6 +15,7 @@ from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_a
 from backend.app.agent.service.agents.sage_agent import get_sage
 from backend.app.agent.service.agents.scholar_agent import get_scholar
 from backend.common.log import logger
+from backend.core.conf import settings
 from backend.database.redis import redis_client
 
 ######################################################
@@ -126,16 +127,22 @@ async def run_sage_agent_stream(body: AgentRequest):
     logger.debug(f"Sage AgentRequest: {body}")
 
     try:
+        user_id = body.user_id
+        session_id = body.session_id
+        message = body.message
+        model = body.model
+        debug_mode = settings.ENVIRONMENT == "dev"
+
         # 验证会话
-        await verify_session(body.user_id, body.session_id)
+        await verify_session(user_id, session_id)
 
         # 使用工厂函数获取 Sage agent
-        agent = get_sage()
+        agent = get_sage(user_id=user_id, session_id=session_id, model=model, debug_mode=debug_mode)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Sage agent not found: {str(e)}")
 
     return StreamingResponse(
-        chat_response_streamer(agent, body.message),
+        chat_response_streamer(agent, message),
         media_type="text/event-stream",
     )
 
@@ -154,16 +161,22 @@ async def run_scholar_agent_stream(body: AgentRequest):
     logger.debug(f"Scholar AgentRequest: {body}")
 
     try:
+        user_id = body.user_id
+        session_id = body.session_id
+        message = body.message
+        model = body.model
+        debug_mode = settings.ENVIRONMENT == "dev"
+
         # 验证会话
-        await verify_session(body.user_id, body.session_id)
+        await verify_session(user_id, session_id)
 
         # 使用工厂函数获取 Scholar agent
-        agent = get_scholar()
+        agent = get_scholar(user_id=user_id, session_id=session_id, model=model, debug_mode=debug_mode)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scholar agent not found: {str(e)}")
 
     return StreamingResponse(
-        chat_response_streamer(agent, body.message),
+        chat_response_streamer(agent, message),
         media_type="text/event-stream",
     )
 
@@ -182,15 +195,20 @@ async def run_bartender_agent(body: AgentRequest):
     logger.debug(f"Bartender AgentRequest: {body}")
 
     try:
+        user_id = body.user_id
+        session_id = body.session_id
+        message = body.message
+        model = body.model
+        debug_mode = settings.ENVIRONMENT == "dev"
         # 验证会话
-        await verify_session(body.user_id, body.session_id)
+        await verify_session(user_id, session_id)
 
         # 使用工厂函数获取 Bartender agent
-        agent = get_bartender()
+        agent = get_bartender(user_id=user_id, session_id=session_id, model=model, debug_mode=debug_mode)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Bartender agent not found: {str(e)}")
 
-    response = await agent.arun(body.message, stream=False)
+    response = await agent.arun(message, stream=False)
     return response.content
 
 
@@ -208,15 +226,23 @@ async def run_casual_chat_agent_stream(body: AgentRequest):
     logger.debug(f"Casual Chat AgentRequest: {body}")
 
     try:
+        user_id = body.user_id
+        session_id = body.session_id
+        message = body.message
+        model = body.model
+        debug_mode = settings.ENVIRONMENT == "dev"
         # 验证会话
-        await verify_session(body.user_id, body.session_id)
+
+        await verify_session(user_id, session_id)
 
         # 使用工厂函数获取 Casual Chat agent
-        agent = get_casual_chat_agent()
+        casual_chat_agent = get_casual_chat_agent(
+            user_id=user_id, session_id=session_id, model=model, debug_mode=debug_mode
+        )
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Casual Chat agent not found: {str(e)}")
 
     return StreamingResponse(
-        chat_response_streamer(agent, body.message),
+        chat_response_streamer(casual_chat_agent, message),
         media_type="text/event-stream",
     )

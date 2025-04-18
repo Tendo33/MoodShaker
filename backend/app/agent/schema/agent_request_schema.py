@@ -22,7 +22,6 @@ class AgentRequest(BaseModel):
     """Request model for an running an agent"""
 
     message: str
-    stream: bool = True
     model: ModelName = ModelName.DEEPSEEK_V3
     user_id: Optional[str] = None
     session_id: Optional[str] = None
