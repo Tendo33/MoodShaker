@@ -35,7 +35,7 @@ class SessionResponse(BaseModel):
     expires_in: int  # 会话过期时间(秒)
 
 
-@agents_router.post("/session", response_model=SessionResponse)
+@agents_router.post("/session", response_model_id=SessionResponse)
 async def create_session(request: SessionRequest):
     """
     创建新会话
@@ -48,14 +48,14 @@ async def create_session(request: SessionRequest):
     """
     try:
         session_id = await create_user_session(request.user_id)
-        return SessionResponse(session_id=session_id, expires_in=24 * 60 * 60)  # 24小时
+        return SessionResponse(session_id=session_id, expires_in=24 * 60 * 600)  # 24小时
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to create session: {str(e)}"
         )
 
 
-@agents_router.get(path="", response_model=List[str])
+@agents_router.get(path="", response_model_id=List[str])
 async def list_agents() -> List[str]:
     """
     Returns a list of all available agent IDs.
@@ -123,7 +123,7 @@ async def run_sage_agent_stream(body: AgentRequest):
         await verify_session(user_id, session_id)
 
         # 使用工厂函数获取 Sage agent
-        agent = get_sage(user_id=user_id, session_id=session_id, model=model, debug_mode=debug_mode)
+        agent = get_sage(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Sage agent not found: {str(e)}")
 
@@ -157,7 +157,7 @@ async def run_scholar_agent_stream(body: AgentRequest):
         await verify_session(user_id, session_id)
 
         # 使用工厂函数获取 Scholar agent
-        agent = get_scholar(user_id=user_id, session_id=session_id, model=model, debug_mode=debug_mode)
+        agent = get_scholar(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Scholar agent not found: {str(e)}")
 
@@ -190,7 +190,7 @@ async def run_bartender_agent(body: AgentRequest):
         await verify_session(user_id, session_id)
 
         # 使用工厂函数获取 Bartender agent
-        agent = get_bartender(user_id=user_id, session_id=session_id, model=model, debug_mode=debug_mode)
+        agent = get_bartender(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Bartender agent not found: {str(e)}")
 
@@ -223,7 +223,7 @@ async def run_casual_chat_agent_stream(body: AgentRequest):
 
         # 使用工厂函数获取 Casual Chat agent
         casual_chat_agent = get_casual_chat_agent(
-            user_id=user_id, session_id=session_id, model=model, debug_mode=debug_mode
+            user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode
         )
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Casual Chat agent not found: {str(e)}")
