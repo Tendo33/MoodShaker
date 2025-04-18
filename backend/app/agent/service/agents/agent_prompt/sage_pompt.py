@@ -52,4 +52,3 @@ sage_instructions = dedent("""\
 
             7. In case of any uncertainties, clarify limitations and encourage follow-up queries.\
         """)
-

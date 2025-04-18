@@ -23,7 +23,7 @@ def get_scholar(
         additional_context += "<context>"
         additional_context += f"You are interacting with the user: {user_id}"
         additional_context += "</context>"
-    
+
     # 定义模型
     model = OpenAILike(
         id=model_id,
@@ -33,10 +33,10 @@ def get_scholar(
 
     # 定义storage Persist session data
     storage = PostgresAgentStorage(table_name="scholar_sessions", db_url=syn_db_url, schema="public")
-    
+
     # 定义 tools
     tools = [DuckDuckGoTools()]
-    
+
     scholar_agent = Agent(
         name="Scholar",
         agent_id="scholar",
@@ -63,7 +63,7 @@ def get_scholar(
         read_chat_history=True,
         # Show debug logs
         debug_mode=debug_mode,
-        monitoring=True
+        monitoring=True,
     )
-    
+
     return scholar_agent

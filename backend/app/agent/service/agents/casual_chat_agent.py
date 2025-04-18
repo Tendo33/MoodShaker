@@ -63,11 +63,7 @@ def get_casual_chat_agent(
     )
 
     # 定义 storage
-    storage = PostgresAgentStorage(
-        table_name="casual_chat_sessions",
-        db_url=syn_db_url,
-        schema="public"
-    )
+    storage = PostgresAgentStorage(table_name="casual_chat_sessions", db_url=syn_db_url, schema="public")
 
     # 组合成 agent
     casual_chat_agent = Agent(
@@ -86,10 +82,10 @@ def get_casual_chat_agent(
         markdown=True,
         add_datetime_to_instructions=True,
         add_history_to_messages=True,
-        num_history_responses=10, 
+        num_history_responses=10,
         read_chat_history=True,
         debug_mode=debug_mode,
-        monitoring=True
+        monitoring=True,
     )
 
-    return casual_chat_agent 
+    return casual_chat_agent

@@ -7,6 +7,7 @@ from agno.memory.v2.memory import Memory
 from agno.models.openai.like import OpenAILike
 from agno.storage.agent.postgres import PostgresAgentStorage
 from agno.vectordb.pgvector import PgVector
+from backend.app.agent.schema.cocktail_schema import BartenderResponse
 from backend.core.conf import settings
 from backend.database.db import get_syn_db_url
 
@@ -33,6 +34,7 @@ def get_bartender(
         id=model_id,
         api_key=settings.OPENAI_API_KEY,
         base_url=settings.OPENAI_BASE_URL,
+        temperature=0.7,
     )
 
     # 定义 persistent memory for chat history
@@ -59,15 +61,11 @@ def get_bartender(
             schema="public",
             embedder=embedder,
         ),
-        num_documents=3,
+        num_documents=5,
     )
 
     # 定义 storage
-    storage = PostgresAgentStorage(
-        table_name="bartender_sessions",
-        db_url=syn_db_url,
-        schema="public"
-    )
+    storage = PostgresAgentStorage(table_name="bartender_sessions", db_url=syn_db_url, schema="public")
 
     # 组合成 agent
     bartender_agent = Agent(
@@ -86,10 +84,11 @@ def get_bartender(
         markdown=True,
         add_datetime_to_instructions=True,
         add_history_to_messages=True,
-        num_history_responses=3,
+        num_history_responses=10,
         read_chat_history=True,
         debug_mode=debug_mode,
-        monitoring=True
+        monitoring=True,
+        response_model=BartenderResponse,
     )
 
-    return bartender_agent 
+    return bartender_agent

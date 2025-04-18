@@ -198,6 +198,3 @@ async def run_casual_chat_agent(body: AgentRequest):
     else:
         response = await agent.arun(body.message, stream=False)
         return response.content
-
-
-

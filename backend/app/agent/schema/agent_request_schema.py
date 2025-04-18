@@ -13,6 +13,7 @@ class AgentType(StrEnum):
 
 class ModelName(StrEnum):
     """模型枚举类"""
+
     DEEPSEEK_V3 = "deepseek-v3-250324"
     DEEPSEEK_R1 = "deepseek-r1-250120"
 
