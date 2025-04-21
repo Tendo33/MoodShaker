@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from backend.app.admin.schema.user import Avatar, CreateUser, GetUserInfo, ResetPassword, UpdateUser
+from backend.app.admin.schema.user_schema import Avatar, CreateUser, GetUserInfo, ResetPassword, UpdateUser
 from backend.app.admin.service.user_service import UserService
 from backend.common.pagination import DependsPagination, PageData, paging_data
 from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base

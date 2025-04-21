@@ -5,8 +5,7 @@ import uuid
 from datetime import datetime, timedelta
 from typing import Optional
 
-from pydantic import BaseModel
-
+from backend.app.admin.schema.session_schema import SessionData
 from backend.common.log import logger
 from backend.database.redis import redis_client
 
@@ -14,14 +13,6 @@ from backend.database.redis import redis_client
 SESSION_KEY_PREFIX = "user_session"
 SESSION_DATA_KEY_PREFIX = "session_data"
 COCKTAIL_IMAGE_KEY_PREFIX = "cocktail_image"
-
-
-class SessionData(BaseModel):
-    user_id: int
-    created_at: datetime
-    last_activity: datetime
-    device_info: Optional[str] = None
-    ip_address: Optional[str] = None
 
 
 async def create_user_session(user_id: int, device_info: Optional[str] = None, ip_address: Optional[str] = None) -> str:

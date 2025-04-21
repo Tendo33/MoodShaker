@@ -3,8 +3,8 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from backend.app.admin.crud.crud_user import user_dao
 from backend.app.admin.model import User
-from backend.app.admin.schema.token import GetLoginToken
-from backend.app.admin.schema.user import Auth2
+from backend.app.admin.schema.token_schema import GetLoginToken
+from backend.app.admin.schema.user_schema import Auth2
 from backend.common.exception import errors
 from backend.common.response.response_code import CustomErrorCode
 from backend.common.security.jwt import create_access_token, password_verify

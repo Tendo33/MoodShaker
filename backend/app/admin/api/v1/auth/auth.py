@@ -1,9 +1,13 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 
-from backend.app.admin.schema.token import GetLoginToken, GetSwaggerToken
-from backend.app.admin.schema.user import Auth2
+from backend.app.admin.schema.session_schema import SessionRequest, SessionResponse
+from backend.app.admin.schema.token_schema import GetLoginToken, GetSwaggerToken
+from backend.app.admin.schema.user_schema import Auth2
 from backend.app.admin.service.auth_service import auth_service
+from backend.app.admin.service.session_manager import (
+    create_user_session,
+)
 from backend.common.response.response_schema import ResponseModel, ResponseSchemaModel, response_base
 from backend.common.security.jwt import DependsJwtAuth
 
@@ -25,3 +29,23 @@ async def user_login(request: Request, obj: Auth2) -> ResponseSchemaModel[GetLog
 @router.post("/logout", summary="用户登出", dependencies=[DependsJwtAuth])
 async def user_logout() -> ResponseModel:
     return response_base.success()
+
+
+@router.post("/session")
+async def create_session(request: SessionRequest) -> SessionResponse:
+    """
+    创建新会话
+
+    Args:
+        request: 包含用户ID的请求
+
+    Returns:
+        SessionResponse: 包含会话ID和过期时间的响应
+    """
+    try:
+        session_id = await create_user_session(request.user_id)
+        return SessionResponse(session_id=session_id, expires_in=24 * 60 * 600)  # 24小时
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to create session: {str(e)}"
+        )

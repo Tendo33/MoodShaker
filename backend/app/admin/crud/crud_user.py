@@ -8,7 +8,7 @@ from sqlalchemy.sql import Select
 from sqlalchemy_crud_plus import CRUDPlus
 
 from backend.app.admin.model import User
-from backend.app.admin.schema.user import Avatar, CreateUser, UpdateUser
+from backend.app.admin.schema.user_schema import Avatar, CreateUser, UpdateUser
 from backend.common.security.jwt import get_hash_password
 
 

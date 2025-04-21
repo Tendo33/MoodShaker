@@ -1,14 +1,10 @@
-import asyncio
-
 from typing import AsyncGenerator, List
 
 from agno.agent import Agent
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
 
 from backend.app.admin.service.session_manager import (
-    create_user_session,
     get_cocktail_image_url,
     store_cocktail_image_url,
 )
@@ -26,35 +22,6 @@ from backend.core.conf import settings
 ######################################################
 
 agents_router = APIRouter(prefix="/agents", tags=["Agents"])
-
-
-class SessionRequest(BaseModel):
-    user_id: int
-
-
-class SessionResponse(BaseModel):
-    session_id: str
-    expires_in: int  # 会话过期时间(秒)
-
-
-@agents_router.post("/session")
-async def create_session(request: SessionRequest) -> SessionResponse:
-    """
-    创建新会话
-
-    Args:
-        request: 包含用户ID的请求
-
-    Returns:
-        SessionResponse: 包含会话ID和过期时间的响应
-    """
-    try:
-        session_id = await create_user_session(request.user_id)
-        return SessionResponse(session_id=session_id, expires_in=24 * 60 * 600)  # 24小时
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Failed to create session: {str(e)}"
-        )
 
 
 @agents_router.get(path="/list_agents", response_model=List[str])
@@ -81,9 +48,6 @@ async def chat_response_streamer(agent: Agent, message: str) -> AsyncGenerator:
     """
     run_response = await agent.arun(message, stream=True)
     async for chunk in run_response:
-        # chunk.content only contains the text response from the Agent.
-        # For advanced use cases, we should yield the entire chunk
-        # that contains the tool calls and intermediate steps.
         logger.debug(f"Chunk: {chunk}")
         yield chunk.content
 
@@ -170,16 +134,7 @@ async def run_classic_bartender_agent(body: BartenderRequest):
     # 使用组装好的用户提示
     user_prompt = body.get_user_prompt()
     response = await agent.arun(user_prompt, stream=False)
-    
-    # 解析响应为CocktailRecommendation对象
-    try:
-        cocktail = CocktailRecommendation.model_validate_json(response.content)
-        # 异步生成图片
-        asyncio.create_task(generate_and_store_image(cocktail, user_id, session_id))
-        return cocktail.model_dump_json()
-    except Exception as e:
-        logger.error(f"Failed to parse cocktail response: {str(e)}")
-        return response.content
+    return response.content
 
 
 @agents_router.post("/creative_bartender", status_code=status.HTTP_200_OK)
@@ -212,16 +167,8 @@ async def run_creative_bartender_agent(body: BartenderRequest):
     # 使用组装好的用户提示
     user_prompt = body.get_user_prompt()
     response = await agent.arun(user_prompt, stream=False)
-    
-    # 解析响应为CocktailRecommendation对象
-    try:
-        cocktail = CocktailRecommendation.model_validate_json(response.content)
-        # 异步生成图片
-        asyncio.create_task(generate_and_store_image(cocktail, user_id, session_id))
-        return cocktail.model_dump_json()
-    except Exception as e:
-        logger.error(f"Failed to parse cocktail response: {str(e)}")
-        return response.content
+
+    return response.content
 
 
 @agents_router.get("/cocktail_image", status_code=status.HTTP_200_OK)
@@ -238,8 +185,5 @@ async def get_cocktail_image(user_id: int, session_id: str):
     """
     image_url = await get_cocktail_image_url(user_id, session_id)
     if not image_url:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Image not found or not ready yet"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found or not ready yet")
     return {"image_url": image_url}

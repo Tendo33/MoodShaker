@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Request
 from fastapi_limiter.depends import RateLimiter
 from starlette.concurrency import run_in_threadpool
 
-from backend.app.admin.schema.captcha import GetCaptchaDetail
+from backend.app.admin.schema.captcha_schema import GetCaptchaDetail
 from backend.common.response.response_schema import ResponseSchemaModel, response_base
 from backend.core.conf import settings
 from backend.database.db import uuid4_str

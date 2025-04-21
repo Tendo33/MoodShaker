@@ -1,4 +1,4 @@
-from backend.app.admin.schema.user import GetUserInfo
+from backend.app.admin.schema.user_schema import GetUserInfo
 from backend.common.schema import SchemaBase
 
 
