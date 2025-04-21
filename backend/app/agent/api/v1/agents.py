@@ -1,5 +1,3 @@
-import json
-
 from typing import AsyncGenerator, List
 
 from agno.agent import Agent
@@ -78,25 +76,12 @@ async def chat_response_streamer(agent: Agent, message: str) -> AsyncGenerator:
         Text chunks from the agent response
     """
     run_response = await agent.arun(message, stream=True)
-    if hasattr(run_response, "content"):
-        # 如果 RunResponse 有 content 属性,直接返回内容
-        if isinstance(run_response.content, dict):
-            yield json.dumps(run_response.content, ensure_ascii=False)
-        else:
-            yield run_response.content
-    else:
-        # 如果 RunResponse 是一个迭代器,遍历它
-        async for chunk in run_response:
-            if hasattr(chunk, "content"):
-                if isinstance(chunk.content, dict):
-                    yield json.dumps(chunk.content, ensure_ascii=False)
-                else:
-                    yield chunk.content
-            else:
-                if isinstance(chunk, dict):
-                    yield json.dumps(chunk, ensure_ascii=False)
-                else:
-                    yield chunk
+    async for chunk in run_response:
+        # chunk.content only contains the text response from the Agent.
+        # For advanced use cases, we should yield the entire chunk
+        # that contains the tool calls and intermediate steps.
+        logger.debug(f"Chunk: {chunk}")
+        yield chunk.content
 
 
 @agents_router.post("/sage", status_code=status.HTTP_200_OK)
