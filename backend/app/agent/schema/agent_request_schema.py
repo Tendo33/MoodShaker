@@ -50,26 +50,30 @@ class BartenderRequest(AgentRequest):
 
     def get_user_prompt(self) -> str:
         """组装用户提示"""
-        prompt_parts = []
+        # 用户需求是必填的，作为基础信息
+        prompt = f"用户需求: {self.message}\n"
+        
+        # 添加其他可选条件
+        conditions = []
         
         # 添加酒精浓度选择
         if self.alcohol_level != AlcoholLevel.ANY:
-            prompt_parts.append(f"酒精浓度: {self.alcohol_level.value}")
+            conditions.append(f"酒精浓度: {self.alcohol_level.value}")
         
         # 添加工具情况
         if self.has_tools is not None:
-            prompt_parts.append(f"是否有调酒工具: {'有' if self.has_tools else '没有'}")
+            conditions.append(f"是否有调酒工具: {'有' if self.has_tools else '没有'}")
         
         # 添加制作难度
         if self.difficulty_level != DifficultyLevel.ANY:
-            prompt_parts.append(f"制作难度: {self.difficulty_level.value}")
+            conditions.append(f"制作难度: {self.difficulty_level.value}")
         
         # 添加可用基酒
         if self.base_spirits:
-            prompt_parts.append(f"可用的基酒: {', '.join(self.base_spirits)}")
+            conditions.append(f"可用的基酒: {', '.join(self.base_spirits)}")
         
-        # 添加用户的其他需求
-        if self.message:
-            prompt_parts.append(f"其他需求: {self.message}")
+        # 如果有其他条件，添加到提示中
+        if conditions:
+            prompt += "其他条件:\n" + "\n".join(conditions)
         
-        return "\n".join(prompt_parts)
+        return prompt
