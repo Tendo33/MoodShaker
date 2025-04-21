@@ -40,7 +40,7 @@
           v-for="option in moodOptions" 
           :key="option.value"
           class="option-btn"
-          @click="selectMood(option.value)"
+          @click="selectMood(option.value as 'happy' | 'sad' | 'excited')"
         >
           {{ option.label }}
         </button>
