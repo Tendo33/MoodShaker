@@ -33,7 +33,6 @@ class CocktailRecommendation(BaseModel):
     # 基本信息
     name: str = Field(..., description="鸡尾酒名称")
     description: str = Field(..., description="鸡尾酒描述")
-    image_url: Optional[str] = Field(None, description="鸡尾酒图片URL")
     time_required: Optional[str] = Field(None, description="所需时间")
     match_reason: str = Field(..., description="推荐理由")
 

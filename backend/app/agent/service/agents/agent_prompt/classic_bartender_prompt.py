@@ -64,7 +64,6 @@ classic_bartender_instructions = dedent("""\
 {
     "name": "鸡尾酒名称",
     "description": "鸡尾酒描述(包含历史背景、风味特点等)",
-    "image_url": "图片URL(可选)",
     "time_required": "所需时间(可选)",
     "match_reason": "推荐理由(详细说明与用户心情和偏好的匹配点)",
     "base_spirit": "基酒类型",

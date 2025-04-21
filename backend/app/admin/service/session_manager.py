@@ -13,6 +13,7 @@ from backend.database.redis import redis_client
 # Redis key 前缀
 SESSION_KEY_PREFIX = "user_session"
 SESSION_DATA_KEY_PREFIX = "session_data"
+COCKTAIL_IMAGE_KEY_PREFIX = "cocktail_image"
 
 
 class SessionData(BaseModel):
@@ -77,3 +78,36 @@ async def delete_session(user_id: int, session_id: str) -> bool:
     await redis_client.delete(session_data_key)
     logger.info(f"Deleted session for user {user_id}: {session_id}")
     return True
+
+
+async def store_cocktail_image_url(user_id: int, session_id: str, image_url: str) -> None:
+    """
+    存储鸡尾酒图片URL
+
+    Args:
+        user_id: 用户ID
+        session_id: 会话ID
+        image_url: 图片URL
+    """
+    image_key = f"{COCKTAIL_IMAGE_KEY_PREFIX}:{user_id}:{session_id}"
+    expire_time = timedelta(hours=24)
+    await redis_client.setex(image_key, expire_time, image_url)
+    logger.info(f"Stored cocktail image URL for user {user_id}: {session_id}")
+
+
+async def get_cocktail_image_url(user_id: int, session_id: str) -> Optional[str]:
+    """
+    获取鸡尾酒图片URL
+
+    Args:
+        user_id: 用户ID
+        session_id: 会话ID
+
+    Returns:
+        图片URL,如果不存在则返回None
+    """
+    image_key = f"{COCKTAIL_IMAGE_KEY_PREFIX}:{user_id}:{session_id}"
+    image_url = await redis_client.get(image_key)
+    if image_url:
+        return image_url.decode()
+    return None

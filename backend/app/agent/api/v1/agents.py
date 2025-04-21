@@ -1,3 +1,5 @@
+import asyncio
+
 from typing import AsyncGenerator, List
 
 from agno.agent import Agent
@@ -7,11 +9,15 @@ from pydantic import BaseModel
 
 from backend.app.admin.service.session_manager import (
     create_user_session,
+    get_cocktail_image_url,
+    store_cocktail_image_url,
 )
 from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType, BartenderRequest
+from backend.app.agent.schema.cocktail_schema import CocktailRecommendation
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
 from backend.app.agent.service.agents.classic_bartender_agent import get_classic_bartender
 from backend.app.agent.service.agents.creative_bartender_agent import get_creative_bartender
+from backend.app.agent.service.utils.image_generator import generate_cocktail_image
 from backend.common.log import logger
 from backend.core.conf import settings
 
@@ -116,6 +122,24 @@ async def run_casual_chat_agent_stream(body: AgentRequest):
     )
 
 
+async def generate_and_store_image(cocktail: CocktailRecommendation, user_id: int, session_id: str) -> None:
+    """
+    异步生成并存储鸡尾酒图片
+
+    Args:
+        cocktail: 鸡尾酒推荐信息
+        user_id: 用户ID
+        session_id: 会话ID
+    """
+    try:
+        image_url = await generate_cocktail_image(cocktail)
+        if image_url:
+            await store_cocktail_image_url(user_id, session_id, image_url)
+            logger.info(f"Generated and stored image for user {user_id}: {session_id}")
+    except Exception as e:
+        logger.error(f"Failed to generate image for user {user_id}: {session_id}, error: {str(e)}")
+
+
 @agents_router.post("/classic_bartender", status_code=status.HTTP_200_OK)
 async def run_classic_bartender_agent(body: BartenderRequest):
     """
@@ -146,7 +170,16 @@ async def run_classic_bartender_agent(body: BartenderRequest):
     # 使用组装好的用户提示
     user_prompt = body.get_user_prompt()
     response = await agent.arun(user_prompt, stream=False)
-    return response.content
+    
+    # 解析响应为CocktailRecommendation对象
+    try:
+        cocktail = CocktailRecommendation.model_validate_json(response.content)
+        # 异步生成图片
+        asyncio.create_task(generate_and_store_image(cocktail, user_id, session_id))
+        return cocktail.model_dump_json()
+    except Exception as e:
+        logger.error(f"Failed to parse cocktail response: {str(e)}")
+        return response.content
 
 
 @agents_router.post("/creative_bartender", status_code=status.HTTP_200_OK)
@@ -179,4 +212,34 @@ async def run_creative_bartender_agent(body: BartenderRequest):
     # 使用组装好的用户提示
     user_prompt = body.get_user_prompt()
     response = await agent.arun(user_prompt, stream=False)
-    return response.content
+    
+    # 解析响应为CocktailRecommendation对象
+    try:
+        cocktail = CocktailRecommendation.model_validate_json(response.content)
+        # 异步生成图片
+        asyncio.create_task(generate_and_store_image(cocktail, user_id, session_id))
+        return cocktail.model_dump_json()
+    except Exception as e:
+        logger.error(f"Failed to parse cocktail response: {str(e)}")
+        return response.content
+
+
+@agents_router.get("/cocktail_image", status_code=status.HTTP_200_OK)
+async def get_cocktail_image(user_id: int, session_id: str):
+    """
+    获取鸡尾酒图片URL
+
+    Args:
+        user_id: 用户ID
+        session_id: 会话ID
+
+    Returns:
+        图片URL,如果不存在则返回404
+    """
+    image_url = await get_cocktail_image_url(user_id, session_id)
+    if not image_url:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Image not found or not ready yet"
+        )
+    return {"image_url": image_url}
