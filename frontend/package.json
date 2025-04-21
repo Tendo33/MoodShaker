@@ -21,8 +21,13 @@
     "@unhead/vue": "catalog:frontend",
     "@unocss/reset": "catalog:frontend",
     "@vueuse/core": "catalog:frontend",
+    "autoprefixer": "^10.4.21",
+    "axios": "^1.8.4",
     "nprogress": "catalog:frontend",
     "pinia": "catalog:frontend",
+    "postcss": "^8.4.31",
+    "@tailwindcss/postcss": "^4.1.4",
+    "tailwindcss": "^3.3.5",
     "vue": "catalog:frontend",
     "vue-i18n": "catalog:frontend",
     "vue-router": "catalog:frontend"
