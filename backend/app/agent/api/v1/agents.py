@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from backend.app.admin.service.session_manager import (
     create_user_session,
 )
-from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType
+from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType, BartenderRequest
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
 from backend.app.agent.service.agents.classic_bartender_agent import get_classic_bartender
 from backend.app.agent.service.agents.creative_bartender_agent import get_creative_bartender
@@ -117,12 +117,12 @@ async def run_casual_chat_agent_stream(body: AgentRequest):
 
 
 @agents_router.post("/classic_bartender", status_code=status.HTTP_200_OK)
-async def run_classic_bartender_agent(body: AgentRequest):
+async def run_classic_bartender_agent(body: BartenderRequest):
     """
     发送消息给经典调酒师 agent 并返回完整响应。
 
     Args:
-        body: 包含消息的请求参数
+        body: 包含选择题选项和消息的请求参数
 
     Returns:
         来自 agent 的完整响应
@@ -132,7 +132,6 @@ async def run_classic_bartender_agent(body: AgentRequest):
     try:
         user_id = body.user_id
         session_id = body.session_id
-        message = body.message
         model = body.model
         debug_mode = settings.ENVIRONMENT == "dev"
         # 验证会话
@@ -144,17 +143,19 @@ async def run_classic_bartender_agent(body: AgentRequest):
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Classic Bartender agent not found: {str(e)}"
         )
 
-    response = await agent.arun(message, stream=False)
+    # 使用组装好的用户提示
+    user_prompt = body.get_user_prompt()
+    response = await agent.arun(user_prompt, stream=False)
     return response.content
 
 
 @agents_router.post("/creative_bartender", status_code=status.HTTP_200_OK)
-async def run_creative_bartender_agent(body: AgentRequest):
+async def run_creative_bartender_agent(body: BartenderRequest):
     """
     发送消息给创意调酒师 agent 并返回完整响应。
 
     Args:
-        body: 包含消息的请求参数
+        body: 包含选择题选项和消息的请求参数
 
     Returns:
         来自 agent 的完整响应
@@ -164,7 +165,6 @@ async def run_creative_bartender_agent(body: AgentRequest):
     try:
         user_id = body.user_id
         session_id = body.session_id
-        message = body.message
         model = body.model
         debug_mode = settings.ENVIRONMENT == "dev"
         # 验证会话
@@ -176,5 +176,7 @@ async def run_creative_bartender_agent(body: AgentRequest):
             status_code=status.HTTP_404_NOT_FOUND, detail=f"Creative Bartender agent not found: {str(e)}"
         )
 
-    response = await agent.arun(message, stream=False)
+    # 使用组装好的用户提示
+    user_prompt = body.get_user_prompt()
+    response = await agent.arun(user_prompt, stream=False)
     return response.content
