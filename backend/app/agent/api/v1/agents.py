@@ -7,7 +7,6 @@ from pydantic import BaseModel
 
 from backend.app.admin.service.session_manager import (
     create_user_session,
-    verify_session,
 )
 from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
@@ -104,7 +103,7 @@ async def run_casual_chat_agent_stream(body: AgentRequest):
         debug_mode = settings.ENVIRONMENT == "dev"
 
         # 验证会话
-        await verify_session(user_id, session_id)
+        # await verify_session(user_id, session_id)
         casual_chat_agent = get_casual_chat_agent(
             user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode
         )
@@ -137,7 +136,7 @@ async def run_classic_bartender_agent(body: AgentRequest):
         model = body.model
         debug_mode = settings.ENVIRONMENT == "dev"
         # 验证会话
-        await verify_session(user_id, session_id)
+        # await verify_session(user_id, session_id)
 
         agent = get_classic_bartender(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
     except Exception as e:
@@ -169,7 +168,7 @@ async def run_creative_bartender_agent(body: AgentRequest):
         model = body.model
         debug_mode = settings.ENVIRONMENT == "dev"
         # 验证会话
-        await verify_session(user_id, session_id)
+        # await verify_session(user_id, session_id)
 
         agent = get_creative_bartender(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
     except Exception as e:
