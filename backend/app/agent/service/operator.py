@@ -3,7 +3,6 @@ from typing import List, Optional
 from agno.agent import Agent
 
 from backend.app.agent.schema.agent_request_schema import AgentType
-from backend.app.agent.service.agents.bartender_agent import get_bartender
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
 from backend.app.agent.service.agents.classic_bartender_agent import get_classic_bartender
 from backend.app.agent.service.agents.creative_bartender_agent import get_creative_bartender
@@ -21,9 +20,7 @@ def get_agent(
     session_id: Optional[str] = None,
     debug_mode: bool = True,
 ) -> Agent:
-    if agent_id == AgentType.BARTENDER:
-        return get_bartender(model_id=model_id, user_id=user_id, session_id=session_id, debug_mode=debug_mode)
-    elif agent_id == AgentType.CLASSIC_BARTENDER:
+    if agent_id == AgentType.CLASSIC_BARTENDER:
         return get_classic_bartender(model_id=model_id, user_id=user_id, session_id=session_id, debug_mode=debug_mode)
     elif agent_id == AgentType.CREATIVE_BARTENDER:
         return get_creative_bartender(model_id=model_id, user_id=user_id, session_id=session_id, debug_mode=debug_mode)

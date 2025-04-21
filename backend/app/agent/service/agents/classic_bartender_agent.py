@@ -67,7 +67,7 @@ def get_classic_bartender(
     )
 
     # 定义 storage
-    storage = PostgresAgentStorage(table_name="classic_bartender_sessions", db_url=syn_db_url, schema="public")
+    storage = PostgresAgentStorage(table_name="classic_bartender_storage", db_url=syn_db_url, schema="public")
 
     # 定义 tools
     tools = [DuckDuckGoTools(), TavilyTools()]

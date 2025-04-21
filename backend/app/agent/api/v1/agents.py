@@ -10,7 +10,6 @@ from backend.app.admin.service.session_manager import (
     verify_session,
 )
 from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType
-from backend.app.agent.service.agents.bartender_agent import get_bartender
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
 from backend.app.agent.service.agents.classic_bartender_agent import get_classic_bartender
 from backend.app.agent.service.agents.creative_bartender_agent import get_creative_bartender
@@ -82,36 +81,6 @@ async def chat_response_streamer(agent: Agent, message: str) -> AsyncGenerator:
         # that contains the tool calls and intermediate steps.
         logger.debug(f"Chunk: {chunk}")
         yield chunk.content
-
-
-@agents_router.post("/bartender", status_code=status.HTTP_200_OK)
-async def run_bartender_agent(body: AgentRequest):
-    """
-    Sends a message to the Bartender agent and returns the complete response.
-
-    Args:
-        body: Request parameters including the message
-
-    Returns:
-        Complete response from the agent
-    """
-    logger.debug(f"Bartender AgentRequest: {body}")
-
-    try:
-        user_id = body.user_id
-        session_id = body.session_id
-        message = body.message
-        model = body.model
-        debug_mode = settings.ENVIRONMENT == "dev"
-        # 验证会话
-        await verify_session(user_id, session_id)
-
-        agent = get_bartender(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Bartender agent not found: {str(e)}")
-
-    response = await agent.arun(message, stream=False)
-    return response.content
 
 
 @agents_router.post("/casual_chat", status_code=status.HTTP_200_OK)
