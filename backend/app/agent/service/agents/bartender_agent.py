@@ -6,6 +6,8 @@ from agno.memory.v2.db.postgres import PostgresMemoryDb
 from agno.memory.v2.memory import Memory
 from agno.models.openai.like import OpenAILike
 from agno.storage.agent.postgres import PostgresAgentStorage
+from agno.tools.duckduckgo import DuckDuckGoTools
+from agno.tools.tavily import TavilyTools
 from agno.vectordb.pgvector import PgVector
 from backend.app.agent.schema.cocktail_schema import BartenderResponse
 from backend.core.conf import settings
@@ -66,6 +68,9 @@ def get_bartender(
 
     # 定义 storage
     storage = PostgresAgentStorage(table_name="bartender_sessions", db_url=syn_db_url, schema="public")
+    
+    # 定义 tools
+    tools = [DuckDuckGoTools(), TavilyTools()]
 
     # 组合成 agent
     bartender_agent = Agent(
@@ -78,6 +83,8 @@ def get_bartender(
         knowledge=knowledge,
         search_knowledge=True,
         memory=memory,
+        enable_user_memories=True,
+        enable_session_summaries=True,
         description=bartender_description,
         instructions=bartender_instructions,
         additional_context=additional_context,
@@ -87,6 +94,8 @@ def get_bartender(
         num_history_responses=10,
         read_chat_history=True,
         debug_mode=debug_mode,
+        tools=tools,
+        show_tool_calls=True,
         monitoring=True,
         response_model=BartenderResponse,
     )
