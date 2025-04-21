@@ -33,16 +33,6 @@ class DifficultyLevel(StrEnum):
     ANY = "any"  # 任意
 
 
-class MoodType(StrEnum):
-    """心情类型选项"""
-    HAPPY = "happy"  # 开心
-    SAD = "sad"  # 悲伤
-    RELAXED = "relaxed"  # 放松
-    EXCITED = "excited"  # 兴奋
-    ROMANTIC = "romantic"  # 浪漫
-    ANY = "any"  # 任意
-
-
 class AgentRequest(BaseModel):
     message: str
     model: ModelName = ModelName.DEEPSEEK_V3
@@ -57,7 +47,6 @@ class BartenderRequest(AgentRequest):
     has_tools: Optional[bool] = None
     difficulty_level: Optional[DifficultyLevel] = DifficultyLevel.ANY
     base_spirits: Optional[List[str]] = None
-    mood: Optional[MoodType] = MoodType.ANY
 
     def get_user_prompt(self) -> str:
         """组装用户提示"""
@@ -78,10 +67,6 @@ class BartenderRequest(AgentRequest):
         # 添加可用基酒
         if self.base_spirits:
             prompt_parts.append(f"可用的基酒: {', '.join(self.base_spirits)}")
-        
-        # 添加心情状态
-        if self.mood != MoodType.ANY:
-            prompt_parts.append(f"心情状态: {self.mood.value}")
         
         # 添加用户的其他需求
         if self.message:

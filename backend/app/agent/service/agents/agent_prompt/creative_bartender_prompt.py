@@ -42,41 +42,38 @@ creative_bartender_instructions = dedent("""\
    - 考虑季节性和可获得性
 
 # 返回格式
-你必须严格按照以下 JSON 格式返回数据:
+你必须严格按照以下 JSON 格式返回数据,不要返回任何其他内容:
 {
-    "cocktail": {
-        "name": "鸡尾酒名称",
-        "description": "鸡尾酒描述(包含创作灵感、风味特点等)",
-        "image_url": "图片URL(可选)",
-        "match_reason": "创作理由(详细说明与用户心情和偏好的匹配点)",
-        "base_spirit": "基酒类型",
-        "alcohol_level": "酒精浓度(必须是以下之一：无酒精、低度、中度、高度)",
-        "flavor_profiles": ["口味特征列表(可选：甜、酸、苦、辣、果味、草本、花香、烟熏、清爽、其他)"],
-        "ingredients": [
-            {
-                "name": "原料名称",
-                "amount": "原料用量",
-                "unit": "计量单位(可选)",
-                "substitute": "替代品(可选)",
-                "is_garnish": "是否为装饰物(布尔值)"
-            }
-        ],
-        "steps": [
-            {
-                "step_number": "步骤序号",
-                "description": "步骤描述(清晰详细)",
-                "tips": "小贴士(可选,包含技巧和注意事项)",
-                "time_required": "所需时间(可选)"
-            }
-        ],
-        "tools": [
-            {
-                "name": "工具名称",
-                "alternative": "替代工具(可选)"
-            }
-        ],
-        "serving_glass": "建议使用的酒杯"
-    }
+    "name": "鸡尾酒名称",
+    "description": "鸡尾酒描述(包含创作灵感、风味特点等)",
+    "image_url": "图片URL(可选)",
+    "time_required": "所需时间(可选)",
+    "match_reason": "创作理由(详细说明与用户心情和偏好的匹配点)",
+    "base_spirit": "基酒类型",
+    "alcohol_level": "酒精浓度(必须是以下之一：无酒精、低度、中度、高度)",
+    "flavor_profiles": ["口味特征列表(可选：甜、酸、苦、辣、果味、草本、花香、烟熏、清爽、其他)"],
+    "ingredients": [
+        {
+            "name": "原料名称",
+            "amount": "原料用量",
+            "unit": "计量单位(可选)",
+            "substitute": "替代品(可选)"
+        }
+    ],
+    "steps": [
+        {
+            "step_number": "步骤序号",
+            "description": "步骤描述(清晰详细)",
+            "tips": "小贴士(可选,包含技巧和注意事项)"
+        }
+    ],
+    "tools": [
+        {
+            "name": "工具名称",
+            "alternative": "替代工具(可选)"
+        }
+    ],
+    "serving_glass": "建议使用的酒杯"
 }
 
 # 输出质量要求
@@ -99,94 +96,86 @@ creative_bartender_instructions = dedent("""\
 
 # 示例输出
 {
-    "cocktail": {
-        "name": "夏日微风",
-        "description": "一款灵感来自夏日微风的创意鸡尾酒,以伏特加为基酒,加入西瓜汁和薄荷,口感清爽怡人。",
-        "match_reason": "这款鸡尾酒清爽怡人,适合在炎热的夏日饮用,能让人心情愉悦。",
-        "base_spirit": "伏特加",
-        "alcohol_level": "中度",
-        "flavor_profiles": ["清爽", "果味", "草本"],
-        "ingredients": [
-            {
-                "name": "伏特加",
-                "amount": "45",
-                "unit": "ml",
-                "substitute": "金酒",
-                "is_garnish": false
-            },
-            {
-                "name": "西瓜汁",
-                "amount": "60",
-                "unit": "ml",
-                "substitute": "草莓汁",
-                "is_garnish": false
-            },
-            {
-                "name": "青柠汁",
-                "amount": "15",
-                "unit": "ml",
-                "substitute": "柠檬汁",
-                "is_garnish": false
-            },
-            {
-                "name": "薄荷叶",
-                "amount": "6",
-                "unit": "片",
-                "substitute": "薄荷糖浆",
-                "is_garnish": true
-            },
-            {
-                "name": "西瓜球",
-                "amount": "3",
-                "unit": "个",
-                "substitute": "草莓",
-                "is_garnish": true
-            }
-        ],
-        "steps": [
-            {
-                "step_number": 1,
-                "description": "将薄荷叶放入杯中,轻轻捣碎以释放香气",
-                "tips": "不要过度捣碎,以免产生苦味",
-                "time_required": "30秒"
-            },
-            {
-                "step_number": 2,
-                "description": "加入西瓜汁和青柠汁,搅拌均匀",
-                "tips": "确保果汁充分混合",
-                "time_required": "30秒"
-            },
-            {
-                "step_number": 3,
-                "description": "加入伏特加和碎冰,轻轻搅拌",
-                "tips": "搅拌要轻柔,避免过度稀释",
-                "time_required": "30秒"
-            },
-            {
-                "step_number": 4,
-                "description": "用西瓜球和薄荷叶装饰,插入吸管",
-                "tips": "装饰要美观,突出夏日主题",
-                "time_required": "30秒"
-            }
-        ],
-        "tools": [
-            {
-                "name": "捣棒",
-                "alternative": "勺子背面"
-            },
-            {
-                "name": "搅拌勺",
-                "alternative": "长柄勺"
-            },
-            {
-                "name": "碎冰器",
-                "alternative": "干净的毛巾包裹冰块敲碎"
-            },
-            {
-                "name": "西瓜球勺",
-                "alternative": "小勺子"
-            }
-        ],
-        "serving_glass": "高球杯"
-    }
+
+    "name": "夏日微风",
+    "description": "一款灵感来自夏日微风的创意鸡尾酒,以伏特加为基酒,加入西瓜汁和薄荷,口感清爽怡人。",
+    "time_required": "10分钟",
+    "match_reason": "这款鸡尾酒清爽怡人,适合在炎热的夏日饮用,能让人心情愉悦。",
+    "base_spirit": "伏特加",
+    "alcohol_level": "中度",
+    "flavor_profiles": ["清爽", "果味", "草本"],
+    "ingredients": [
+        {
+            "name": "伏特加",
+            "amount": "45",
+            "unit": "ml",
+            "substitute": "金酒"
+        },
+        {
+            "name": "西瓜汁",
+            "amount": "60",
+            "unit": "ml",
+            "substitute": "草莓汁"
+        },
+        {
+            "name": "青柠汁",
+            "amount": "15",
+            "unit": "ml",
+            "substitute": "柠檬汁"
+        },
+        {
+            "name": "薄荷叶",
+            "amount": "6",
+            "unit": "片",
+            "substitute": "薄荷糖浆"
+        },
+        {
+            "name": "西瓜球",
+            "amount": "3",
+            "unit": "个",
+            "substitute": "草莓"
+        }
+    ],
+    "steps": [
+        {
+            "step_number": 1,
+            "description": "将薄荷叶放入杯中,轻轻捣碎以释放香气",
+            "tips": "不要过度捣碎,以免产生苦味"
+        },
+        {
+            "step_number": 2,
+            "description": "加入西瓜汁和青柠汁,搅拌均匀",
+            "tips": "确保果汁充分混合"
+        },
+        {
+            "step_number": 3,
+            "description": "加入伏特加和碎冰,轻轻搅拌",
+            "tips": "搅拌要轻柔,避免过度稀释"
+        },
+        {
+            "step_number": 4,
+            "description": "用西瓜球和薄荷叶装饰,插入吸管",
+            "tips": "装饰要美观,突出夏日主题"
+        }
+    ],
+    "tools": [
+        {
+            "name": "捣棒",
+            "alternative": "勺子背面"
+        },
+        {
+            "name": "搅拌勺",
+            "alternative": "长柄勺"
+        },
+        {
+            "name": "碎冰器",
+            "alternative": "干净的毛巾包裹冰块敲碎"
+        },
+        {
+            "name": "西瓜球勺",
+            "alternative": "小勺子"
+        }
+    ],
+    "serving_glass": "高球杯"
+
 }""")

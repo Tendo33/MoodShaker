@@ -17,37 +17,46 @@ class Settings(BaseSettings):
 
     # 环境配置
     ENVIRONMENT: Literal["dev", "pro"]  # 运行环境：开发或生产
-    # 模型配置
-    OPENAI_API_KEY: str
-    OPENAI_BASE_URL: str
-    CHAT_MODEL_NAME: str
-    EMBEDDING_MODEL_NAME: str
-    EMBEDDING_API_KEY: str
-    EMBEDDING_BASE_URL: str
-    # 搜索配置
-    EXA_API_KEY: str
-    TAVILY_API_KEY: str
-    # 日志配置
-    LOGFIRE_TOKEN: str
-    # 天气配置
-    WEATHER_API_KEY: str
-    # 地理编码配置
-    GEO_API_KEY: str
-
+    
     # 数据库配置
     DATABASE_HOST: str  # 数据库主机
     DATABASE_PORT: int  # 数据库端口
     DATABASE_USER: str  # 数据库用户
     DATABASE_PASSWORD: str  # 数据库密码
-
+    DATABASE_SCHEMA: str  # 数据库名
+    
     # Redis配置
     REDIS_HOST: str  # Redis主机
     REDIS_PORT: int  # Redis端口
     REDIS_PASSWORD: str  # Redis密码
     REDIS_DATABASE: int  # Redis数据库编号
-
+    
     # Token配置
     TOKEN_SECRET_KEY: str  # JWT密钥
+    
+    # 模型配置
+    OPENAI_API_KEY: str  # OpenAI API密钥
+    OPENAI_BASE_URL: str  # OpenAI API基础URL
+    EMBEDDING_API_KEY: str  # Embedding API密钥
+    EMBEDDING_BASE_URL: str  # Embedding API基础URL
+    CHAT_MODEL_NAME: str  # 聊天模型名称
+    EMBEDDING_MODEL_NAME: str  # 嵌入模型名称
+    
+    # 搜索配置
+    EXA_API_KEY: str  # Exa API密钥
+    TAVILY_API_KEY: str  # Tavily API密钥
+    
+    # 日志配置
+    LOGFIRE_TOKEN: str  # Logfire日志令牌
+    
+    # 天气配置
+    WEATHER_API_KEY: str  # 天气API密钥
+    
+    # 地理编码配置
+    GEO_API_KEY: str  # 地理编码API密钥
+    
+    # Agno配置
+    AGNO_API_KEY: str  # Agno API密钥
 
     # FastAPI配置
     FASTAPI_API_V1_PATH: str = "/api/v1"  # API基础路径
@@ -71,7 +80,6 @@ class Settings(BaseSettings):
     # Postgres配置
     DATABASE_ECHO: bool = False  # SQL语句打印
     DATABASE_POOL_ECHO: bool = False  # 连接池日志
-    DATABASE_SCHEMA: str = "moodshaker"  # 数据库名
     DATABASE_CHARSET: str = "utf8mb4"  # 字符集
 
     # Redis配置

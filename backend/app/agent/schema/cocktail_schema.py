@@ -10,7 +10,6 @@ class Ingredient(BaseModel):
     amount: str = Field(..., description="原料用量")
     unit: Optional[str] = Field(None, description="计量单位")
     substitute: Optional[str] = Field(None, description="替代品")
-    is_garnish: bool = Field(False, description="是否为装饰物")
 
 
 class Step(BaseModel):
@@ -19,7 +18,6 @@ class Step(BaseModel):
     step_number: int = Field(..., description="步骤序号")
     description: str = Field(..., description="步骤描述")
     tips: Optional[str] = Field(None, description="小贴士")
-    time_required: Optional[str] = Field(None, description="所需时间")
 
 
 class Tool(BaseModel):
@@ -36,6 +34,7 @@ class CocktailRecommendation(BaseModel):
     name: str = Field(..., description="鸡尾酒名称")
     description: str = Field(..., description="鸡尾酒描述")
     image_url: Optional[str] = Field(None, description="鸡尾酒图片URL")
+    time_required: Optional[str] = Field(None, description="所需时间")
     match_reason: str = Field(..., description="推荐理由")
 
     # 关键特征
@@ -48,9 +47,3 @@ class CocktailRecommendation(BaseModel):
     steps: List[Step] = Field(..., description="制作步骤")
     tools: List[Tool] = Field(..., description="所需工具")
     serving_glass: str = Field(..., description="建议使用的酒杯")
-
-
-class BartenderResponse(BaseModel):
-    """调酒师响应"""
-
-    cocktail: Optional[CocktailRecommendation] = Field(None, description="推荐的鸡尾酒")
