@@ -3,19 +3,19 @@ import type { CocktailRecommendation } from '@/types/cocktail'
 
 // 酒精浓度枚举
 export enum AlcoholLevel {
-  ANY = '任意',
-  NONE = '无酒精',
-  LOW = '低度',
-  MEDIUM = '中度',
-  HIGH = '高度'
+  ANY = 'any',
+  NONE = 'none',
+  LOW = 'low',
+  MEDIUM = 'medium',
+  HIGH = 'high'
 }
 
 // 制作难度枚举
 export enum DifficultyLevel {
-  ANY = '任意',
-  EASY = '简单',
-  MEDIUM = '中等',
-  HARD = '困难'
+  ANY = 'any',
+  EASY = 'easy',
+  MEDIUM = 'medium',
+  HARD = 'hard'
 }
 
 // 调酒师类型枚举
@@ -26,7 +26,7 @@ export enum BartenderType {
 
 // 调酒师请求参数
 export interface BartenderRequest {
-  user_id: number
+  user_id: string
   session_id: string
   model: string
   message: string
@@ -38,12 +38,12 @@ export interface BartenderRequest {
 
 // 获取鸡尾酒推荐
 export function getCocktailRecommendation(type: BartenderType, params: BartenderRequest) {
-  return http.post<CocktailRecommendation>(`/agents/${type}`, params)
+  return http.post<CocktailRecommendation>(`/api/v1/agents/${type}`, params)
 }
 
 // 获取鸡尾酒图片
-export function getCocktailImage(user_id: number, session_id: string) {
-  return http.get<{ image_url: string }>('/agents/cocktail_image', {
+export function getCocktailImage(user_id: string, session_id: string) {
+  return http.get<{ image_url: string }>('/api/v1/agents/cocktail_image', {
     params: { user_id, session_id }
   })
 } 

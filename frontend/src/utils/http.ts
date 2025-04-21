@@ -4,7 +4,7 @@ import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 // 创建axios实例
 const http: AxiosInstance = axios.create({
 	baseURL: import.meta.env.VITE_API_BASE_URL,
-	timeout: 10000,
+	timeout: 1000000,
 	headers: {
 		"Content-Type": "application/json",
 	},

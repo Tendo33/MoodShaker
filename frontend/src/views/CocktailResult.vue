@@ -109,26 +109,40 @@ const fetchCocktailRecommendation = async () => {
     const hasTools = route.query.hasTools === 'true'
     const mood = route.query.mood as string
 
-    const response = await getCocktailRecommendation(type, {
-      user_id: 1, // 临时使用固定用户ID
+    // 构建请求参数
+    const requestParams = {
+      user_id: '1', // 临时使用固定用户ID,改为字符串类型
       session_id: Date.now().toString(),
       model: 'deepseek-v3-250324',
       message: `我的心情是${mood}`,
       has_tools: hasTools
+    }
+
+    // 打印请求信息
+    console.log('发送鸡尾酒推荐请求:', {
+      url: `/api/v1/agents/${type}`,
+      method: 'POST',
+      params: requestParams
     })
 
-    cocktail.value = response
+    const response = await getCocktailRecommendation(type, requestParams)
+
+    // 打印响应信息
+    console.log('收到鸡尾酒推荐响应:', response.data)
+
+    // 使用响应数据
+    cocktail.value = response.data
 
     // 获取鸡尾酒图片
     try {
-      const imageResponse = await getCocktailImage(1, Date.now().toString())
-      imageUrl.value = imageResponse.image_url
+      const imageResponse = await getCocktailImage('1', Date.now().toString())
+      imageUrl.value = imageResponse.data.image_url
     } catch (e) {
-      console.error('Failed to get cocktail image:', e)
+      console.error('获取鸡尾酒图片失败:', e)
     }
   } catch (e) {
     error.value = '获取鸡尾酒推荐失败，请稍后重试'
-    console.error('Failed to get cocktail recommendation:', e)
+    console.error('获取鸡尾酒推荐失败:', e)
   } finally {
     loading.value = false
   }
