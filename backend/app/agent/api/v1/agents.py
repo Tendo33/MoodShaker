@@ -12,6 +12,8 @@ from backend.app.admin.service.session_manager import (
 from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType
 from backend.app.agent.service.agents.bartender_agent import get_bartender
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
+from backend.app.agent.service.agents.classic_bartender_agent import get_classic_bartender
+from backend.app.agent.service.agents.creative_bartender_agent import get_creative_bartender
 from backend.common.log import logger
 from backend.core.conf import settings
 
@@ -51,7 +53,7 @@ async def create_session(request: SessionRequest) -> SessionResponse:
         )
 
 
-@agents_router.get(path="", response_model=List[str])
+@agents_router.get(path="/list_agents", response_model=List[str])
 async def list_agents() -> List[str]:
     """
     Returns a list of all available agent IDs.
@@ -104,7 +106,6 @@ async def run_bartender_agent(body: AgentRequest):
         # 验证会话
         await verify_session(user_id, session_id)
 
-        # 使用工厂函数获取 Bartender agent
         agent = get_bartender(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Bartender agent not found: {str(e)}")
@@ -132,11 +133,9 @@ async def run_casual_chat_agent_stream(body: AgentRequest):
         message = body.message
         model = body.model
         debug_mode = settings.ENVIRONMENT == "dev"
+
         # 验证会话
-
         await verify_session(user_id, session_id)
-
-        # 使用工厂函数获取 Casual Chat agent
         casual_chat_agent = get_casual_chat_agent(
             user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode
         )
@@ -147,3 +146,67 @@ async def run_casual_chat_agent_stream(body: AgentRequest):
         chat_response_streamer(casual_chat_agent, message),
         media_type="text/event-stream",
     )
+
+
+@agents_router.post("/classic_bartender", status_code=status.HTTP_200_OK)
+async def run_classic_bartender_agent(body: AgentRequest):
+    """
+    发送消息给经典调酒师 agent 并返回完整响应。
+
+    Args:
+        body: 包含消息的请求参数
+
+    Returns:
+        来自 agent 的完整响应
+    """
+    logger.debug(f"Classic Bartender AgentRequest: {body}")
+
+    try:
+        user_id = body.user_id
+        session_id = body.session_id
+        message = body.message
+        model = body.model
+        debug_mode = settings.ENVIRONMENT == "dev"
+        # 验证会话
+        await verify_session(user_id, session_id)
+
+        agent = get_classic_bartender(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Classic Bartender agent not found: {str(e)}"
+        )
+
+    response = await agent.arun(message, stream=False)
+    return response.content
+
+
+@agents_router.post("/creative_bartender", status_code=status.HTTP_200_OK)
+async def run_creative_bartender_agent(body: AgentRequest):
+    """
+    发送消息给创意调酒师 agent 并返回完整响应。
+
+    Args:
+        body: 包含消息的请求参数
+
+    Returns:
+        来自 agent 的完整响应
+    """
+    logger.debug(f"Creative Bartender AgentRequest: {body}")
+
+    try:
+        user_id = body.user_id
+        session_id = body.session_id
+        message = body.message
+        model = body.model
+        debug_mode = settings.ENVIRONMENT == "dev"
+        # 验证会话
+        await verify_session(user_id, session_id)
+
+        agent = get_creative_bartender(user_id=user_id, session_id=session_id, model_id=model, debug_mode=debug_mode)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Creative Bartender agent not found: {str(e)}"
+        )
+
+    response = await agent.arun(message, stream=False)
+    return response.content

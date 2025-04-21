@@ -13,12 +13,12 @@ from backend.app.agent.schema.cocktail_schema import BartenderResponse
 from backend.core.conf import settings
 from backend.database.db import get_syn_db_url
 
-from .agent_prompt.bartender_prompt import bartender_description, bartender_instructions
+from .agent_prompt.classic_bartender_prompt import classic_bartender_description, classic_bartender_instructions
 
 syn_db_url = get_syn_db_url()
 
 
-def get_bartender(
+def get_classic_bartender(
     model_id: str = "deepseek-v3-250324",
     user_id: Optional[str] = None,
     session_id: Optional[str] = None,
@@ -41,7 +41,7 @@ def get_bartender(
 
     # 定义 persistent memory for chat history
     memory_db = PostgresMemoryDb(
-        table_name="bartender_memory",
+        table_name="classic_bartender_memory",
         db_url=syn_db_url,
         schema="public",
     )
@@ -59,7 +59,7 @@ def get_bartender(
     knowledge = AgentKnowledge(
         vector_db=PgVector(
             db_url=syn_db_url,
-            table_name="bartender_knowledge",
+            table_name="classic_bartender_knowledge",
             schema="public",
             embedder=embedder,
         ),
@@ -67,15 +67,15 @@ def get_bartender(
     )
 
     # 定义 storage
-    storage = PostgresAgentStorage(table_name="bartender_sessions", db_url=syn_db_url, schema="public")
+    storage = PostgresAgentStorage(table_name="classic_bartender_sessions", db_url=syn_db_url, schema="public")
 
     # 定义 tools
     tools = [DuckDuckGoTools(), TavilyTools()]
 
     # 组合成 agent
-    bartender_agent = Agent(
-        name="Bartender",
-        agent_id="bartender",
+    classic_bartender_agent = Agent(
+        name="Classic Bartender",
+        agent_id="classic_bartender",
         user_id=user_id,
         session_id=session_id,
         model=model,
@@ -85,8 +85,8 @@ def get_bartender(
         memory=memory,
         enable_user_memories=True,
         enable_session_summaries=True,
-        description=bartender_description,
-        instructions=bartender_instructions,
+        description=classic_bartender_description,
+        instructions=classic_bartender_instructions,
         additional_context=additional_context,
         markdown=True,
         add_datetime_to_instructions=True,
@@ -100,4 +100,4 @@ def get_bartender(
         response_model=BartenderResponse,
     )
 
-    return bartender_agent
+    return classic_bartender_agent

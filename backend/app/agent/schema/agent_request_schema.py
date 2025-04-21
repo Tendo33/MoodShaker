@@ -8,6 +8,8 @@ class AgentType(StrEnum):
     SAGE = "sage"
     SCHOLAR = "scholar"
     BARTENDER = "bartender"
+    CLASSIC_BARTENDER = "classic_bartender"
+    CREATIVE_BARTENDER = "creative_bartender"
     CASUAL_CHAT = "casual_chat"
 
 
