@@ -59,14 +59,9 @@ async def generate_cocktail_image(
     try:
         # 构建prompt
         prompt = f"""
-        Generate a high-resolution photo with a {cocktail.english_name} cocktail in the center,
-        artistically garnished, with a deliberately blurred background to highlight the cocktail.
-        Ensure that regardless of the {cocktail.english_name} variation, the perspective remains constant, 
-        providing a consistent view from above, captivatingly showcasing the cocktail’s appeal.
-        Use a Canon EOS 5D Mark IV camera with a 50mm prime lens, ISO 100, shutter speed 1/200 sec, aperture f/1.8, 
-        to achieve a shallow depth of field. The photo style should be vivid and clear, 
-        emphasizing the details and colors of the {cocktail.english_name} cocktail.
-        """
+        Create a high-resolution image featuring a cocktail named {cocktail.english_name} prominently in the center, elegantly garnished. The background should be intentionally blurred to draw attention to the {cocktail.english_name} cocktail. Maintain a consistent top-down perspective for various name variations, ensuring the cocktail’s allure is always showcased. Capture the image using a Canon EOS 5D Mark IV camera with a 50mm prime lens, set at ISO 100, shutter speed 1/200 sec, and aperture f/1.8 to create a shallow depth of field. The photo should have a vivid and clear style, highlighting the intricate details and vibrant colors of the {cocktail.english_name} cocktail.
+        """  # noqa: E501
+        
         negative_prompt = "low quality, blurry, out of focus, low resolution, low resolution"
 
         image_size = "512x512"
