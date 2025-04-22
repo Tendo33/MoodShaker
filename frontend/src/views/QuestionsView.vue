@@ -1,22 +1,33 @@
 <template>
-	<div class="min-h-screen bg-gradient-to-b from-gray-900 to-black text-white">
-		<!-- 背景效果 -->
-		<div class="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
-			<div class="absolute top-1/4 left-1/4 w-64 h-64 bg-amber-500 rounded-full blur-3xl animate-pulse"></div>
+	<div class="min-h-screen transition-colors duration-300" :class="themeClasses">
+		<!-- Enhanced background effects with better animation -->
+		<div class="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
 			<div
-				class="absolute bottom-1/4 right-1/4 w-64 h-64 bg-pink-500 rounded-full blur-3xl animate-pulse"
-				style="animation-delay: 2s"
+				class="absolute top-1/4 left-1/4 w-80 h-80 bg-amber-500 rounded-full blur-3xl animate-pulse"
+				style="animation-duration: 8s"
+			></div>
+			<div
+				class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-500 rounded-full blur-3xl animate-pulse"
+				style="animation-duration: 10s; animation-delay: 2s"
+			></div>
+			<div
+				class="absolute top-3/4 left-1/3 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse"
+				style="animation-duration: 12s; animation-delay: 4s"
 			></div>
 		</div>
-		<!-- 这里会影响到页面布局居中 -->
+
 		<div class="container max-w-4xl py-12 relative" style="margin: 0 auto">
 			<div class="mb-8 flex items-center justify-between">
-				<button class="flex items-center text-white hover:bg-white/10 px-4 py-2 rounded-md" @click="handleBack">
-					<ArrowLeft class="mr-2 h-4 w-4" /> 返回
+				<button
+					class="flex items-center hover:bg-white/10 px-4 py-2 rounded-md transition-colors duration-300 group"
+					:class="textColorClass"
+					@click="handleBack"
+				>
+					<ArrowLeft class="mr-2 h-4 w-4 group-hover:translate-x-[-4px] transition-transform" /> 返回
 				</button>
-				<div class="relative w-1/2 h-2 bg-gray-800 rounded-full overflow-hidden">
+				<div class="relative w-1/2 h-3 bg-gray-800/30 rounded-full overflow-hidden shadow-inner">
 					<div
-						class="h-full bg-gradient-to-r from-amber-500 to-pink-500 rounded-full transition-all duration-500"
+						class="h-full bg-gradient-to-r from-amber-500 to-pink-500 rounded-full transition-all duration-500 shadow-lg"
 						:style="{ width: `${progressPercentage}%` }"
 					></div>
 				</div>
@@ -43,19 +54,22 @@
 							'translate-y-4 opacity-0': !visibleQuestions.includes(question.id),
 						}"
 					>
-						<div class="mb-6 overflow-hidden border-0 bg-white/10 backdrop-blur-sm text-white shadow-xl rounded-lg">
-							<div class="p-6 relative">
+						<div
+							class="mb-6 overflow-hidden border border-white/10 backdrop-blur-sm shadow-xl rounded-xl transition-colors duration-300"
+							:class="cardClasses"
+						>
+							<div class="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10 relative">
 								<div v-if="isQuestionAnswered(question.id)" class="absolute right-6 top-6">
-									<div class="bg-gradient-to-r from-amber-500 to-pink-500 text-white rounded-full p-1">
+									<div class="bg-gradient-to-r from-amber-500 to-pink-500 text-white rounded-full p-1.5 shadow-lg">
 										<Check class="h-4 w-4" />
 									</div>
 								</div>
-								<h3 class="text-2xl font-bold mb-2">{{ question.title }}</h3>
+								<h3 class="text-2xl font-bold mb-3" :class="textColorClass">{{ question.title }}</h3>
 								<p class="text-gray-300">{{ question.description }}</p>
 							</div>
 						</div>
 
-						<div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+						<div class="grid gap-5 sm:grid-cols-2 md:grid-cols-3">
 							<div
 								v-for="option in question.options"
 								:key="option.id"
@@ -63,17 +77,20 @@
 								:class="{ 'scale-100 opacity-100': true, 'scale-95 opacity-0': false }"
 							>
 								<div
-									class="cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-lg bg-white/5 backdrop-blur-sm border-0 text-white overflow-hidden rounded-lg"
-									:class="{
-										'ring-2 ring-pink-500 shadow-lg shadow-pink-500/20': answers[question.id] === option.id,
-										'hover:bg-white/10': answers[question.id] !== option.id,
-									}"
+									class="cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl backdrop-blur-sm border border-white/10 overflow-hidden rounded-xl h-full"
+									:class="[
+										optionCardClasses,
+										{
+											'ring-2 ring-pink-500 shadow-xl shadow-pink-500/20': answers[question.id] === option.id,
+											'hover:bg-white/10': answers[question.id] !== option.id,
+										},
+									]"
 									@click="handleOptionSelect(question.id, option.id)"
 								>
-									<div class="p-4">
+									<div class="p-5">
 										<div class="flex flex-col items-center text-center">
 											<div
-												class="mb-4 rounded-full overflow-hidden bg-gradient-to-r from-amber-500/20 to-pink-500/20 p-2"
+												class="mb-4 rounded-full overflow-hidden bg-gradient-to-r from-amber-500/20 to-pink-500/20 p-3 shadow-inner"
 											>
 												<img
 													:src="option.image || '/placeholder.svg'"
@@ -81,7 +98,7 @@
 													class="w-[120px] h-[120px] object-cover transition-transform duration-300 hover:scale-110 rounded-full"
 												/>
 											</div>
-											<h3 class="font-medium">{{ option.text }}</h3>
+											<h3 class="font-medium text-lg" :class="textColorClass">{{ option.text }}</h3>
 										</div>
 									</div>
 								</div>
@@ -97,10 +114,11 @@
 							class="flex justify-center mt-8"
 						>
 							<button
-								class="flex items-center px-4 py-2 bg-white/10 hover:bg-white/20 text-white border-0 rounded-md text-sm"
+								class="flex items-center px-6 py-3 hover:bg-white/20 border border-white/10 rounded-lg text-sm transition-all duration-300 shadow-lg hover:shadow-xl group"
+								:class="[textColorClass, buttonClasses]"
 								@click="showNextQuestion(question.id)"
 							>
-								下一个问题 <ChevronDown class="ml-2 h-4 w-4" />
+								下一个问题 <ChevronDown class="ml-2 h-4 w-4 group-hover:translate-y-1 transition-transform" />
 							</button>
 						</div>
 					</div>
@@ -110,37 +128,42 @@
 			<!-- 基酒选择 -->
 			<div
 				v-if="visibleQuestions.includes(questions.length)"
-				class="mt-8 transition-all duration-500 transform"
+				class="mt-12 transition-all duration-500 transform"
 				:class="{ 'translate-y-0 opacity-100': true, 'translate-y-4 opacity-0': false }"
 			>
-				<div class="overflow-hidden border-0 bg-white/10 backdrop-blur-sm text-white shadow-xl rounded-lg">
-					<div class="p-6">
-						<h3 class="text-xl font-bold mb-2">可用的基酒（可选）</h3>
+				<div
+					class="overflow-hidden border border-white/10 backdrop-blur-sm shadow-xl rounded-xl transition-colors duration-300"
+					:class="cardClasses"
+				>
+					<div class="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10">
+						<h3 class="text-xl font-bold mb-2" :class="textColorClass">可用的基酒（可选）</h3>
 						<p class="text-gray-300 mb-4">请选择您家中有的基酒</p>
 					</div>
 					<div class="px-6 pb-6">
-						<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+						<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
 							<div
 								v-for="spirit in baseSpiritsOptions"
 								:key="spirit.id"
-								class="cursor-pointer p-3 rounded-lg transition-all duration-300"
-								:class="{
-									'bg-gradient-to-r from-amber-500/30 to-pink-500/30 border border-pink-500': baseSpirits.includes(
-										spirit.id
-									),
-									'bg-white/5 hover:bg-white/10 border border-transparent': !baseSpirits.includes(spirit.id),
-								}"
+								class="cursor-pointer p-4 rounded-lg transition-all duration-300"
+								:class="[
+									spiritCardClasses,
+									{
+										'bg-gradient-to-r from-amber-500/30 to-pink-500/30 border border-pink-500 shadow-lg':
+											baseSpirits.includes(spirit.id),
+										'border border-white/10 hover:border-white/30': !baseSpirits.includes(spirit.id),
+									},
+								]"
 								@click="handleBaseSpiritsToggle(spirit.id)"
 							>
 								<div class="flex items-center justify-between mb-2">
-									<span class="font-medium">{{ spirit.name }}</span>
+									<span class="font-medium" :class="textColorClass">{{ spirit.name }}</span>
 									<div
 										v-if="baseSpirits.includes(spirit.id)"
-										class="h-5 w-5 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center"
+										class="h-6 w-6 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center shadow-lg"
 									>
 										<Check class="h-3 w-3 text-white" />
 									</div>
-									<div v-else class="h-5 w-5 rounded-full bg-white/10 flex items-center justify-center">
+									<div v-else class="h-6 w-6 rounded-full bg-white/10 flex items-center justify-center">
 										<X class="h-3 w-3 text-gray-400" />
 									</div>
 								</div>
@@ -155,35 +178,39 @@
 			<div
 				v-if="showFeedbackForm"
 				id="feedback-form"
-				class="mt-16 pt-8 border-t border-gray-800 transition-all duration-500 transform"
-				:class="{ 'translate-y-0 opacity-100': true, 'translate-y-4 opacity-0': false }"
+				class="mt-16 pt-8 border-t transition-colors duration-300"
+				:class="borderColorClass"
 			>
-				<div class="overflow-hidden shadow-lg border-0 bg-white/10 backdrop-blur-sm text-white rounded-lg">
+				<div
+					class="overflow-hidden shadow-xl border border-white/10 backdrop-blur-sm rounded-xl transition-colors duration-300"
+					:class="cardClasses"
+				>
 					<div class="p-6 bg-gradient-to-r from-amber-500/20 to-pink-500/20">
-						<h3 class="text-xl font-bold mb-2">还有什么想告诉我们的？</h3>
+						<h3 class="text-xl font-bold mb-2" :class="textColorClass">还有什么想告诉我们的？</h3>
 						<p class="text-gray-300">请分享您的任何特殊需求或偏好</p>
 					</div>
 					<div class="p-6">
 						<textarea
 							v-model="userFeedback"
 							placeholder="例如：我喜欢甜一点的鸡尾酒，或者我对某种成分过敏..."
-							class="w-full min-h-[150px] transition-all duration-300 focus:border-pink-500 bg-white/5 border-gray-700 text-white placeholder-gray-400 p-3 rounded-md"
+							class="w-full min-h-[150px] transition-all duration-300 focus:border-pink-500 border border-white/10 rounded-lg p-4 transition-colors duration-300"
+							:class="[textAreaClasses, textColorClass]"
 						></textarea>
 					</div>
-					<div class="px-6 py-4 flex justify-end bg-black/30">
+					<div class="px-6 py-4 flex justify-end transition-colors duration-300" :class="footerClasses">
 						<button
 							@click="handleSubmitFeedback"
-							class="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 transition-all duration-300 hover:shadow-md shadow-pink-500/30 border-0 text-white px-6 py-2 rounded-md flex items-center"
+							class="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 transition-all duration-300 hover:shadow-xl shadow-pink-500/30 border-0 text-white px-8 py-3 rounded-lg flex items-center hover:scale-105"
 							:disabled="isSubmitting"
 						>
 							<div
 								v-if="isSubmitting"
-								class="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-r-transparent"
+								class="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"
 							></div>
 							<span v-if="isSubmitting">正在为您匹配...</span>
 							<span v-else>
 								查看推荐鸡尾酒
-								<ArrowRight class="ml-2 h-4 w-4" />
+								<ArrowRight class="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
 							</span>
 						</button>
 					</div>
@@ -198,6 +225,57 @@ import { ref, reactive, computed, onMounted, nextTick } from "vue";
 import { useRouter } from "vue-router";
 import { ArrowLeft, ArrowRight, Check, ChevronDown, X } from "lucide-vue-next";
 import { AlcoholLevel, DifficultyLevel, requestCocktailRecommendation } from "@/api/cocktail";
+import { useThemeStore } from "@/stores/theme";
+import { storeToRefs } from "pinia";
+
+const themeStore = useThemeStore();
+const { theme } = storeToRefs(themeStore);
+
+// 主题相关计算属性
+const themeClasses = computed(() => ({
+	"bg-gradient-to-b from-black to-gray-900 text-white": theme.value === "dark",
+	"bg-gradient-to-b from-amber-50 to-white text-gray-900": theme.value === "light",
+}));
+
+const textColorClass = computed(() => ({
+	"text-white": theme.value === "dark",
+	"text-gray-900": theme.value === "light",
+}));
+
+const cardClasses = computed(() => ({
+	"bg-white/10 text-white": theme.value === "dark",
+	"bg-white/80 text-gray-900": theme.value === "light",
+}));
+
+const optionCardClasses = computed(() => ({
+	"bg-white/5 text-white": theme.value === "dark",
+	"bg-white/90 text-gray-900": theme.value === "light",
+}));
+
+const spiritCardClasses = computed(() => ({
+	"bg-white/5 hover:bg-white/10": theme.value === "dark",
+	"bg-white/90 hover:bg-white/95": theme.value === "light",
+}));
+
+const buttonClasses = computed(() => ({
+	"bg-white/10": theme.value === "dark",
+	"bg-white/90": theme.value === "light",
+}));
+
+const textAreaClasses = computed(() => ({
+	"bg-white/5": theme.value === "dark",
+	"bg-white/90": theme.value === "light",
+}));
+
+const footerClasses = computed(() => ({
+	"bg-black/30": theme.value === "dark",
+	"bg-gray-50": theme.value === "light",
+}));
+
+const borderColorClass = computed(() => ({
+	"border-gray-800": theme.value === "dark",
+	"border-gray-200": theme.value === "light",
+}));
 
 const router = useRouter();
 const answers = reactive({});
@@ -315,39 +393,40 @@ const progressPercentage = computed(() => {
 	return (answeredCount / questions.length) * 100;
 });
 
-onMounted(() => {
-	// 从本地存储加载之前的答案（如果有）
+const loadSavedData = () => {
 	if (typeof window !== "undefined") {
-		const saved = localStorage.getItem("moodshaker-answers");
-		if (saved) {
-			const parsedAnswers = JSON.parse(saved);
+		// 加载答案
+		const savedAnswers = localStorage.getItem("moodshaker-answers");
+		if (savedAnswers) {
+			const parsedAnswers = JSON.parse(savedAnswers);
 			Object.assign(answers, parsedAnswers);
 
 			// 根据已保存的答案设置可见问题
 			const answeredQuestionIds = Object.keys(parsedAnswers).map(Number);
 			if (answeredQuestionIds.length > 0) {
-				// 找出最大的已回答问题ID
 				const maxAnsweredId = Math.max(...answeredQuestionIds);
-				// 设置可见问题为所有已回答的问题加上下一个问题（如果有）
 				const nextVisible = [...answeredQuestionIds];
 				if (maxAnsweredId < questions.length) {
 					nextVisible.push(maxAnsweredId + 1);
 				}
 				visibleQuestions.value = nextVisible;
 
-				// 如果所有问题都已回答，显示反馈表单
 				if (maxAnsweredId === questions.length) {
 					showFeedbackForm.value = true;
 				}
 			}
 		}
 
-		// 加载基酒列表（如果有）
+		// 加载基酒
 		const savedSpirits = localStorage.getItem("moodshaker-base-spirits");
 		if (savedSpirits) {
 			baseSpirits.value = JSON.parse(savedSpirits);
 		}
 	}
+};
+
+onMounted(() => {
+	loadSavedData();
 });
 
 const handleOptionSelect = (questionId, optionId) => {
