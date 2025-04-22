@@ -4,16 +4,16 @@ from agno.agent import Agent
 from fastapi import APIRouter, HTTPException, status
 from fastapi.responses import StreamingResponse
 
-from backend.app.admin.service.session_manager import (
-    get_cocktail_image_url,
-    store_cocktail_image_url,
-)
 from backend.app.agent.schema.agent_request_schema import AgentRequest, AgentType, BartenderRequest
 from backend.app.agent.schema.cocktail_schema import CocktailRecommendation
 from backend.app.agent.service.agents.casual_chat_agent import get_casual_chat_agent
 from backend.app.agent.service.agents.classic_bartender_agent import get_classic_bartender
 from backend.app.agent.service.agents.creative_bartender_agent import get_creative_bartender
-from backend.app.agent.service.utils.image_generator import generate_cocktail_image
+from backend.app.agent.service.utils.image_generator import (
+    generate_cocktail_image,
+    get_cocktail_image_url,
+    store_cocktail_image_url,
+)
 from backend.common.log import logger
 from backend.core.conf import settings
 
