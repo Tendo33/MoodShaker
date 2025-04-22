@@ -1,8 +1,8 @@
 <template>
-	<div class="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white">
+	<div class="min-h-screen bg-gradient-to-b from-black to-gray-900 text-white flex items-center justify-center">
 		<router-view v-slot="{ Component }">
 			<transition name="fade" mode="out-in">
-				<component :is="Component" />
+				<component :is="Component" class="w-full h-full" />
 			</transition>
 		</router-view>
 	</div>

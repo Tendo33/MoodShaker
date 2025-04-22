@@ -15,7 +15,7 @@
 				<div class="absolute -bottom-10 right-1/4 w-72 h-72 bg-purple-500 rounded-full blur-3xl"></div>
 			</div>
 
-			<section class="container py-12 md:py-24 lg:py-32 relative">
+			<section class="container py-12 md:py-24 lg:py-32 relative" style="margin: 0 auto">
 				<div class="mx-auto flex max-w-[980px] flex-col items-center gap-4 text-center">
 					<div class="inline-block mb-4 p-2 bg-white/5 backdrop-blur-sm rounded-full">
 						<div
