@@ -39,3 +39,9 @@ export interface CocktailRecommendation {
 	tools: Tool[];
 	serving_glass: string;
 }
+
+// 环境变量类型声明
+interface ImportMetaEnv {
+	readonly VITE_BACKEND_API_URL: string;
+	// 更多环境变量...
+}

@@ -29,6 +29,7 @@
     "pinia": "catalog:frontend",
     "postcss": "^8.4.31",
     "tailwindcss": "^3.3.5",
+    "tailwindcss-animate": "^1.0.7",
     "vue": "catalog:frontend",
     "vue-i18n": "catalog:frontend",
     "vue-router": "catalog:frontend"

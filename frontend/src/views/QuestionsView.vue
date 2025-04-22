@@ -8,8 +8,8 @@
 				style="animation-delay: 2s"
 			></div>
 		</div>
-
-		<div class="container max-w-4xl py-12 relative"style="margin: 0 auto">
+		<!-- 这里会影响到页面布局居中 -->
+		<div class="container max-w-4xl py-12 relative" style="margin: 0 auto">
 			<div class="mb-8 flex items-center justify-between">
 				<button class="flex items-center text-white hover:bg-white/10 px-4 py-2 rounded-md" @click="handleBack">
 					<ArrowLeft class="mr-2 h-4 w-4" /> 返回
