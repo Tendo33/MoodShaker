@@ -48,10 +48,10 @@ def get_creative_bartender(
 
     # 定义 Embedder
     embedder = OpenAIEmbedder(
-        id=settings.EMBEDDING_MODEL_NAME,
+        id=settings.SILICONFLOW_MODEL_NAME,
         dimensions=1024,
-        api_key=settings.EMBEDDING_API_KEY,
-        base_url=settings.EMBEDDING_BASE_URL,
+        api_key=settings.SILICONFLOW_API_KEY,
+        base_url=settings.SILICONFLOW_BASE_URL,
     )
 
     # 定义 knowledge base

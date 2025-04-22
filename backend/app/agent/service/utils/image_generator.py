@@ -12,7 +12,7 @@ class ImageGenerationRequest(BaseModel):
 
     model: str = "black-forest-labs/FLUX.1-schnell"
     prompt: str
-    image_size: str = "1024x1024"
+    image_size: str = "512x512"
     seed: Optional[int] = None
     prompt_enhancement: bool = False
 

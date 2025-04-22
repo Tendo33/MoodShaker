@@ -37,10 +37,11 @@ class Settings(BaseSettings):
     # 模型配置
     OPENAI_API_KEY: str  # OpenAI API密钥
     OPENAI_BASE_URL: str  # OpenAI API基础URL
-    EMBEDDING_API_KEY: str  # Embedding API密钥
-    EMBEDDING_BASE_URL: str  # Embedding API基础URL
+    SILICONFLOW_API_KEY: str  # Embedding API密钥
+    SILICONFLOW_BASE_URL: str  # Embedding API基础URL
+    
     CHAT_MODEL_NAME: str  # 聊天模型名称
-    EMBEDDING_MODEL_NAME: str  # 嵌入模型名称
+    SILICONFLOW_MODEL_NAME: str  # 嵌入模型名称
 
     # 搜索配置
     EXA_API_KEY: str  # Exa API密钥

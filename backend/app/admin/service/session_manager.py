@@ -81,7 +81,8 @@ async def store_cocktail_image_url(user_id: int, session_id: str, image_url: str
         image_url: 图片URL
     """
     image_key = f"{COCKTAIL_IMAGE_KEY_PREFIX}:{user_id}:{session_id}"
-    expire_time = timedelta(hours=24)
+    # 设置过期时间 永不过期
+    expire_time = timedelta(days=3650)
     await redis_client.setex(image_key, expire_time, image_url)
     logger.info(f"Stored cocktail image URL for user {user_id}: {session_id}")
 

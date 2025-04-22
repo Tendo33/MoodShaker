@@ -110,9 +110,10 @@ const fetchCocktailRecommendation = async () => {
 		const mood = route.query.mood as string;
 
 		// 构建请求参数
+		//TODO 根据实际情况修改请求参数
 		const requestParams = {
 			user_id: "1", // 临时使用固定用户ID,改为字符串类型
-			session_id: Date.now().toString(),
+			session_id: Date.now().toString(), // 使用当前时间戳作为会话ID
 			model: "deepseek-v3-250324",
 			message: `我的心情是${mood}`,
 			has_tools: hasTools,

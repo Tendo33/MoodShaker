@@ -134,6 +134,10 @@ async def run_classic_bartender_agent(body: BartenderRequest):
     # 使用组装好的用户提示
     user_prompt = body.get_user_prompt()
     response = await agent.arun(user_prompt, stream=False)
+    
+    # 生成并存储鸡尾酒图片
+    await generate_and_store_image(response.content, user_id, session_id)
+    
     return response.content
 
 
@@ -167,7 +171,10 @@ async def run_creative_bartender_agent(body: BartenderRequest):
     # 使用组装好的用户提示
     user_prompt = body.get_user_prompt()
     response = await agent.arun(user_prompt, stream=False)
-
+    
+    # 生成并存储鸡尾酒图片
+    await generate_and_store_image(response.content, user_id, session_id)
+    
     return response.content
 
 
