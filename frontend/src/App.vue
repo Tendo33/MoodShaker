@@ -39,9 +39,9 @@
 						<p class="text-sm text-gray-400 mt-1">找到适合您心情的鸡尾酒</p>
 					</div>
 					<div class="flex space-x-6">
-						<a href="#" class="text-gray-400 hover:text-amber-500 transition-colors">关于我们</a>
-						<a href="#" class="text-gray-400 hover:text-amber-500 transition-colors">联系方式</a>
-						<a href="#" class="text-gray-400 hover:text-amber-500 transition-colors">隐私政策</a>
+						<a href="#" class="text-gray-400 hover:text-amber-500 transition-colors whitespace-nowrap">关于我们</a>
+						<a href="#" class="text-gray-400 hover:text-amber-500 transition-colors whitespace-nowrap">联系方式</a>
+						<a href="#" class="text-gray-400 hover:text-amber-500 transition-colors whitespace-nowrap">隐私政策</a>
 					</div>
 				</div>
 				<div class="mt-6 pt-6 border-t text-center text-sm text-gray-400" :class="borderColorClass">
@@ -111,5 +111,11 @@ const borderColorClass = computed(() => {
 .fade-enter-from,
 .fade-leave-to {
 	opacity: 0;
+}
+
+/* 确保所有按钮文字不换行 */
+button,
+a {
+	white-space: nowrap;
 }
 </style>

@@ -2,20 +2,23 @@
 	<div class="min-h-screen transition-colors duration-300" :class="themeClasses">
 		<!-- Enhanced background effects -->
 		<div class="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
-			<div class="absolute top-1/4 right-1/4 w-72 h-72 bg-amber-500 rounded-full blur-3xl animate-pulse"></div>
+			<div
+				class="absolute top-1/4 right-1/4 w-72 h-72 bg-amber-500 rounded-full blur-3xl animate-pulse"
+				style="animation-duration: 8s"
+			></div>
 			<div
 				class="absolute bottom-1/3 left-1/3 w-72 h-72 bg-pink-500 rounded-full blur-3xl animate-pulse"
-				style="animation-delay: 1.5s"
+				style="animation-duration: 10s; animation-delay: 1.5s"
 			></div>
 			<div
 				class="absolute top-2/3 right-1/3 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse"
-				style="animation-delay: 3s"
+				style="animation-duration: 12s; animation-delay: 3s"
 			></div>
 		</div>
 
 		<div class="container py-12 relative">
 			<button
-				class="mb-8 flex items-center hover:bg-white/10 px-4 py-2 rounded-md transition-colors duration-300 group"
+				class="mb-8 flex items-center hover:bg-white/10 px-4 py-2 rounded-full transition-colors duration-300 group"
 				:class="textColorClass"
 				@click="handleBack"
 			>
@@ -34,12 +37,15 @@
 				</div>
 			</div>
 
-			<div v-else-if="!cocktail" class="text-center py-12 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl">
+			<div
+				v-else-if="!cocktail"
+				class="text-center py-12 backdrop-blur-sm rounded-2xl border border-white/10 shadow-xl"
+			>
 				<h2 class="text-2xl font-medium mb-4" :class="textColorClass">未找到鸡尾酒推荐</h2>
 				<p class="text-gray-300 mb-6">抱歉，我们无法为您生成鸡尾酒推荐</p>
 				<button
 					@click="handleBack"
-					class="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 border-0 text-white px-8 py-3 rounded-lg shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-105"
+					class="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 border-0 text-white px-8 py-3 rounded-full shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-105 whitespace-nowrap"
 				>
 					返回首页
 				</button>
@@ -48,7 +54,7 @@
 			<div v-else class="transition-all duration-500 transform translate-y-0 opacity-100">
 				<div
 					v-if="userFeedback"
-					class="mb-8 backdrop-blur-sm border border-white/10 rounded-lg shadow-xl transition-colors duration-300"
+					class="mb-8 backdrop-blur-sm border border-white/10 rounded-2xl shadow-xl transition-colors duration-300"
 					:class="cardClasses"
 				>
 					<div class="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10">
@@ -60,7 +66,7 @@
 				<div class="grid gap-10 md:grid-cols-2">
 					<div class="transition-all duration-500 transform translate-x-0 opacity-100">
 						<div
-							class="rounded-xl overflow-hidden shadow-2xl border transition-colors duration-300 group"
+							class="rounded-2xl overflow-hidden shadow-2xl border transition-colors duration-300 group"
 							:class="[borderClasses, 'relative aspect-video']"
 						>
 							<div
@@ -106,7 +112,7 @@
 						<p class="text-gray-300 mb-6 italic text-lg leading-relaxed">{{ cocktail.description }}</p>
 
 						<div
-							class="mb-6 p-5 backdrop-blur-sm rounded-xl border border-white/10 shadow-xl transition-colors duration-300"
+							class="mb-6 p-5 backdrop-blur-sm rounded-2xl border border-white/10 shadow-xl transition-colors duration-300"
 							:class="cardClasses"
 						>
 							<h3 class="text-lg font-medium mb-3 text-amber-400">推荐理由</h3>
@@ -116,28 +122,28 @@
 						<div class="flex flex-wrap gap-4 mb-6">
 							<div
 								v-if="cocktail.time_required"
-								class="flex items-center backdrop-blur-sm p-3 rounded-lg border border-white/10 transition-colors duration-300 hover:bg-white/5"
+								class="flex items-center backdrop-blur-sm p-3 rounded-full border border-white/10 transition-colors duration-300 hover:bg-white/5 whitespace-nowrap"
 								:class="cardClasses"
 							>
 								<Clock class="mr-2 h-5 w-5 text-amber-500" />
 								<span :class="textColorClass">{{ cocktail.time_required }}</span>
 							</div>
 							<div
-								class="flex items-center backdrop-blur-sm p-3 rounded-lg border border-white/10 transition-colors duration-300 hover:bg-white/5"
+								class="flex items-center backdrop-blur-sm p-3 rounded-full border border-white/10 transition-colors duration-300 hover:bg-white/5 whitespace-nowrap"
 								:class="cardClasses"
 							>
 								<Beaker class="mr-2 h-5 w-5 text-pink-500" />
 								<span :class="textColorClass">基酒: {{ cocktail.base_spirit }}</span>
 							</div>
 							<div
-								class="flex items-center backdrop-blur-sm p-3 rounded-lg border border-white/10 transition-colors duration-300 hover:bg-white/5"
+								class="flex items-center backdrop-blur-sm p-3 rounded-full border border-white/10 transition-colors duration-300 hover:bg-white/5 whitespace-nowrap"
 								:class="cardClasses"
 							>
 								<Droplet class="mr-2 h-5 w-5 text-blue-500" />
 								<span :class="textColorClass">酒精度: {{ cocktail.alcohol_level }}</span>
 							</div>
 							<div
-								class="flex items-center backdrop-blur-sm p-3 rounded-lg border border-white/10 transition-colors duration-300 hover:bg-white/5"
+								class="flex items-center backdrop-blur-sm p-3 rounded-full border border-white/10 transition-colors duration-300 hover:bg-white/5 whitespace-nowrap"
 								:class="cardClasses"
 							>
 								<GlassWater class="mr-2 h-5 w-5 text-green-500" />
@@ -149,7 +155,7 @@
 							<span
 								v-for="(flavor, index) in cocktail.flavor_profiles"
 								:key="index"
-								class="px-4 py-2 backdrop-blur-sm rounded-full text-sm border border-white/10 transition-colors duration-300 hover:bg-white/5"
+								class="px-4 py-2 backdrop-blur-sm rounded-full text-sm border border-white/10 transition-colors duration-300 hover:bg-white/5 whitespace-nowrap"
 								:class="tagClasses"
 							>
 								{{ flavor }}
@@ -157,7 +163,7 @@
 						</div>
 
 						<div
-							class="mb-6 backdrop-blur-sm border border-white/10 shadow-xl rounded-xl overflow-hidden transition-colors duration-300"
+							class="mb-6 backdrop-blur-sm border border-white/10 shadow-xl rounded-2xl overflow-hidden transition-colors duration-300"
 							:class="cardClasses"
 						>
 							<div class="p-6 bg-gradient-to-r from-amber-500/20 to-pink-500/20">
@@ -183,7 +189,7 @@
 						</div>
 
 						<div
-							class="mb-6 backdrop-blur-sm border border-white/10 shadow-xl rounded-xl overflow-hidden transition-colors duration-300"
+							class="mb-6 backdrop-blur-sm border border-white/10 shadow-xl rounded-2xl overflow-hidden transition-colors duration-300"
 							:class="cardClasses"
 						>
 							<div class="p-6 bg-gradient-to-r from-pink-500/20 to-amber-500/20">
@@ -195,7 +201,7 @@
 									<li
 										v-for="(tool, index) in cocktail.tools"
 										:key="index"
-										class="backdrop-blur-sm p-3 rounded-lg border border-white/10 transition-colors duration-300 hover:bg-white/5"
+										class="backdrop-blur-sm p-3 rounded-2xl border border-white/10 transition-colors duration-300 hover:bg-white/5"
 										:class="toolCardClasses"
 									>
 										<span :class="textColorClass" class="font-medium">{{ tool.name }}</span>
@@ -211,7 +217,7 @@
 
 				<div
 					v-if="cocktail"
-					class="mt-10 backdrop-blur-sm border border-white/10 shadow-xl rounded-xl overflow-hidden transition-colors duration-300"
+					class="mt-10 backdrop-blur-sm border border-white/10 shadow-xl rounded-2xl overflow-hidden transition-colors duration-300"
 					:class="cardClasses"
 				>
 					<div class="p-6 bg-gradient-to-r from-pink-500/20 to-purple-500/20">
@@ -238,13 +244,13 @@
 				<div class="mt-12 flex flex-col sm:flex-row gap-4 justify-center">
 					<button
 						@click="handleTryAgain"
-						class="flex items-center backdrop-blur-sm hover:bg-white/10 border border-white/20 rounded-lg transition-all duration-300 group"
+						class="flex items-center backdrop-blur-sm hover:bg-white/10 border border-white/20 rounded-full transition-all duration-300 group whitespace-nowrap"
 						:class="[textColorClass, buttonClasses, 'px-6 py-3']"
 					>
 						<RefreshCw class="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-500" /> 重新选择
 					</button>
 					<button
-						class="flex items-center bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 border-0 text-white shadow-lg shadow-pink-500/20 px-6 py-3 rounded-lg transition-all duration-300 hover:scale-105"
+						class="flex items-center bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 border-0 text-white shadow-lg shadow-pink-500/20 px-6 py-3 rounded-full transition-all duration-300 hover:scale-105 whitespace-nowrap"
 					>
 						<ThumbsUp class="mr-2 h-5 w-5" /> 喜欢这个推荐
 					</button>
@@ -325,19 +331,22 @@ const isImageLoading = ref(true);
 // Initialize imageData and isImageLoading to null and true respectively
 // to avoid conditional hook calls.
 onMounted(() => {
+	let savedRecommendation = null;
+	let feedback = null;
+
 	isLoading.value = true;
 	imageData.value = null;
 	isImageLoading.value = true;
 
 	// 从本地存储获取推荐结果
 	if (typeof window !== "undefined") {
-		const savedRecommendation = localStorage.getItem("moodshaker-recommendation");
+		savedRecommendation = localStorage.getItem("moodshaker-recommendation");
 		if (savedRecommendation) {
 			cocktail.value = JSON.parse(savedRecommendation);
 		}
 
 		// 获取用户反馈
-		const feedback = localStorage.getItem("moodshaker-feedback");
+		feedback = localStorage.getItem("moodshaker-feedback");
 		if (feedback) {
 			userFeedback.value = feedback;
 		}
@@ -372,3 +381,10 @@ const handleTryAgain = () => {
 	router.push("/questions");
 };
 </script>
+
+<style scoped>
+/* 确保所有按钮文字不换行 */
+button {
+	white-space: nowrap;
+}
+</style>

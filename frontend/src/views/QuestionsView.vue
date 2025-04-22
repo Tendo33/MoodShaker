@@ -77,11 +77,12 @@
 								:class="{ 'scale-100 opacity-100': true, 'scale-95 opacity-0': false }"
 							>
 								<div
-									class="cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl backdrop-blur-sm border border-white/10 overflow-hidden rounded-xl h-full"
+									class="cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl backdrop-blur-sm border border-white/10 overflow-hidden rounded-2xl h-full"
 									:class="[
 										optionCardClasses,
 										{
-											'ring-2 ring-pink-500 shadow-xl shadow-pink-500/20': answers[question.id] === option.id,
+											'ring-2 ring-pink-500 shadow-xl shadow-pink-500/20 bg-gradient-to-br from-white/5 to-white/10':
+												answers[question.id] === option.id,
 											'hover:bg-white/10': answers[question.id] !== option.id,
 										},
 									]"
@@ -98,7 +99,7 @@
 													class="w-[120px] h-[120px] object-cover transition-transform duration-300 hover:scale-110 rounded-full"
 												/>
 											</div>
-											<h3 class="font-medium text-lg" :class="textColorClass">{{ option.text }}</h3>
+											<h3 class="font-medium text-lg whitespace-nowrap" :class="textColorClass">{{ option.text }}</h3>
 										</div>
 									</div>
 								</div>
@@ -114,7 +115,7 @@
 							class="flex justify-center mt-8"
 						>
 							<button
-								class="flex items-center px-6 py-3 hover:bg-white/20 border border-white/10 rounded-lg text-sm transition-all duration-300 shadow-lg hover:shadow-xl group"
+								class="flex items-center px-6 py-3 hover:bg-white/20 border border-white/10 rounded-full text-sm transition-all duration-300 shadow-lg hover:shadow-xl group whitespace-nowrap"
 								:class="[textColorClass, buttonClasses]"
 								@click="showNextQuestion(question.id)"
 							>
@@ -144,11 +145,11 @@
 							<div
 								v-for="spirit in baseSpiritsOptions"
 								:key="spirit.id"
-								class="cursor-pointer p-4 rounded-lg transition-all duration-300"
+								class="cursor-pointer p-4 rounded-2xl transition-all duration-300"
 								:class="[
 									spiritCardClasses,
 									{
-										'bg-gradient-to-r from-amber-500/30 to-pink-500/30 border border-pink-500 shadow-lg':
+										'bg-gradient-to-br from-amber-500/20 to-pink-500/30 border border-pink-500/70 shadow-lg':
 											baseSpirits.includes(spirit.id),
 										'border border-white/10 hover:border-white/30': !baseSpirits.includes(spirit.id),
 									},
@@ -156,7 +157,7 @@
 								@click="handleBaseSpiritsToggle(spirit.id)"
 							>
 								<div class="flex items-center justify-between mb-2">
-									<span class="font-medium" :class="textColorClass">{{ spirit.name }}</span>
+									<span class="font-medium whitespace-nowrap" :class="textColorClass">{{ spirit.name }}</span>
 									<div
 										v-if="baseSpirits.includes(spirit.id)"
 										class="h-6 w-6 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center shadow-lg"
@@ -200,15 +201,16 @@
 					<div class="px-6 py-4 flex justify-end transition-colors duration-300" :class="footerClasses">
 						<button
 							@click="handleSubmitFeedback"
-							class="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 transition-all duration-300 hover:shadow-xl shadow-pink-500/30 border-0 text-white px-8 py-3 rounded-lg flex items-center hover:scale-105"
+							class="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 transition-all duration-300 hover:shadow-xl shadow-pink-500/30 border-0 text-white px-8 py-3 rounded-full flex items-center group whitespace-nowrap"
 							:disabled="isSubmitting"
+							:class="{ 'opacity-70 cursor-not-allowed': isSubmitting, 'hover:scale-105': !isSubmitting }"
 						>
 							<div
 								v-if="isSubmitting"
 								class="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"
 							></div>
-							<span v-if="isSubmitting">正在为您匹配...</span>
-							<span v-else>
+							<span v-if="isSubmitting" class="font-medium">正在为您匹配...</span>
+							<span v-else class="font-medium inline-flex items-center">
 								查看推荐鸡尾酒
 								<ArrowRight class="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
 							</span>
@@ -393,42 +395,6 @@ const progressPercentage = computed(() => {
 	return (answeredCount / questions.length) * 100;
 });
 
-const loadSavedData = () => {
-	if (typeof window !== "undefined") {
-		// 加载答案
-		const savedAnswers = localStorage.getItem("moodshaker-answers");
-		if (savedAnswers) {
-			const parsedAnswers = JSON.parse(savedAnswers);
-			Object.assign(answers, parsedAnswers);
-
-			// 根据已保存的答案设置可见问题
-			const answeredQuestionIds = Object.keys(parsedAnswers).map(Number);
-			if (answeredQuestionIds.length > 0) {
-				const maxAnsweredId = Math.max(...answeredQuestionIds);
-				const nextVisible = [...answeredQuestionIds];
-				if (maxAnsweredId < questions.length) {
-					nextVisible.push(maxAnsweredId + 1);
-				}
-				visibleQuestions.value = nextVisible;
-
-				if (maxAnsweredId === questions.length) {
-					showFeedbackForm.value = true;
-				}
-			}
-		}
-
-		// 加载基酒
-		const savedSpirits = localStorage.getItem("moodshaker-base-spirits");
-		if (savedSpirits) {
-			baseSpirits.value = JSON.parse(savedSpirits);
-		}
-	}
-};
-
-onMounted(() => {
-	loadSavedData();
-});
-
 const handleOptionSelect = (questionId, optionId) => {
 	answers[questionId] = optionId;
 
@@ -512,31 +478,35 @@ const handleBaseSpiritsToggle = (spiritId) => {
 	let newBaseSpirits = [...baseSpirits.value];
 
 	if (spiritId === "all") {
-		// 如果选择"全部"，则添加除"all"外的所有基酒
+		// 如果选择"全部"
 		if (baseSpirits.value.includes("all")) {
 			// 如果已经选择了"全部"，则取消所有选择
 			newBaseSpirits = [];
 		} else {
-			// 否则选择所有基酒
-			newBaseSpirits = baseSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id);
+			// 选择所有基酒，包括"all"
+			newBaseSpirits = [
+				"all",
+				...baseSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id),
+			];
 		}
 	} else {
 		// 处理单个基酒的选择/取消
 		if (baseSpirits.value.includes(spiritId)) {
 			// 如果已经选择了该基酒，则取消选择
-			newBaseSpirits = baseSpirits.value.filter((id) => id !== spiritId && id !== "all");
+			newBaseSpirits = baseSpirits.value.filter((id) => id !== spiritId);
+			// 如果取消了某个基酒，也需要取消"all"
+			newBaseSpirits = newBaseSpirits.filter((id) => id !== "all");
 		} else {
-			// 否则添加该基酒
+			// 添加该基酒
 			newBaseSpirits = [...baseSpirits.value.filter((id) => id !== "all"), spiritId];
 
 			// 检查是否选择了除"all"外的所有基酒
 			const allOtherSpirits = baseSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id);
-
 			const allSelected = allOtherSpirits.every((id) => newBaseSpirits.includes(id));
 
 			// 如果选择了所有基酒，则添加"all"
 			if (allSelected) {
-				newBaseSpirits = [...newBaseSpirits, "all"];
+				newBaseSpirits = ["all", ...newBaseSpirits];
 			}
 		}
 	}
@@ -577,4 +547,47 @@ const handleSubmitFeedback = async () => {
 		isSubmitting.value = false;
 	}
 };
+
+const loadSavedData = () => {
+	if (typeof window !== "undefined") {
+		// 加载答案
+		const savedAnswers = localStorage.getItem("moodshaker-answers");
+		if (savedAnswers) {
+			const parsedAnswers = JSON.parse(savedAnswers);
+			Object.assign(answers, parsedAnswers);
+
+			// 根据已保存的答案设置可见问题
+			const answeredQuestionIds = Object.keys(parsedAnswers).map(Number);
+			if (answeredQuestionIds.length > 0) {
+				const maxAnsweredId = Math.max(...answeredQuestionIds);
+				const nextVisible = [...answeredQuestionIds];
+				if (maxAnsweredId < questions.length) {
+					nextVisible.push(maxAnsweredId + 1);
+				}
+				visibleQuestions.value = nextVisible;
+
+				if (maxAnsweredId === questions.length) {
+					showFeedbackForm.value = true;
+				}
+			}
+		}
+
+		// 加载基酒
+		const savedSpirits = localStorage.getItem("moodshaker-base-spirits");
+		if (savedSpirits) {
+			baseSpirits.value = JSON.parse(savedSpirits);
+		}
+	}
+};
+
+onMounted(() => {
+	loadSavedData();
+});
 </script>
+
+<style scoped>
+/* 确保所有按钮文字不换行 */
+button {
+	white-space: nowrap;
+}
+</style>
