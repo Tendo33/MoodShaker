@@ -1,3 +1,5 @@
+import base64
+
 from datetime import timedelta
 from typing import List, Optional
 
@@ -26,7 +28,6 @@ class ImageGenerationRequest(BaseModel):
     seed: Optional[int] = Field(default=None, description="随机种子")
     num_inference_steps: int = Field(default=20, description="推理步数")
     guidance_scale: float = Field(default=7.5, description="引导尺度")
-    image: Optional[str] = Field(default=None, description="用于图像到图像生成的输入图像(base64格式)")
 
 
 class ImageGenerationResponse(BaseModel):
@@ -39,11 +40,6 @@ class ImageGenerationResponse(BaseModel):
 
 async def generate_cocktail_image(
     cocktail: CocktailRecommendation,
-    image_size: str = "1024x1024",
-    negative_prompt: Optional[str] = None,
-    num_inference_steps: int = 20,
-    guidance_scale: float = 7.5,
-    input_image: Optional[str] = None,
 ) -> Optional[str]:
     """
     根据鸡尾酒信息生成图片
@@ -62,14 +58,20 @@ async def generate_cocktail_image(
     try:
         # 构建prompt
         prompt = f"""
-        一杯{cocktail.name}鸡尾酒, 
-        基酒是{cocktail.base_spirit},
-        酒精浓度{cocktail.alcohol_level},
-        口味特征包括{", ".join(cocktail.flavor_profiles)},
-        使用{cocktail.serving_glass}盛装,
-        装饰精美, 光线明亮, 专业摄影风格
+        A professional photograph of a {cocktail.name} cocktail,
+        Base spirit: {cocktail.base_spirit},
+        Alcohol level: {cocktail.alcohol_level},
+        Flavor profiles: {", ".join(cocktail.flavor_profiles)},
+        Served in a {cocktail.serving_glass},
+        Beautiful garnishes, bright lighting, professional studio photography,
+        High-end cocktail bar setting, crystal clear glassware,
+        Perfect composition, 8k resolution, photorealistic
         """
+        negative_prompt = "low quality, blurry, out of focus, low resolution, low resolution"
 
+        image_size = "512x512"
+        guidance_scale = 7.5
+        num_inference_steps = 20
         # 构建请求
         request = ImageGenerationRequest(
             prompt=prompt,
@@ -78,7 +80,6 @@ async def generate_cocktail_image(
             seed=hash(cocktail.name) % 10000000000,  # 使用鸡尾酒名称生成固定seed
             num_inference_steps=num_inference_steps,
             guidance_scale=guidance_scale,
-            image=input_image,
         )
 
         # 调用API
@@ -101,35 +102,70 @@ async def generate_cocktail_image(
         return None
 
 
+async def download_and_convert_to_base64(image_url: str) -> Optional[str]:
+    """
+    下载图片并转换为base64格式
+
+    Args:
+        image_url: 图片URL
+
+    Returns:
+        base64编码的图片字符串，如果失败则返回None
+    """
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(image_url)
+            if response.status_code == 200:
+                # 将图片内容转换为base64
+                image_bytes = response.content
+                base64_image = base64.b64encode(image_bytes).decode("utf-8")
+                return base64_image
+            else:
+                logger.error(f"Failed to download image: {response.status_code}")
+                return None
+    except Exception as e:
+        logger.error(f"Error downloading and converting image: {str(e)}")
+        return None
+
+
 async def store_cocktail_image_url(user_id: int, session_id: str, image_url: str) -> None:
     """
-    存储鸡尾酒图片URL
+    存储鸡尾酒图片URL和base64数据
 
     Args:
         user_id: 用户ID
         session_id: 会话ID
         image_url: 图片URL
     """
-    image_key = f"{COCKTAIL_IMAGE_KEY_PREFIX}:{user_id}:{session_id}"
-    # 设置过期时间 永不过期
-    expire_time = timedelta(days=3650)
-    await redis_client.setex(image_key, expire_time, image_url)
-    logger.info(f"Stored cocktail image URL for user {user_id}: {session_id}")
+    try:
+        # 下载图片并转换为base64
+        base64_image = await download_and_convert_to_base64(image_url)
+        if not base64_image:
+            logger.error(f"Failed to convert image to base64 for user {user_id}: {session_id}")
+            return
+
+        # 存储base64数据到Redis
+        image_key = f"{COCKTAIL_IMAGE_KEY_PREFIX}:{user_id}:{session_id}"
+        expire_time = timedelta(days=3650)
+        await redis_client.setex(image_key, expire_time, base64_image)
+        logger.info(f"Stored cocktail image base64 for user {user_id}: {session_id}")
+    except Exception as e:
+        logger.error(f"Error storing cocktail image: {str(e)}")
 
 
 async def get_cocktail_image_url(user_id: int, session_id: str) -> Optional[str]:
     """
-    获取鸡尾酒图片URL
+    获取鸡尾酒图片base64数据
 
     Args:
         user_id: 用户ID
         session_id: 会话ID
 
     Returns:
-        图片URL,如果不存在则返回None
+        图片base64数据,如果不存在则返回None
     """
     image_key = f"{COCKTAIL_IMAGE_KEY_PREFIX}:{user_id}:{session_id}"
-    image_url = await redis_client.get(image_key)
-    if image_url:
-        return image_url.decode()
+    base64_image = await redis_client.get(image_key)
+    if base64_image:
+        return base64_image
     return None

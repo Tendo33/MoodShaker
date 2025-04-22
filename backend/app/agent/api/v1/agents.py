@@ -181,19 +181,19 @@ async def run_creative_bartender_agent(body: BartenderRequest):
 @agents_router.get("/cocktail_image", status_code=status.HTTP_200_OK)
 async def get_cocktail_image(user_id: int, session_id: str):
     """
-    获取鸡尾酒图片URL
+    获取鸡尾酒图片base64数据
 
     Args:
         user_id: 用户ID
         session_id: 会话ID
 
     Returns:
-        图片URL,如果不存在则返回404
+        图片base64数据,如果不存在则返回404
     """
-    image_url = await get_cocktail_image_url(user_id, session_id)
-    if not image_url:
+    base64_image = await get_cocktail_image_url(user_id, session_id)
+    if not base64_image:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Image not found or not ready yet")
-    return {"image_url": image_url}
+    return {"image_data": base64_image}
 
 
 @agents_router.post("/make_image", status_code=status.HTTP_200_OK)

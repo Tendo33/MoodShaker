@@ -6,7 +6,6 @@ from agno.memory.v2.db.postgres import PostgresMemoryDb
 from agno.memory.v2.memory import Memory
 from agno.models.openai.like import OpenAILike
 from agno.storage.agent.postgres import PostgresAgentStorage
-from agno.tools.duckduckgo import DuckDuckGoTools
 from agno.vectordb.pgvector import PgVector
 from backend.app.agent.schema.cocktail_schema import CocktailRecommendation
 from backend.core.conf import settings
@@ -69,7 +68,7 @@ def get_creative_bartender(
     storage = PostgresAgentStorage(table_name="creative_bartender_storage", db_url=syn_db_url, schema="public")
 
     # 定义 tools
-    tools = [DuckDuckGoTools()]
+    tools = None
 
     # 组合成 agent
     creative_bartender_agent = Agent(
