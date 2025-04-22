@@ -39,8 +39,9 @@
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { Globe } from "lucide-vue-next";
-import { useThemeStore } from "../stores/theme";
+import { useThemeStore } from "@/stores/theme";
 import { storeToRefs } from "pinia";
+import { loadLanguageAsync } from "@/modules/i18n";
 
 const themeStore = useThemeStore();
 const { theme } = storeToRefs(themeStore);
@@ -50,14 +51,25 @@ const isOpen = ref(false);
 const currentLocale = computed(() => locale.value);
 
 const availableLanguages: Record<string, string> = {
-	zh: "中文",
-	en: "English",
+	"zh-CN": "中文",
+	"en": "English",
+	"ja": "日本語",
+	"ko": "한국어",
+	"fr": "Français",
+	"de": "Deutsch",
+	"es": "Español",
+	"it": "Italiano",
+	"ru": "Русский",
 };
 
-const changeLanguage = (lang: string): void => {
-	locale.value = lang;
-	localStorage.setItem("moodshaker-language", lang);
-	isOpen.value = false;
+const changeLanguage = async (lang: string): Promise<void> => {
+	try {
+		await loadLanguageAsync(lang);
+		localStorage.setItem("moodshaker-language", lang);
+		isOpen.value = false;
+	} catch (error) {
+		console.error("Failed to change language:", error);
+	}
 };
 
 // 点击外部关闭下拉菜单
@@ -73,7 +85,7 @@ onMounted(() => {
 	// 从本地存储加载语言设置
 	const savedLanguage = localStorage.getItem("moodshaker-language");
 	if (savedLanguage && availableLanguages[savedLanguage]) {
-		locale.value = savedLanguage;
+		changeLanguage(savedLanguage);
 	}
 });
 
