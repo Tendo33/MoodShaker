@@ -1,5 +1,3 @@
-# backend/app/agent/service/session_manager.py
-
 import uuid
 
 from datetime import datetime, timedelta
@@ -69,5 +67,3 @@ async def delete_session(user_id: int, session_id: str) -> bool:
     await redis_client.delete(session_data_key)
     logger.info(f"Deleted session for user {user_id}: {session_id}")
     return True
-
-
