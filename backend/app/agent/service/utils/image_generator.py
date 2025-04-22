@@ -29,6 +29,7 @@ class ImageGenerationRequest(BaseModel):
     seed: Optional[int] = Field(default=None, description="随机种子")
     num_inference_steps: int = Field(default=20, description="推理步数")
     guidance_scale: float = Field(default=7.5, description="引导尺度")
+    prompt_enhancement: bool = Field(default=True, description="是否使用prompt增强")
 
 
 class ImageGenerationResponse(BaseModel):
@@ -62,10 +63,10 @@ async def generate_cocktail_image(
         Create a high-resolution image featuring a cocktail named {cocktail.english_name} prominently in the center, elegantly garnished. The background should be intentionally blurred to draw attention to the {cocktail.english_name} cocktail. Maintain a consistent top-down perspective for various name variations, ensuring the cocktail’s allure is always showcased. Capture the image using a Canon EOS 5D Mark IV camera with a 50mm prime lens, set at ISO 100, shutter speed 1/200 sec, and aperture f/1.8 to create a shallow depth of field. The photo should have a vivid and clear style, highlighting the intricate details and vibrant colors of the {cocktail.english_name} cocktail.
         """  # noqa: E501
         
-        negative_prompt = "low quality, blurry, out of focus, low resolution, low resolution"
+        negative_prompt = "low quality, blurry, out of focus, low resolution"
 
         image_size = "512x512"
-        guidance_scale = 7.5
+        guidance_scale = 4.5
         num_inference_steps = 20
         # 构建请求
         request = ImageGenerationRequest(
