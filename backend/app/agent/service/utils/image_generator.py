@@ -1,4 +1,5 @@
 import base64
+import traceback
 
 from datetime import timedelta
 from typing import List, Optional
@@ -98,7 +99,7 @@ async def generate_cocktail_image(
                 return None
 
     except Exception as e:
-        logger.error(f"Error generating cocktail image: {str(e)}")
+        logger.error(f"Error generating cocktail image: {str(e)}{traceback.format_exc()}")
         return None
 
 
@@ -124,7 +125,7 @@ async def download_and_convert_to_base64(image_url: str) -> Optional[str]:
                 logger.error(f"Failed to download image: {response.status_code}")
                 return None
     except Exception as e:
-        logger.error(f"Error downloading and converting image: {str(e)}")
+        logger.error(f"Error downloading and converting image: {str(e)}{traceback.format_exc()}")
         return None
 
 
@@ -150,7 +151,7 @@ async def store_cocktail_image_url(user_id: int, session_id: str, image_url: str
         await redis_client.setex(image_key, expire_time, base64_image)
         logger.info(f"Stored cocktail image base64 for user {user_id}: {session_id}")
     except Exception as e:
-        logger.error(f"Error storing cocktail image: {str(e)}")
+        logger.error(f"Error storing cocktail image: {str(e)}{traceback.format_exc()}")
 
 
 async def get_cocktail_image_url(user_id: int, session_id: str) -> Optional[str]:

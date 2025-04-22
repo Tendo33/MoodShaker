@@ -67,6 +67,7 @@ creative_bartender_instructions = dedent("""\
 你必须严格按照以下 JSON 格式返回数据,不要返回任何其他内容:
 {
     "name": "鸡尾酒名称",
+    "english_name": "English Name",
     "description": "鸡尾酒描述(包含创作灵感、风味特点等)",
     "time_required": "所需时间(可选)",
     "match_reason": "创作理由(详细说明与用户心情和偏好的匹配点)",
@@ -118,6 +119,7 @@ creative_bartender_instructions = dedent("""\
 # 示例输出
 {
     "name": "夏日微风",
+    "english_name": "Summer Wind"
     "description": "一款灵感来自夏日微风的创意鸡尾酒,以伏特加为基酒,加入西瓜汁和薄荷,口感清爽怡人。",
     "time_required": "10分钟",
     "match_reason": "这款鸡尾酒清爽怡人,适合在炎热的夏日饮用,能让人心情愉悦。",

@@ -19,7 +19,7 @@
 
 			<!-- 鸡尾酒图片 -->
 			<div class="cocktail-image">
-				<img v-if="imageUrl" :src="imageUrl" :alt="cocktail.name" class="rounded-lg shadow-lg" />
+				<img v-if="imageData" :src="`data:image/jpeg;base64,${imageData}`" :alt="cocktail.name" class="rounded-lg shadow-lg" />
 				<div v-else class="image-placeholder">
 					<p>图片生成中...</p>
 				</div>
@@ -97,7 +97,7 @@ const route = useRoute();
 const loading = ref(true);
 const error = ref("");
 const cocktail = ref<CocktailRecommendation | null>(null);
-const imageUrl = ref("");
+const imageData = ref("");
 
 // 获取鸡尾酒推荐
 const fetchCocktailRecommendation = async () => {
@@ -137,7 +137,7 @@ const fetchCocktailRecommendation = async () => {
 		// 获取鸡尾酒图片
 		try {
 			const imageResponse = await getCocktailImage("1", Date.now().toString());
-			imageUrl.value = imageResponse.data.image_url;
+			imageData.value = imageResponse.data.image_data;
 		} catch (e) {
 			console.error("获取鸡尾酒图片失败:", e);
 		}

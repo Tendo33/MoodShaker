@@ -23,6 +23,7 @@ export interface Tool {
 export interface CocktailRecommendation {
 	// 基本信息
 	name: string;
+	english_name: string;
 	description: string;
 	time_required?: string;
 	match_reason: string;

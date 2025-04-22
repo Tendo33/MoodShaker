@@ -43,7 +43,7 @@ export function getCocktailRecommendation(type: BartenderType, params: Bartender
 
 // 获取鸡尾酒图片
 export function getCocktailImage(user_id: string, session_id: string) {
-  return http.get<{ image_url: string }>('/api/v1/agents/cocktail_image', {
+  return http.get<{ image_data: string }>('/api/v1/agents/cocktail_image', {
     params: { user_id, session_id }
   })
 } 
