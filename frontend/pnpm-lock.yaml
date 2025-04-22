@@ -175,6 +175,9 @@ importers:
       axios:
         specifier: ^1.8.4
         version: 1.8.4
+      lucide-vue-next:
+        specifier: ^0.503.0
+        version: 0.503.0(vue@3.5.13(typescript@5.8.3))
       nprogress:
         specifier: catalog:frontend
         version: 0.2.0
@@ -3945,7 +3948,7 @@ packages:
     engines: {node: '>= 0.4'}
 
   is-regexp@1.0.0:
-    resolution: {integrity: sha1-/S2INUXEa6xaYz57mgnof6LLUGk=}
+    resolution: {integrity: sha512-7zjFAPO4/gwyQAAgRRmqeEeyIICSdmCqa3tsVHMdBzaXXRiqopZL4Cyghg/XulGWrtABTpbnYYzzIRffLkP4oA==}
     engines: {node: '>=0.10.0'}
 
   is-set@2.0.3:
@@ -4293,6 +4296,11 @@ packages:
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
+
+  lucide-vue-next@0.503.0:
+    resolution: {integrity: sha512-3MrtHIBdh4dPCUZDLxQnvmQ17UzUnBYgezUSIo87Laais8hOz6qIPllp0iG/uS/UIzk7bJxyZRzoZTW/gLSr4A==}
+    peerDependencies:
+      vue: '>=3.0.1'
 
   magic-string-ast@0.7.1:
     resolution: {integrity: sha512-ub9iytsEbT7Yw/Pd29mSo/cNQpaEu67zR1VVcXDiYjSFwzeBxNdTd0FMnSslLQXiRj8uGPzwsaoefrMD5XAmdw==}
@@ -4785,7 +4793,7 @@ packages:
     engines: {node: '>=8'}
 
   path-is-absolute@1.0.1:
-    resolution: {integrity: sha1-F0uSaHNVNP+8es5r9TpanhtcX18=}
+    resolution: {integrity: sha512-AVbw3UJ2e9bq64vSaS9Am0fje1Pa8pbGqTTsmXfaIiMpnr5DlDhfJOuLj9Sf95ZPVDAUerDfEk88MPmPe7UCQg==}
     engines: {node: '>=0.10.0'}
 
   path-key@3.1.1:
@@ -5592,7 +5600,7 @@ packages:
     engines: {node: '>=16'}
 
   tr46@1.0.1:
-    resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
+    resolution: {integrity: sha1-qLE/1r/SSJUZZ0zN5VujaTtwbQk=}
 
   tr46@5.1.1:
     resolution: {integrity: sha512-hdF5ZgjTqgAntKkklYw0R03MG2x/bSzTtkxmIRw/sTNV8YXsCJ1tfLAX23lhxhHJlEf3CRCOCGGWw3vI3GaSPw==}
@@ -10814,6 +10822,10 @@ snapshots:
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
+
+  lucide-vue-next@0.503.0(vue@3.5.13(typescript@5.8.3)):
+    dependencies:
+      vue: 3.5.13(typescript@5.8.3)
 
   magic-string-ast@0.7.1:
     dependencies:

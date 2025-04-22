@@ -1,21 +1,30 @@
 import { createRouter, createWebHistory } from "vue-router";
-import GuideQuestions from "@/views/GuideQuestions.vue";
-import CocktailResult from "@/views/CocktailResult.vue";
+import QuestionsView from "@/views/QuestionsView.vue";
+
+import HomeView from '@/views/Home.vue'
+
+import CocktailRecommendationView from '@/views/CocktailRecommendation.vue'
+
+const routes = [
+	{
+		path: "/",
+		component: HomeView
+	},
+	{
+		path: "/questions",
+		name: "questions",
+		component: QuestionsView
+	},
+	{
+		path: "/recommendations",
+		name: "recommendationss",
+		component: CocktailRecommendationView
+	},
+]
 
 const router = createRouter({
-	history: createWebHistory(import.meta.env.BASE_URL),
-	routes: [
-		{
-			path: "/",
-			name: "Home",
-			component: GuideQuestions,
-		},
-		{
-			path: "/result",
-			name: "CocktailResult",
-			component: CocktailResult,
-		},
-	],
+	history: createWebHistory(),
+	routes
 });
 
 export default router;
