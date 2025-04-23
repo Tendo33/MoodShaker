@@ -35,7 +35,7 @@
 		<!-- 增强的页脚 -->
 		<footer class="border-t transition-colors duration-300 py-12" :class="footerClasses">
 			<div class="container">
-				<div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+				<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
 					<!-- 品牌信息 -->
 					<div class="md:col-span-1">
 						<div class="flex items-center gap-2 mb-4">
@@ -75,7 +75,7 @@
 					</div>
 
 					<!-- 联系我们 -->
-					<div class="md:col-span-1">
+					<div class="md:col-span-1 md:col-start-3">
 						<h3 class="font-bold text-lg mb-4" :class="textColorClass">联系我们</h3>
 						<ul class="space-y-2">
 							<li class="flex items-center text-gray-400">
@@ -136,24 +136,6 @@
 								上海市浦东新区张江高科技园区
 							</li>
 						</ul>
-					</div>
-
-					<!-- 订阅 -->
-					<div class="md:col-span-1">
-						<h3 class="font-bold text-lg mb-4" :class="textColorClass">订阅我们</h3>
-						<p class="text-gray-400 mb-4">订阅我们的新闻通讯，获取最新的鸡尾酒配方和调酒技巧。</p>
-						<div class="flex">
-							<input
-								type="email"
-								placeholder="您的邮箱地址"
-								class="px-4 py-2 rounded-l-full bg-white/10 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50 w-full"
-							/>
-							<button
-								class="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white px-4 py-2 rounded-r-full transition-all duration-300"
-							>
-								订阅
-							</button>
-						</div>
 					</div>
 				</div>
 
