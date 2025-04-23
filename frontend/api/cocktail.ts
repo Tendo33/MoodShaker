@@ -71,10 +71,15 @@ export interface BartenderRequest {
 export const requestCocktailRecommendation = async (request: BartenderRequest): Promise<Cocktail> => {
   try {
     // 在实际环境中，这里应该使用真实的API端点
-    // const response = await axios.post(`/api/cocktail/recommend`, request, {
-    //   timeout: 15000, // 15 seconds timeout
-    // })
-    // return response.data
+    // const response = await fetch(`/api/cocktail/recommend`, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify(request),
+    // });
+    // if (!response.ok) throw new Error('Failed to fetch recommendation');
+    // return await response.json();
 
     // 开发/演示环境使用模拟数据
     return getMockCocktail()
@@ -88,11 +93,10 @@ export const requestCocktailRecommendation = async (request: BartenderRequest): 
 export const getCocktailImage = async (userId: number, sessionId: string): Promise<string> => {
   try {
     // 在实际环境中，这里应该使用真实的API端点
-    // const response = await axios.get(`/api/cocktail/image`, {
-    //   params: { user_id: userId, session_id: sessionId },
-    //   timeout: 10000, // 10 seconds timeout
-    // })
-    // return response.data.image_data
+    // const response = await fetch(`/api/cocktail/image?user_id=${userId}&session_id=${sessionId}`);
+    // if (!response.ok) throw new Error('Failed to fetch image');
+    // const data = await response.json();
+    // return data.image_data;
 
     // 开发/演示环境返回空字符串，将使用占位图像
     return ""
