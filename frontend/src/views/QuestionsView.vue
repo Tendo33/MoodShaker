@@ -19,13 +19,32 @@
 		<div class="container max-w-4xl py-12 relative" style="margin: 0 auto">
 			<div class="mb-8 flex items-center justify-between">
 				<button
-					class="flex items-center hover:bg-white/10 px-4 py-2 rounded-md transition-colors duration-300 group"
+					class="flex items-center hover:bg-white/10 px-4 py-2 rounded-full transition-colors duration-300 group"
 					:class="textColorClass"
 					@click="handleBack"
 				>
 					<ArrowLeft class="mr-2 h-4 w-4 group-hover:translate-x-[-4px] transition-transform" /> 返回
 				</button>
-				<div class="relative w-1/2 h-3 bg-gray-800/30 rounded-full overflow-hidden shadow-inner">
+
+				<!-- 垂直进度条 - 从上往下涨 -->
+				<div
+					class="fixed right-8 top-1/2 transform -translate-y-1/2 h-64 w-3 bg-gray-800/30 rounded-full overflow-hidden shadow-inner hidden md:block"
+				>
+					<div
+						class="w-full bg-gradient-to-b from-pink-500 to-amber-500 rounded-full transition-all duration-500 shadow-lg absolute top-0 progress-bar-vertical"
+						:style="{ height: `${progressPercentage}%` }"
+					></div>
+					<div
+						class="absolute -right-7 transform -translate-y-1/2 text-xs font-medium"
+						:class="textColorClass"
+						:style="{ top: `${progressPercentage}%` }"
+					>
+						{{ Math.round(progressPercentage) }}%
+					</div>
+				</div>
+
+				<!-- 保留水平进度条，但仅在移动设备上显示 -->
+				<div class="relative w-1/2 h-3 bg-gray-800/30 rounded-full overflow-hidden shadow-inner md:hidden">
 					<div
 						class="h-full bg-gradient-to-r from-amber-500 to-pink-500 rounded-full transition-all duration-500 shadow-lg"
 						:style="{ width: `${progressPercentage}%` }"
@@ -55,7 +74,7 @@
 						}"
 					>
 						<div
-							class="mb-6 overflow-hidden border border-white/10 backdrop-blur-sm shadow-xl rounded-xl transition-colors duration-300"
+							class="mb-6 overflow-hidden border border-white/10 backdrop-blur-sm shadow-xl rounded-2xl transition-colors duration-300"
 							:class="cardClasses"
 						>
 							<div class="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10 relative">
@@ -126,21 +145,22 @@
 				</div>
 			</div>
 
-			<!-- 基酒选择 -->
+			<!-- 基酒选择 - 增加了上下间距 -->
 			<div
 				v-if="visibleQuestions.includes(questions.length)"
-				class="mt-12 transition-all duration-500 transform"
+				class="mt-16 transition-all duration-500 transform"
 				:class="{ 'translate-y-0 opacity-100': true, 'translate-y-4 opacity-0': false }"
 			>
 				<div
-					class="overflow-hidden border border-white/10 backdrop-blur-sm shadow-xl rounded-xl transition-colors duration-300"
+					class="overflow-hidden border border-white/10 backdrop-blur-sm shadow-xl rounded-2xl transition-colors duration-300"
 					:class="cardClasses"
 				>
 					<div class="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10">
 						<h3 class="text-xl font-bold mb-2" :class="textColorClass">可用的基酒（可选）</h3>
 						<p class="text-gray-300 mb-4">请选择您家中有的基酒</p>
 					</div>
-					<div class="px-6 pb-6">
+					<!-- 增加了上下间距 -->
+					<div class="px-6 pb-8 pt-4">
 						<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
 							<div
 								v-for="spirit in baseSpiritsOptions"
@@ -183,7 +203,7 @@
 				:class="borderColorClass"
 			>
 				<div
-					class="overflow-hidden shadow-xl border border-white/10 backdrop-blur-sm rounded-xl transition-colors duration-300"
+					class="overflow-hidden shadow-xl border border-white/10 backdrop-blur-sm rounded-2xl transition-colors duration-300"
 					:class="cardClasses"
 				>
 					<div class="p-6 bg-gradient-to-r from-amber-500/20 to-pink-500/20">
@@ -191,10 +211,11 @@
 						<p class="text-gray-300">请分享您的任何特殊需求或偏好</p>
 					</div>
 					<div class="p-6">
+						<!-- 更改了文本框为更圆润的样式 -->
 						<textarea
 							v-model="userFeedback"
 							placeholder="例如：我喜欢甜一点的鸡尾酒，或者我对某种成分过敏..."
-							class="w-full min-h-[150px] transition-all duration-300 focus:border-pink-500 border border-white/10 rounded-lg p-4 transition-colors duration-300"
+							class="w-full min-h-[150px] transition-all duration-300 focus:border-pink-500 border border-white/10 rounded-2xl p-5 transition-colors duration-300 focus:ring-2 focus:ring-pink-500/30 focus:outline-none"
 							:class="[textAreaClasses, textColorClass]"
 						></textarea>
 					</div>
@@ -210,7 +231,7 @@
 								class="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"
 							></div>
 							<span v-if="isSubmitting" class="font-medium">正在为您匹配...</span>
-							<span v-else class="font-medium inline-flex items-center">
+							<span v-else class="font-medium">
 								查看推荐鸡尾酒
 								<ArrowRight class="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
 							</span>
@@ -223,9 +244,9 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted, nextTick } from "vue";
+import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
 import { useRouter } from "vue-router";
-import { ArrowLeft, ArrowRight, Check, ChevronDown, X } from "lucide-vue-next";
+import { ArrowLeft, ArrowRight, Check, ChevronDown, X, History } from "lucide-vue-next";
 import { AlcoholLevel, DifficultyLevel, requestCocktailRecommendation } from "@/api/cocktail";
 import { useThemeStore } from "@/stores/theme";
 import { storeToRefs } from "pinia";
@@ -550,6 +571,23 @@ const handleSubmitFeedback = async () => {
 
 const loadSavedData = () => {
 	if (typeof window !== "undefined") {
+		// 检查是否有 URL 参数指示新会话
+		const urlParams = new URLSearchParams(window.location.search);
+		const isNewSession = urlParams.get("new") === "true";
+
+		// 如果是新会话，清除之前的数据
+		if (isNewSession) {
+			localStorage.removeItem("moodshaker-answers");
+			localStorage.removeItem("moodshaker-feedback");
+			localStorage.removeItem("moodshaker-base-spirits");
+			// 重置状态
+			Object.keys(answers).forEach((key) => delete answers[key]);
+			baseSpirits.value = [];
+			visibleQuestions.value = [1];
+			showFeedbackForm.value = false;
+			return;
+		}
+
 		// 加载答案
 		const savedAnswers = localStorage.getItem("moodshaker-answers");
 		if (savedAnswers) {
@@ -581,6 +619,28 @@ const loadSavedData = () => {
 };
 
 onMounted(() => {
+	// 检查是否有保存的答案
+	const savedAnswers = localStorage.getItem("moodshaker-answers");
+
+	if (savedAnswers) {
+		// 如果有保存的答案，显示确认对话框
+		const continueSession = window.confirm('检测到您有未完成的问卷，是否继续？点击"取消"开始新的问卷。');
+
+		if (!continueSession) {
+			// 如果用户选择不继续，清除所有保存的数据
+			localStorage.removeItem("moodshaker-answers");
+			localStorage.removeItem("moodshaker-feedback");
+			localStorage.removeItem("moodshaker-base-spirits");
+			// 重置状态
+			Object.keys(answers).forEach((key) => delete answers[key]);
+			baseSpirits.value = [];
+			visibleQuestions.value = [1];
+			showFeedbackForm.value = false;
+			return;
+		}
+	}
+
+	// 加载保存的数据
 	loadSavedData();
 });
 </script>
@@ -589,5 +649,20 @@ onMounted(() => {
 /* 确保所有按钮文字不换行 */
 button {
 	white-space: nowrap;
+}
+
+/* 添加进度条动画 */
+@keyframes pulse-glow {
+	0%,
+	100% {
+		box-shadow: 0 0 5px 0 rgba(244, 114, 182, 0.5);
+	}
+	50% {
+		box-shadow: 0 0 15px 0 rgba(244, 114, 182, 0.8);
+	}
+}
+
+.progress-bar-vertical {
+	animation: pulse-glow 2s infinite;
 }
 </style>
