@@ -35,6 +35,24 @@ async def list_agents() -> List[str]:
     return [agent.value for agent in AgentType]
 
 
+async def generate_and_store_image(cocktail: CocktailRecommendation, user_id: int, session_id: str) -> None:
+    """
+    异步生成并存储鸡尾酒图片
+
+    Args:
+        cocktail: 鸡尾酒推荐信息
+        user_id: 用户ID
+        session_id: 会话ID
+    """
+    try:
+        image_url = await generate_cocktail_image(cocktail)
+        if image_url:
+            await store_cocktail_image_url(user_id, session_id, image_url)
+            logger.info(f"Generated and stored image for user {user_id}: {session_id}")
+    except Exception as e:
+        logger.error(f"Failed to generate image for user {user_id}: {session_id}, error: {str(e)}")
+
+
 async def chat_response_streamer(agent: Agent, message: str) -> AsyncGenerator:
     """
     Stream agent responses chunk by chunk.
@@ -84,24 +102,6 @@ async def run_casual_chat_agent_stream(body: AgentRequest):
         chat_response_streamer(casual_chat_agent, message),
         media_type="text/event-stream",
     )
-
-
-async def generate_and_store_image(cocktail: CocktailRecommendation, user_id: int, session_id: str) -> None:
-    """
-    异步生成并存储鸡尾酒图片
-
-    Args:
-        cocktail: 鸡尾酒推荐信息
-        user_id: 用户ID
-        session_id: 会话ID
-    """
-    try:
-        image_url = await generate_cocktail_image(cocktail)
-        if image_url:
-            await store_cocktail_image_url(user_id, session_id, image_url)
-            logger.info(f"Generated and stored image for user {user_id}: {session_id}")
-    except Exception as e:
-        logger.error(f"Failed to generate image for user {user_id}: {session_id}, error: {str(e)}")
 
 
 @agents_router.post("/classic_bartender", status_code=status.HTTP_200_OK)
