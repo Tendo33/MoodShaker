@@ -74,24 +74,6 @@
 						</div>
 					</div>
 
-					<!-- 快速链接 -->
-					<div class="md:col-span-1">
-						<h3 class="font-bold text-lg mb-4" :class="textColorClass">快速链接</h3>
-						<ul class="space-y-2">
-							<li>
-								<router-link to="/" class="text-gray-400 hover:text-amber-500 transition-colors">首页</router-link>
-							</li>
-							<li>
-								<router-link to="/questions" class="text-gray-400 hover:text-amber-500 transition-colors"
-									>开始探索</router-link
-								>
-							</li>
-							<li><a href="#" class="text-gray-400 hover:text-amber-500 transition-colors">鸡尾酒库</a></li>
-							<li><a href="#" class="text-gray-400 hover:text-amber-500 transition-colors">调酒技巧</a></li>
-							<li><a href="#" class="text-gray-400 hover:text-amber-500 transition-colors">常见问题</a></li>
-						</ul>
-					</div>
-
 					<!-- 联系我们 -->
 					<div class="md:col-span-1">
 						<h3 class="font-bold text-lg mb-4" :class="textColorClass">联系我们</h3>
