@@ -1,21 +1,20 @@
 "use client"
 
-import type React from "react"
 import { useState, useEffect, useRef } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, ArrowRight, Check, ChevronDown, X } from "lucide-react"
-import { useTheme } from "../context/ThemeContext"
-import { useCocktail } from "../context/CocktailContext"
+import { useTheme } from "@/context/ThemeContext"
+import { useCocktail } from "@/context/CocktailContext"
 
 // Question option images
 const optionImages = {
-  classic: "/stainless-steel-shaker.png",
-  custom: "/vibrant-elixir.png",
-  yes: "/cocktail-essentials.png",
-  no: "/classic-cocktail-glass.png",
-  low: "/fruity-refreshment.png",
-  medium: "/balanced-citrus-cocktail.png",
-  high: "/dark-and-stormy-night.png",
+  classic: "/polished-cocktail-shaker.png",
+  custom: "/tropical-fusion.png",
+  yes: "/placeholder.svg?height=120&width=120&query=cocktail bar tools set",
+  no: "/placeholder.svg?height=120&width=120&query=classic cocktail glass",
+  low: "/placeholder.svg?height=120&width=120&query=fruity refreshing cocktail",
+  medium: "/placeholder.svg?height=120&width=120&query=balanced citrus cocktail",
+  high: "/placeholder.svg?height=120&width=120&query=dark and stormy cocktail",
   any: "/placeholder.svg?height=120&width=120&query=variety of cocktails",
   easy: "/placeholder.svg?height=120&width=120&query=simple cocktail preparation",
   hard: "/placeholder.svg?height=120&width=120&query=complex cocktail preparation",
@@ -31,9 +30,9 @@ const spiritImages = {
   brandy: "/placeholder.svg?height=80&width=80&query=brandy bottle",
 }
 
-const Questions: React.FC = () => {
-  const navigate = useNavigate()
-  const location = useLocation()
+export default function Questions() {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   const { theme } = useTheme()
   const {
     answers,
@@ -209,7 +208,7 @@ const Questions: React.FC = () => {
   }
 
   const handleBack = () => {
-    navigate("/")
+    router.push("/")
   }
 
   const handleBaseSpiritsToggle = (spiritId: string) => {
@@ -225,7 +224,7 @@ const Questions: React.FC = () => {
       await submitRequest()
 
       // 导航到鸡尾酒详情页
-      navigate("/cocktail/recommendation")
+      router.push("/cocktail/recommendation")
     } catch (error) {
       console.error("Error submitting request:", error)
     }
@@ -234,7 +233,7 @@ const Questions: React.FC = () => {
   const loadSavedDataAndSetup = () => {
     if (typeof window !== "undefined") {
       // 检查是否有 URL 参数指示新会话
-      const isNewSession = new URLSearchParams(location.search).get("new") === "true"
+      const isNewSession = searchParams?.get("new") === "true"
 
       // 如果是新会话，清除之前的数据
       if (isNewSession) {
@@ -268,7 +267,7 @@ const Questions: React.FC = () => {
   useEffect(() => {
     // 加载保存的数据，根据URL参数决定是否开始新会话
     loadSavedDataAndSetup()
-  }, [location.search])
+  }, [searchParams])
 
   useEffect(() => {
     setLocalUserFeedback(userFeedback)
@@ -461,5 +460,3 @@ const Questions: React.FC = () => {
     </div>
   )
 }
-
-export default Questions

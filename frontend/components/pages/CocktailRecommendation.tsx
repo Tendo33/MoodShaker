@@ -1,11 +1,10 @@
 "use client"
 
-import type React from "react"
 import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useRouter } from "next/navigation"
 import { ArrowLeft, Clock, Droplet, ThumbsUp, RefreshCw, Beaker, Share2 } from "lucide-react"
-import { useTheme } from "../context/ThemeContext"
-import { useCocktail } from "../context/CocktailContext"
+import { useTheme } from "@/context/ThemeContext"
+import { useCocktail } from "@/context/CocktailContext"
 
 // Cocktail glass images
 const glassImages = {
@@ -17,8 +16,8 @@ const glassImages = {
   flute: "/placeholder.svg?height=40&width=40&query=champagne flute icon",
 }
 
-const CocktailRecommendation: React.FC = () => {
-  const navigate = useNavigate()
+export default function CocktailRecommendation() {
+  const router = useRouter()
   const { theme } = useTheme()
   const {
     recommendation: cocktail,
@@ -75,7 +74,7 @@ const CocktailRecommendation: React.FC = () => {
   }
 
   const handleBack = () => {
-    navigate("/")
+    router.push("/")
   }
 
   const handleTryAgain = () => {
@@ -86,7 +85,7 @@ const CocktailRecommendation: React.FC = () => {
       localStorage.removeItem("moodshaker-recommendation")
       localStorage.removeItem("moodshaker-base-spirits")
     }
-    navigate("/questions")
+    router.push("/questions")
   }
 
   const handleShare = () => {
@@ -417,15 +416,6 @@ const CocktailRecommendation: React.FC = () => {
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        /* 确保所有按钮文字不换行 */
-        button {
-          white-space: nowrap;
-        }
-      `}</style>
     </div>
   )
 }
-
-export default CocktailRecommendation

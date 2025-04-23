@@ -1,22 +1,19 @@
 "use client"
 
-import type React from "react"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import Link from "next/link"
 import { ArrowRight, History } from "lucide-react"
-import { useTheme } from "../context/ThemeContext"
-import { useLanguage } from "../context/LanguageContext"
+import { useTheme } from "@/context/ThemeContext"
+import { useLanguage } from "@/context/LanguageContext"
 
 // Import cocktail images
 const cocktailImages = {
-  mojito: "/refreshing-mojito.png",
-  margarita: "/classic-margarita.png",
-  cosmopolitan: "/vibrant-cosmopolitan.png",
+  mojito: "/vibrant-mojito.png",
+  margarita: "/vibrant-margarita.png",
+  cosmopolitan: "/city-lights-cocktail.png",
 }
 
-// 替换整个Home组件实现，修复布局问题
-const Home: React.FC = () => {
-  const navigate = useNavigate()
+export default function Home() {
   const { theme } = useTheme()
   const { t } = useLanguage()
   const [hasSavedSession, setHasSavedSession] = useState(false)
@@ -59,16 +56,6 @@ const Home: React.FC = () => {
     return () => clearInterval(interval)
   }, [])
 
-  // 继续上次会话
-  const continueSession = () => {
-    navigate("/questions")
-  }
-
-  // 开始新会话
-  const startNewSession = () => {
-    navigate("/questions?new=true")
-  }
-
   // 确定主题相关的样式
   const bgClass = theme === "dark" ? "bg-gray-900" : "bg-gray-50"
   const textClass = theme === "dark" ? "text-white" : "text-gray-900"
@@ -99,28 +86,28 @@ const Home: React.FC = () => {
                   </div>
                   <p className={`mb-5 ${mutedTextClass}`}>{t("home.savedSessionDesc")}</p>
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <button
-                      onClick={continueSession}
-                      className="px-5 py-3 bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-105"
+                    <Link
+                      href="/questions"
+                      className="px-5 py-3 bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-105 text-center"
                     >
                       {t("home.continue")}
-                    </button>
-                    <button
-                      onClick={startNewSession}
-                      className={`px-5 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all duration-300 ${textClass}`}
+                    </Link>
+                    <Link
+                      href="/questions?new=true"
+                      className={`px-5 py-3 bg-white/10 hover:bg-white/20 border border-white/20 rounded-full transition-all duration-300 ${textClass} text-center`}
                     >
                       {t("home.new")}
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ) : (
-                <button
-                  onClick={startNewSession}
-                  className="px-8 py-4 text-lg font-medium bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-105 flex items-center"
+                <Link
+                  href="/questions"
+                  className="px-8 py-4 text-lg font-medium bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white rounded-full shadow-lg transition-all duration-300 hover:scale-105 flex items-center inline-flex"
                 >
                   {t("home.start")}
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </button>
+                </Link>
               )}
             </div>
 
@@ -138,7 +125,7 @@ const Home: React.FC = () => {
                   <div className="relative h-full">
                     <div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 to-pink-500/20 rounded-full blur-xl"></div>
                     <img
-                      src={cocktail.image || "/placeholder.svg?height=500&width=500&query=cocktail"}
+                      src={cocktail.image || "/placeholder.svg"}
                       alt={cocktail.name}
                       className="relative rounded-3xl shadow-2xl w-full h-full object-cover"
                     />
@@ -233,7 +220,7 @@ const Home: React.FC = () => {
               >
                 <div className="h-48">
                   <img
-                    src={cocktail.image || "/placeholder.svg?height=200&width=400&query=cocktail"}
+                    src={cocktail.image || "/placeholder.svg"}
                     alt={cocktail.name}
                     className="w-full h-full object-cover"
                   />
@@ -242,12 +229,12 @@ const Home: React.FC = () => {
                   <h3 className="text-xl font-bold mb-1">{cocktail.name}</h3>
                   <p className="text-sm text-gray-400 mb-3">{cocktail.englishName}</p>
                   <p className={mutedTextClass}>{cocktail.description}</p>
-                  <button
-                    onClick={startNewSession}
-                    className="mt-4 w-full py-2 bg-gradient-to-r from-amber-500/20 to-pink-500/20 hover:from-amber-500/30 hover:to-pink-500/30 text-white border border-white/10 rounded-full transition-all duration-300"
+                  <Link
+                    href="/questions"
+                    className="mt-4 w-full py-2 bg-gradient-to-r from-amber-500/20 to-pink-500/20 hover:from-amber-500/30 hover:to-pink-500/30 text-white border border-white/10 rounded-full transition-all duration-300 block text-center"
                   >
                     获取配方
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -257,5 +244,3 @@ const Home: React.FC = () => {
     </div>
   )
 }
-
-export default Home

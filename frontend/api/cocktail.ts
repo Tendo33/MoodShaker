@@ -1,8 +1,3 @@
-import axios from "axios"
-
-// 修复API基础URL，确保它能正确工作
-const API_BASE_URL = "/api/v1"
-
 // 酒精浓度枚举
 export enum AlcoholLevel {
   ANY = "any",
@@ -75,27 +70,35 @@ export interface BartenderRequest {
 // Added error handling and timeout configuration
 export const requestCocktailRecommendation = async (request: BartenderRequest): Promise<Cocktail> => {
   try {
-    const response = await axios.post(`${API_BASE_URL}/agents/classic_bartender`, request, {
-      timeout: 15000, // 15 seconds timeout
-    })
-    return response.data
+    // 在实际环境中，这里应该使用真实的API端点
+    // const response = await axios.post(`/api/cocktail/recommend`, request, {
+    //   timeout: 15000, // 15 seconds timeout
+    // })
+    // return response.data
+
+    // 开发/演示环境使用模拟数据
+    return getMockCocktail()
   } catch (error) {
     console.error("Error requesting cocktail recommendation:", error)
-    // Return mock data for development/demo purposes
+    // 返回模拟数据用于开发/演示
     return getMockCocktail()
   }
 }
 
 export const getCocktailImage = async (userId: number, sessionId: string): Promise<string> => {
   try {
-    const response = await axios.get(`${API_BASE_URL}/agents/cocktail_image`, {
-      params: { user_id: userId, session_id: sessionId },
-      timeout: 10000, // 10 seconds timeout
-    })
-    return response.data.image_data
+    // 在实际环境中，这里应该使用真实的API端点
+    // const response = await axios.get(`/api/cocktail/image`, {
+    //   params: { user_id: userId, session_id: sessionId },
+    //   timeout: 10000, // 10 seconds timeout
+    // })
+    // return response.data.image_data
+
+    // 开发/演示环境返回空字符串，将使用占位图像
+    return ""
   } catch (error) {
     console.error("Error getting cocktail image:", error)
-    return "" // Return empty string on error
+    return "" // 出错时返回空字符串
   }
 }
 
@@ -111,8 +114,8 @@ export async function pollForCocktailImage(
   const poll = async () => {
     if (attempts >= maxAttempts) {
       console.error("Max polling attempts reached")
-      // Provide a fallback image when polling fails
-      onSuccess("") // Empty string will trigger the placeholder image
+      // 轮询失败时提供占位图像
+      onSuccess("") // 空字符串将触发占位图像
       return
     }
 
@@ -134,7 +137,7 @@ export async function pollForCocktailImage(
   poll()
 }
 
-// Mock data for development/demo purposes
+// 用于开发/演示的模拟数据
 function getMockCocktail(): Cocktail {
   return {
     id: "mock-1",
