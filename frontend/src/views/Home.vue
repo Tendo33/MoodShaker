@@ -33,13 +33,47 @@
 				<p class="max-w-[700px] text-xl text-gray-300 md:text-2xl leading-relaxed">
 					通过回答几个简单问题，让我们为您推荐完美的鸡尾酒
 				</p>
-				<router-link to="/questions" class="w-full sm:w-auto mt-10">
+
+				<!-- 会话选择区域 -->
+				<div class="w-full sm:w-auto mt-10 flex flex-col items-center">
+					<div
+						v-if="hasSavedSession"
+						class="w-full mb-6 backdrop-blur-sm bg-white/5 border border-white/10 rounded-2xl p-6 max-w-md"
+					>
+						<div class="flex items-center mb-4">
+							<div
+								class="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500/20 to-pink-500/20 flex items-center justify-center mr-3"
+							>
+								<History class="h-5 w-5 text-amber-500" />
+							</div>
+							<h3 class="text-xl font-bold text-white">检测到未完成的问卷</h3>
+						</div>
+						<p class="text-gray-300 mb-5">您有一个未完成的鸡尾酒推荐问卷。您想继续之前的问卷还是开始一个新的？</p>
+						<div class="flex flex-col sm:flex-row gap-3">
+							<button
+								@click="continueSession"
+								class="flex-1 px-5 py-3 bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white rounded-full shadow-lg shadow-pink-500/20 transition-all duration-300 hover:scale-105 whitespace-nowrap"
+							>
+								继续上次问卷
+							</button>
+							<button
+								@click="startNewSession"
+								class="flex-1 px-5 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full transition-all duration-300 whitespace-nowrap"
+							>
+								开始新问卷
+							</button>
+						</div>
+					</div>
+
+					<!-- 如果没有保存的会话，只显示开始按钮 -->
 					<button
+						v-if="!hasSavedSession"
+						@click="startNewSession"
 						class="w-full sm:w-auto px-10 py-4 text-lg font-medium bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white border-0 shadow-xl shadow-pink-500/30 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-105 group whitespace-nowrap"
 					>
 						开始探索 <ArrowRight class="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
 					</button>
-				</router-link>
+				</div>
 
 				<!-- Added feature highlights -->
 				<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 w-full">
@@ -83,7 +117,31 @@
 </template>
 
 <script setup>
-import { ArrowRight } from "lucide-vue-next";
+import { ref, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { ArrowRight, History } from "lucide-vue-next";
+
+const router = useRouter();
+const hasSavedSession = ref(false);
+const savedAnswers = ref(null); // Initialize savedAnswers
+
+onMounted(() => {
+	// 检查是否有保存的会话
+	if (typeof window !== "undefined") {
+		savedAnswers.value = localStorage.getItem("moodshaker-answers");
+		hasSavedSession.value = !!savedAnswers.value;
+	}
+});
+
+// 继续上次会话
+const continueSession = () => {
+	router.push("/questions");
+};
+
+// 开始新会话
+const startNewSession = () => {
+	router.push("/questions?new=true");
+};
 </script>
 
 <style scoped>

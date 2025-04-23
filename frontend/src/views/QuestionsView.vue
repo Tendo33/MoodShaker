@@ -245,7 +245,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { ArrowLeft, ArrowRight, Check, ChevronDown, X, History } from "lucide-vue-next";
 import { AlcoholLevel, DifficultyLevel, requestCocktailRecommendation } from "@/api/cocktail";
 import { useThemeStore } from "@/stores/theme";
@@ -253,6 +253,8 @@ import { storeToRefs } from "pinia";
 
 const themeStore = useThemeStore();
 const { theme } = storeToRefs(themeStore);
+const router = useRouter();
+const route = useRoute();
 
 // 主题相关计算属性
 const themeClasses = computed(() => ({
@@ -300,7 +302,6 @@ const borderColorClass = computed(() => ({
 	"border-gray-200": theme.value === "light",
 }));
 
-const router = useRouter();
 const answers = reactive({});
 const userFeedback = ref("");
 const visibleQuestions = ref([1]); // 初始只显示第一个问题
@@ -572,8 +573,7 @@ const handleSubmitFeedback = async () => {
 const loadSavedData = () => {
 	if (typeof window !== "undefined") {
 		// 检查是否有 URL 参数指示新会话
-		const urlParams = new URLSearchParams(window.location.search);
-		const isNewSession = urlParams.get("new") === "true";
+		const isNewSession = route.query.new === "true";
 
 		// 如果是新会话，清除之前的数据
 		if (isNewSession) {
@@ -619,28 +619,7 @@ const loadSavedData = () => {
 };
 
 onMounted(() => {
-	// 检查是否有保存的答案
-	const savedAnswers = localStorage.getItem("moodshaker-answers");
-
-	if (savedAnswers) {
-		// 如果有保存的答案，显示确认对话框
-		const continueSession = window.confirm('检测到您有未完成的问卷，是否继续？点击"取消"开始新的问卷。');
-
-		if (!continueSession) {
-			// 如果用户选择不继续，清除所有保存的数据
-			localStorage.removeItem("moodshaker-answers");
-			localStorage.removeItem("moodshaker-feedback");
-			localStorage.removeItem("moodshaker-base-spirits");
-			// 重置状态
-			Object.keys(answers).forEach((key) => delete answers[key]);
-			baseSpirits.value = [];
-			visibleQuestions.value = [1];
-			showFeedbackForm.value = false;
-			return;
-		}
-	}
-
-	// 加载保存的数据
+	// 加载保存的数据，根据URL参数决定是否开始新会话
 	loadSavedData();
 });
 </script>
