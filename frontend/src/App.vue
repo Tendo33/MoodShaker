@@ -12,7 +12,7 @@
 						<span class="text-white text-sm">🍹</span>
 					</div>
 					<span class="bg-gradient-to-r from-amber-500 to-pink-500 bg-clip-text text-transparent">
-						{{ $t("MoodShaker") }}
+						{{ "MoodShaker" }}
 					</span>
 				</router-link>
 				<div class="flex items-center gap-4">

@@ -5,12 +5,16 @@ import { createI18n } from 'vue-i18n'
 // 获取浏览器默认语言
 const getBrowserLanguage = (): string => {
   const lang = navigator.language || (navigator as any).userLanguage
-  return lang.split('-')[0] // 只取主要语言代码
+  const mainLang = lang.split('-')[0] // 只取主要语言代码
+  // 只允许中文和英文
+  return mainLang === 'zh' ? 'zh-CN' : 'en'
 }
 
 // 获取存储的语言设置
 const getStoredLanguage = (): string => {
-  return localStorage.getItem('moodshaker-language') || ''
+  const storedLang = localStorage.getItem('moodshaker-language') || ''
+  // 只允许中文和英文
+  return storedLang === 'zh-CN' ? 'zh-CN' : 'en'
 }
 
 // 设置默认语言
@@ -25,6 +29,7 @@ const i18n = createI18n({
 
 const localesMap = Object.fromEntries(
   Object.entries(import.meta.glob('../../locales/*.yml'))
+    .filter(([path]) => path.includes('en.yml') || path.includes('zh-CN.yml'))
     .map(([path, loadLocale]) => [path.match(/([\w-]*)\.yml$/)?.[1], loadLocale]),
 ) as Record<Locale, () => Promise<{ default: Record<string, string> }>>
 
