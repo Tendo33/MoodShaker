@@ -2,12 +2,13 @@
 
 import type React from "react";
 
-import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useState, useCallback, type ReactNode, useEffect } from "react";
 import {
 	requestCocktailRecommendation,
 	pollForCocktailImage,
 	AlcoholLevel,
 	DifficultyLevel,
+	AgentType,
 	type Cocktail,
 	type BartenderRequest,
 } from "@/api/cocktail";
@@ -58,6 +59,21 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isImageLoading, setIsImageLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
+	const [sessionId, setSessionId] = useState<string>("");
+	const [userId, setUserId] = useState<string>("");
+
+	// Initialize session and user IDs
+	useEffect(() => {
+		// Generate a random user ID if not already set
+		if (!userId) {
+			setUserId(`user-${Math.random().toString(36).substring(2, 15)}`);
+		}
+
+		// Generate a random session ID if not already set
+		if (!sessionId) {
+			setSessionId(`session-${Math.random().toString(36).substring(2, 15)}`);
+		}
+	}, [userId, sessionId]);
 
 	// 计算属性
 	const progressPercentage = (): number => {
@@ -106,11 +122,23 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			if (savedRecommendation && (!recommendation || savedRecommendation !== JSON.stringify(recommendation))) {
 				setRecommendation(JSON.parse(savedRecommendation));
 			}
+
+			// 加载会话ID
+			const savedSessionId = localStorage.getItem("moodshaker-session-id");
+			if (savedSessionId && savedSessionId !== sessionId) {
+				setSessionId(savedSessionId);
+			}
+
+			// 加载用户ID
+			const savedUserId = localStorage.getItem("moodshaker-user-id");
+			if (savedUserId && savedUserId !== userId) {
+				setUserId(savedUserId);
+			}
 		} catch (e) {
 			console.error("Error loading saved data:", e);
 			setError("加载保存的数据时出错");
 		}
-	}, [answers, baseSpirits, recommendation, userFeedback]);
+	}, [answers, baseSpirits, recommendation, userFeedback, sessionId, userId]);
 
 	// 保存答案
 	const saveAnswer = (questionId: string, optionId: string): void => {
@@ -166,6 +194,7 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 		if (answers[3] === "low") alcoholLevel = AlcoholLevel.LOW;
 		else if (answers[3] === "medium") alcoholLevel = AlcoholLevel.MEDIUM;
 		else if (answers[3] === "high") alcoholLevel = AlcoholLevel.HIGH;
+		else if (answers[3] === "none") alcoholLevel = AlcoholLevel.NONE;
 
 		let difficultyLevel = DifficultyLevel.ANY;
 		if (answers[4] === "easy") difficultyLevel = DifficultyLevel.EASY;
@@ -174,14 +203,17 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 
 		const hasTools = answers[2] === "yes" ? true : answers[2] === "no" ? false : null;
 
+		// 过滤掉 "all" 选项，因为后端不需要
+		const filteredSpirits = baseSpirits.filter((spirit) => spirit !== "all");
+
 		return {
 			message: userFeedback || "推荐一款适合我的鸡尾酒",
 			alcohol_level: alcoholLevel,
 			has_tools: hasTools,
 			difficulty_level: difficultyLevel,
-			base_spirits: baseSpirits.length > 0 ? baseSpirits : null,
-			user_id: MOCK_USER_ID,
-			session_id: MOCK_SESSION_ID,
+			base_spirits: filteredSpirits.length > 0 ? filteredSpirits : null,
+			user_id: userId,
+			session_id: sessionId,
 		};
 	};
 
@@ -197,8 +229,15 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			// 保存请求对象
 			localStorage.setItem("moodshaker-request", JSON.stringify(request));
 
+			// 保存会话ID和用户ID
+			localStorage.setItem("moodshaker-session-id", sessionId);
+			localStorage.setItem("moodshaker-user-id", userId);
+
+			// 确定使用哪种调酒师类型
+			const bartenderType = answers[1] === "classic" ? AgentType.CLASSIC_BARTENDER : AgentType.CREATIVE_BARTENDER;
+
 			// 发送请求
-			const result = await requestCocktailRecommendation(request);
+			const result = await requestCocktailRecommendation(request, bartenderType);
 			setRecommendation(result);
 
 			// 保存推荐结果
@@ -221,7 +260,7 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 	const startImagePolling = (): void => {
 		setIsImageLoading(true);
 
-		pollForCocktailImage(MOCK_USER_ID, MOCK_SESSION_ID, (data: string) => {
+		pollForCocktailImage(userId, sessionId, (data: string) => {
 			setImageData(data);
 			setIsImageLoading(false);
 		});
@@ -235,6 +274,11 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 		setRecommendation(null);
 		setImageData(null);
 		setError(null);
+
+		// 生成新的会话ID
+		const newSessionId = `session-${Math.random().toString(36).substring(2, 15)}`;
+		setSessionId(newSessionId);
+		localStorage.setItem("moodshaker-session-id", newSessionId);
 
 		// 清除本地存储
 		localStorage.removeItem("moodshaker-answers");

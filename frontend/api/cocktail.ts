@@ -1,13 +1,12 @@
-// 酒精浓度枚举
+// Update the enums to match the backend API
 export enum AlcoholLevel {
 	ANY = "any",
-	NONE = "none",
+	NONE = "none", // Keep this for UI compatibility
 	LOW = "low",
 	MEDIUM = "medium",
 	HIGH = "high",
 }
 
-// 制作难度枚举
 export enum DifficultyLevel {
 	ANY = "any",
 	EASY = "easy",
@@ -15,10 +14,17 @@ export enum DifficultyLevel {
 	HARD = "hard",
 }
 
-// 调酒师类型枚举
-export enum BartenderType {
-	CLASSIC = "classic_bartender",
-	CREATIVE = "creative_bartender",
+// Add model name enum from backend
+export enum ModelName {
+	DEEPSEEK_V3 = "deepseek-v3-250324",
+	DEEPSEEK_R1 = "deepseek-r1-250120",
+}
+
+// Add agent type enum from backend
+export enum AgentType {
+	CLASSIC_BARTENDER = "classic_bartender",
+	CREATIVE_BARTENDER = "creative_bartender",
+	CASUAL_CHAT = "casual_chat",
 }
 
 export interface Ingredient {
@@ -40,7 +46,7 @@ export interface Step {
 }
 
 export interface Cocktail {
-	id: string | number;
+	id?: string | number; // Keep for compatibility
 	name: string;
 	english_name?: string;
 	description: string;
@@ -56,58 +62,103 @@ export interface Cocktail {
 	image?: string;
 }
 
-// 调酒师请求参数
+// Update request interface to match backend
 export interface BartenderRequest {
 	message: string;
+	model?: ModelName;
 	alcohol_level: AlcoholLevel;
 	has_tools: boolean | null;
 	difficulty_level: DifficultyLevel;
 	base_spirits: string[] | null;
-	user_id?: number;
+	user_id?: string;
 	session_id?: string;
 }
 
-// Added error handling and timeout configuration
-export const requestCocktailRecommendation = async (request: BartenderRequest): Promise<Cocktail> => {
-	try {
-		// 在实际环境中，这里应该使用真实的API端点
-		// const response = await fetch(`/api/cocktail/recommend`, {
-		//   method: 'POST',
-		//   headers: {
-		//     'Content-Type': 'application/json',
-		//   },
-		//   body: JSON.stringify(request),
-		// });
-		// if (!response.ok) throw new Error('Failed to fetch recommendation');
-		// return await response.json();
+// Added timeout for API requests
+const API_TIMEOUT = 30000; // 30 seconds
 
-		// 开发/演示环境使用模拟数据
-		return getMockCocktail();
+// Helper function to handle API timeouts
+const fetchWithTimeout = async (url: string, options: RequestInit = {}) => {
+	const controller = new AbortController();
+	const { signal } = controller;
+
+	const timeout = setTimeout(() => {
+		controller.abort();
+	}, API_TIMEOUT);
+
+	try {
+		const response = await fetch(url, { ...options, signal });
+		clearTimeout(timeout);
+		return response;
 	} catch (error) {
-		console.error("Error requesting cocktail recommendation:", error);
-		// 返回模拟数据用于开发/演示
-		return getMockCocktail();
+		clearTimeout(timeout);
+		throw error;
 	}
 };
 
-export const getCocktailImage = async (userId: number, sessionId: string): Promise<string> => {
+// Updated to use real API endpoints
+export const requestCocktailRecommendation = async (
+	request: BartenderRequest,
+	agentType: AgentType = AgentType.CLASSIC_BARTENDER
+): Promise<Cocktail> => {
 	try {
-		// 在实际环境中，这里应该使用真实的API端点
-		// const response = await fetch(`/api/cocktail/image?user_id=${userId}&session_id=${sessionId}`);
-		// if (!response.ok) throw new Error('Failed to fetch image');
-		// const data = await response.json();
-		// return data.image_data;
+		// Determine the endpoint based on the agent type
+		const endpoint = `/api/v1/agents/${agentType}`;
 
-		// 开发/演示环境返回空字符串，将使用占位图像
-		return "";
+		const response = await fetchWithTimeout(endpoint, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				...request,
+				model: ModelName.DEEPSEEK_V3, // Default to the latest model
+			}),
+		});
+
+		if (!response.ok) {
+			const errorText = await response.text();
+			console.error(`API error (${response.status}): ${errorText}`);
+			throw new Error(`Failed to fetch recommendation: ${response.status}`);
+		}
+
+		const data = await response.json();
+		return data as Cocktail;
+	} catch (error) {
+		console.error("Error requesting cocktail recommendation:", error);
+
+		// For development/demo fallback to mock data if API fails
+		if (process.env.NODE_ENV !== "production") {
+			console.warn("Using mock data as fallback");
+			return getMockCocktail();
+		}
+
+		throw error;
+	}
+};
+
+export const getCocktailImage = async (userId: string, sessionId: string): Promise<string> => {
+	try {
+		const response = await fetchWithTimeout(`/api/v1/agents/cocktail_image?user_id=${userId}&session_id=${sessionId}`);
+
+		if (!response.ok) {
+			if (response.status === 404) {
+				// Image not ready yet, return empty string
+				return "";
+			}
+			throw new Error(`Failed to fetch image: ${response.status}`);
+		}
+
+		const data = await response.json();
+		return data.image_data || ""; // Return the base64 image data
 	} catch (error) {
 		console.error("Error getting cocktail image:", error);
-		return ""; // 出错时返回空字符串
+		return ""; // Return empty string on error
 	}
 };
 
 export async function pollForCocktailImage(
-	userId: number,
+	userId: string,
 	sessionId: string,
 	onSuccess: (imageData: string) => void,
 	maxAttempts = 20,
@@ -118,8 +169,8 @@ export async function pollForCocktailImage(
 	const poll = async () => {
 		if (attempts >= maxAttempts) {
 			console.error("Max polling attempts reached");
-			// 轮询失败时提供占位图像
-			onSuccess(""); // 空字符串将触发占位图像
+			// Provide placeholder image on polling failure
+			onSuccess(""); // Empty string will trigger placeholder image
 			return;
 		}
 
@@ -141,10 +192,9 @@ export async function pollForCocktailImage(
 	poll();
 }
 
-// 用于开发/演示的模拟数据
+// Keep mock data for development/fallback
 function getMockCocktail(): Cocktail {
 	return {
-		id: "mock-1",
 		name: "莫吉托",
 		english_name: "Mojito",
 		description: "莫吉托是一款清爽的朗姆酒鸡尾酒，源自古巴，以薄荷、青柠和苏打水的清新口感著称。",

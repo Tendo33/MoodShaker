@@ -8,11 +8,11 @@ import { useCocktail } from "@/context/CocktailContext";
 
 // Cocktail glass images
 const glassImages = {
-	highball: "/placeholder.svg?height=40&width=40&query=highball glass icon",
-	martini: "/placeholder.svg?height=40&width=40&query=martini glass icon",
-	rocks: "/placeholder.svg?height=40&width=40&query=rocks glass icon",
-	hurricane: "/placeholder.svg?height=40&width=40&query=hurricane glass icon",
-	wine: "/placeholder.svg?height=40&width=40&query=wine glass icon",
+	highball: "/highball-glass-icon.png",
+	martini: "/classic-martini-icon.png",
+	rocks: "/rocks-glass-icon.png",
+	hurricane: "/hurricane-glass-icon.png",
+	wine: "/elegant-wine-glass.png",
 	flute: "/placeholder.svg?height=40&width=40&query=champagne flute icon",
 };
 

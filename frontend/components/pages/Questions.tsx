@@ -227,6 +227,7 @@ export default function Questions() {
 			router.push("/cocktail/recommendation");
 		} catch (error) {
 			console.error("Error submitting request:", error);
+			// You might want to show an error message to the user here
 		}
 	};
 
