@@ -137,6 +137,7 @@ export const requestCocktailRecommendation = async (
 	}
 };
 
+// 修改图片获取方法，使用更高效的方式
 export const getCocktailImage = async (userId: string, sessionId: string): Promise<string> => {
 	try {
 		const response = await fetchWithTimeout(`/api/v1/agents/cocktail_image?user_id=${userId}&session_id=${sessionId}`);
@@ -157,14 +158,16 @@ export const getCocktailImage = async (userId: string, sessionId: string): Promi
 	}
 };
 
+// 使用指数退避算法优化轮询策略
 export async function pollForCocktailImage(
 	userId: string,
 	sessionId: string,
 	onSuccess: (imageData: string) => void,
-	maxAttempts = 20,
-	interval = 2000
+	maxAttempts = 10,
+	initialInterval = 1000
 ) {
 	let attempts = 0;
+	let interval = initialInterval;
 
 	const poll = async () => {
 		if (attempts >= maxAttempts) {
@@ -181,10 +184,14 @@ export async function pollForCocktailImage(
 			if (imageData) {
 				onSuccess(imageData);
 			} else {
+				// 使用指数退避算法增加轮询间隔
+				interval = Math.min(interval * 1.5, 10000); // 最大间隔10秒
 				setTimeout(poll, interval);
 			}
 		} catch (error) {
 			console.error("Error polling for image:", error);
+			// 使用指数退避算法增加轮询间隔
+			interval = Math.min(interval * 1.5, 10000); // 最大间隔10秒
 			setTimeout(poll, interval);
 		}
 	};

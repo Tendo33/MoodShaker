@@ -22,18 +22,21 @@ export default function Home() {
 	// Featured cocktails for the hero section
 	const featuredCocktails = [
 		{
+			id: "mojito",
 			name: "莫吉托",
 			englishName: "Mojito",
 			description: "清新薄荷与青柠的完美结合",
 			image: cocktailImages.mojito,
 		},
 		{
+			id: "margarita",
 			name: "玛格丽特",
 			englishName: "Margarita",
 			description: "经典龙舌兰鸡尾酒，酸甜平衡",
 			image: cocktailImages.margarita,
 		},
 		{
+			id: "cosmopolitan",
 			name: "大都会",
 			englishName: "Cosmopolitan",
 			description: "时尚优雅的蔓越莓伏特加鸡尾酒",
@@ -230,10 +233,10 @@ export default function Home() {
 									<p className="text-sm text-gray-400 mb-3">{cocktail.englishName}</p>
 									<p className={mutedTextClass}>{cocktail.description}</p>
 									<Link
-										href="/questions"
+										href={`/cocktail/recommendation?id=${cocktail.id}`}
 										className="mt-4 w-full py-2 bg-gradient-to-r from-amber-500/20 to-pink-500/20 hover:from-amber-500/30 hover:to-pink-500/30 text-white border border-white/10 rounded-full transition-all duration-300 block text-center"
 									>
-										获取配方
+										查看详情
 									</Link>
 								</div>
 							</div>
