@@ -12,12 +12,8 @@ export const useThemeStore = defineStore("theme", () => {
 		const savedTheme = localStorage.getItem("moodshaker-theme");
 		if (savedTheme === "light" || savedTheme === "dark") return savedTheme;
 
-		// 检查系统偏好
-		if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-			return "dark";
-		}
-
-		return "light";
+		// 默认返回深色主题
+		return "dark";
 	};
 
 	const theme = ref<ThemeType>(getInitialTheme());
