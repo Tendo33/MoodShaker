@@ -223,15 +223,15 @@
 						<button
 							@click="handleSubmitFeedback"
 							class="bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 transition-all duration-300 hover:shadow-xl shadow-pink-500/30 border-0 text-white px-8 py-3 rounded-full flex items-center group whitespace-nowrap"
-							:disabled="isSubmitting"
-							:class="{ 'opacity-70 cursor-not-allowed': isSubmitting, 'hover:scale-105': !isSubmitting }"
+							:disabled="isLoading"
+							:class="{ 'opacity-70 cursor-not-allowed': isLoading, 'hover:scale-105': !isLoading }"
 						>
 							<div
-								v-if="isSubmitting"
+								v-if="isLoading"
 								class="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"
 							></div>
-							<span v-if="isSubmitting" class="font-medium">正在为您匹配...</span>
-							<span v-else class="font-medium">
+							<span v-if="isLoading" class="font-medium">正在为您匹配...</span>
+							<span v-else class="font-medium inline-flex items-center">
 								查看推荐鸡尾酒
 								<ArrowRight class="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
 							</span>
@@ -247,12 +247,15 @@
 import { ref, reactive, computed, onMounted, nextTick, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { ArrowLeft, ArrowRight, Check, ChevronDown, X, History } from "lucide-vue-next";
-import { AlcoholLevel, DifficultyLevel, requestCocktailRecommendation } from "@/api/cocktail";
+import { AlcoholLevel, DifficultyLevel } from "@/api/cocktail";
 import { useThemeStore } from "@/stores/theme";
+import { useCocktailStore } from "@/stores/cocktail";
 import { storeToRefs } from "pinia";
 
 const themeStore = useThemeStore();
+const cocktailStore = useCocktailStore();
 const { theme } = storeToRefs(themeStore);
+const { answers, userFeedback, baseSpirits, isLoading } = storeToRefs(cocktailStore);
 const router = useRouter();
 const route = useRoute();
 
@@ -302,12 +305,8 @@ const borderColorClass = computed(() => ({
 	"border-gray-200": theme.value === "light",
 }));
 
-const answers = reactive({});
-const userFeedback = ref("");
 const visibleQuestions = ref([1]); // 初始只显示第一个问题
 const showFeedbackForm = ref(false);
-const isSubmitting = ref(false);
-const baseSpirits = ref([]);
 const questionRefs = reactive({});
 
 const questions = [
@@ -413,17 +412,12 @@ const baseSpiritsOptions = [
 
 // 计算问题进度百分比
 const progressPercentage = computed(() => {
-	const answeredCount = Object.keys(answers).length;
+	const answeredCount = Object.keys(answers.value).length;
 	return (answeredCount / questions.length) * 100;
 });
 
 const handleOptionSelect = (questionId, optionId) => {
-	answers[questionId] = optionId;
-
-	// 保存到本地存储
-	if (typeof window !== "undefined") {
-		localStorage.setItem("moodshaker-answers", JSON.stringify(answers));
-	}
+	cocktailStore.saveAnswer(questionId, optionId);
 
 	// 如果回答的是最后一个问题，显示反馈表单
 	if (questionId === questions.length) {
@@ -469,23 +463,23 @@ const handleBack = () => {
 
 // 检查问题是否已回答
 const isQuestionAnswered = (questionId) => {
-	return answers[questionId] !== undefined;
+	return answers.value[questionId] !== undefined;
 };
 
 // 将用户选择转换为API请求
 const createBartenderRequest = () => {
 	// 将用户选择映射到API请求格式
 	let alcoholLevel = AlcoholLevel.ANY;
-	if (answers[3] === "low") alcoholLevel = AlcoholLevel.LOW;
-	else if (answers[3] === "medium") alcoholLevel = AlcoholLevel.MEDIUM;
-	else if (answers[3] === "high") alcoholLevel = AlcoholLevel.HIGH;
+	if (answers.value[3] === "low") alcoholLevel = AlcoholLevel.LOW;
+	else if (answers.value[3] === "medium") alcoholLevel = AlcoholLevel.MEDIUM;
+	else if (answers.value[3] === "high") alcoholLevel = AlcoholLevel.HIGH;
 
 	let difficultyLevel = DifficultyLevel.ANY;
-	if (answers[4] === "easy") difficultyLevel = DifficultyLevel.EASY;
-	else if (answers[4] === "medium") difficultyLevel = DifficultyLevel.MEDIUM;
-	else if (answers[4] === "hard") difficultyLevel = DifficultyLevel.HARD;
+	if (answers.value[4] === "easy") difficultyLevel = DifficultyLevel.EASY;
+	else if (answers.value[4] === "medium") difficultyLevel = DifficultyLevel.MEDIUM;
+	else if (answers.value[4] === "hard") difficultyLevel = DifficultyLevel.HARD;
 
-	const hasTools = answers[2] === "yes" ? true : answers[2] === "no" ? false : null;
+	const hasTools = answers.value[2] === "yes" ? true : answers.value[2] === "no" ? false : null;
 
 	return {
 		message: userFeedback.value || "推荐一款适合我的鸡尾酒",
@@ -497,76 +491,21 @@ const createBartenderRequest = () => {
 };
 
 const handleBaseSpiritsToggle = (spiritId) => {
-	let newBaseSpirits = [...baseSpirits.value];
-
-	if (spiritId === "all") {
-		// 如果选择"全部"
-		if (baseSpirits.value.includes("all")) {
-			// 如果已经选择了"全部"，则取消所有选择
-			newBaseSpirits = [];
-		} else {
-			// 选择所有基酒，包括"all"
-			newBaseSpirits = [
-				"all",
-				...baseSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id),
-			];
-		}
-	} else {
-		// 处理单个基酒的选择/取消
-		if (baseSpirits.value.includes(spiritId)) {
-			// 如果已经选择了该基酒，则取消选择
-			newBaseSpirits = baseSpirits.value.filter((id) => id !== spiritId);
-			// 如果取消了某个基酒，也需要取消"all"
-			newBaseSpirits = newBaseSpirits.filter((id) => id !== "all");
-		} else {
-			// 添加该基酒
-			newBaseSpirits = [...baseSpirits.value.filter((id) => id !== "all"), spiritId];
-
-			// 检查是否选择了除"all"外的所有基酒
-			const allOtherSpirits = baseSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id);
-			const allSelected = allOtherSpirits.every((id) => newBaseSpirits.includes(id));
-
-			// 如果选择了所有基酒，则添加"all"
-			if (allSelected) {
-				newBaseSpirits = ["all", ...newBaseSpirits];
-			}
-		}
-	}
-
-	baseSpirits.value = newBaseSpirits;
-
-	if (typeof window !== "undefined") {
-		localStorage.setItem("moodshaker-base-spirits", JSON.stringify(newBaseSpirits));
-	}
+	cocktailStore.toggleBaseSpirit(spiritId, baseSpiritsOptions);
 };
 
 const handleSubmitFeedback = async () => {
-	isSubmitting.value = true;
-
 	try {
 		// 保存用户反馈
-		if (typeof window !== "undefined") {
-			localStorage.setItem("moodshaker-feedback", userFeedback.value);
-		}
+		cocktailStore.saveFeedback(userFeedback.value);
 
-		// 创建API请求
-		const request = createBartenderRequest();
-
-		// 保存请求到本地存储，以便在详情页面使用
-		localStorage.setItem("moodshaker-request", JSON.stringify(request));
-
-		// 发送请求
-		const recommendation = await requestCocktailRecommendation(request);
-
-		// 保存推荐结果到本地存储
-		localStorage.setItem("moodshaker-recommendation", JSON.stringify(recommendation));
+		// 提交请求
+		await cocktailStore.submitRequest();
 
 		// 导航到鸡尾酒详情页
 		router.push("/cocktail/recommendation");
 	} catch (error) {
 		console.error("Error submitting request:", error);
-	} finally {
-		isSubmitting.value = false;
 	}
 };
 
@@ -577,43 +516,28 @@ const loadSavedData = () => {
 
 		// 如果是新会话，清除之前的数据
 		if (isNewSession) {
-			localStorage.removeItem("moodshaker-answers");
-			localStorage.removeItem("moodshaker-feedback");
-			localStorage.removeItem("moodshaker-base-spirits");
-			// 重置状态
-			Object.keys(answers).forEach((key) => delete answers[key]);
-			baseSpirits.value = [];
+			cocktailStore.resetAll();
 			visibleQuestions.value = [1];
 			showFeedbackForm.value = false;
 			return;
 		}
 
-		// 加载答案
-		const savedAnswers = localStorage.getItem("moodshaker-answers");
-		if (savedAnswers) {
-			const parsedAnswers = JSON.parse(savedAnswers);
-			Object.assign(answers, parsedAnswers);
+		// 加载保存的数据
+		cocktailStore.loadSavedData();
 
-			// 根据已保存的答案设置可见问题
-			const answeredQuestionIds = Object.keys(parsedAnswers).map(Number);
-			if (answeredQuestionIds.length > 0) {
-				const maxAnsweredId = Math.max(...answeredQuestionIds);
-				const nextVisible = [...answeredQuestionIds];
-				if (maxAnsweredId < questions.length) {
-					nextVisible.push(maxAnsweredId + 1);
-				}
-				visibleQuestions.value = nextVisible;
-
-				if (maxAnsweredId === questions.length) {
-					showFeedbackForm.value = true;
-				}
+		// 根据已保存的答案设置可见问题
+		const answeredQuestionIds = Object.keys(answers.value).map(Number);
+		if (answeredQuestionIds.length > 0) {
+			const maxAnsweredId = Math.max(...answeredQuestionIds);
+			const nextVisible = [...answeredQuestionIds];
+			if (maxAnsweredId < questions.length) {
+				nextVisible.push(maxAnsweredId + 1);
 			}
-		}
+			visibleQuestions.value = nextVisible;
 
-		// 加载基酒
-		const savedSpirits = localStorage.getItem("moodshaker-base-spirits");
-		if (savedSpirits) {
-			baseSpirits.value = JSON.parse(savedSpirits);
+			if (maxAnsweredId === questions.length) {
+				showFeedbackForm.value = true;
+			}
 		}
 	}
 };

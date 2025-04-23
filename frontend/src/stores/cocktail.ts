@@ -1,48 +1,6 @@
 import { defineStore } from "pinia";
 import { ref, computed } from "vue";
-import { requestCocktailRecommendation, pollForCocktailImage } from "@/api/cocktail";
-
-// 定义类型
-export interface Ingredient {
-	name: string;
-	amount: number | string;
-	unit?: string;
-}
-
-export interface Tool {
-	name: string;
-	alternative?: string;
-}
-
-export interface Step {
-	step_number: number;
-	description: string;
-	tips?: string;
-}
-
-export interface Cocktail {
-	id: string | number;
-	name: string;
-	english_name?: string;
-	description: string;
-	match_reason: string;
-	base_spirit: string;
-	alcohol_level: string;
-	serving_glass: string;
-	time_required?: string;
-	flavor_profiles: string[];
-	ingredients: Ingredient[];
-	tools: Tool[];
-	steps: Step[];
-}
-
-export interface CocktailRequest {
-	message: string;
-	alcohol_level: string;
-	has_tools: boolean | null;
-	difficulty_level: string;
-	base_spirits: string[] | null;
-}
+import { requestCocktailRecommendation, pollForCocktailImage, AlcoholLevel, DifficultyLevel, Cocktail, BartenderRequest, Ingredient, Tool, Step } from "@/api/cocktail";
 
 // 模拟用户ID和会话ID，实际应用中应从认证系统获取
 const MOCK_USER_ID = 1;
@@ -154,6 +112,32 @@ export const useCocktailStore = defineStore("cocktail", () => {
 		saveBaseSpirits(newSpirits);
 	};
 
+	// 创建请求对象
+	const createRequestObject = (): BartenderRequest => {
+		// 将用户选择映射到API请求格式
+		let alcoholLevel = AlcoholLevel.ANY;
+		if (answers.value[3] === "low") alcoholLevel = AlcoholLevel.LOW;
+		else if (answers.value[3] === "medium") alcoholLevel = AlcoholLevel.MEDIUM;
+		else if (answers.value[3] === "high") alcoholLevel = AlcoholLevel.HIGH;
+
+		let difficultyLevel = DifficultyLevel.ANY;
+		if (answers.value[4] === "easy") difficultyLevel = DifficultyLevel.EASY;
+		else if (answers.value[4] === "medium") difficultyLevel = DifficultyLevel.MEDIUM;
+		else if (answers.value[4] === "hard") difficultyLevel = DifficultyLevel.HARD;
+
+		const hasTools = answers.value[2] === "yes" ? true : answers.value[2] === "no" ? false : null;
+
+		return {
+			message: userFeedback.value || "推荐一款适合我的鸡尾酒",
+			alcohol_level: alcoholLevel,
+			has_tools: hasTools,
+			difficulty_level: difficultyLevel,
+			base_spirits: baseSpirits.value.length > 0 ? baseSpirits.value : null,
+			user_id: MOCK_USER_ID,
+			session_id: MOCK_SESSION_ID
+		};
+	};
+
 	// 提交请求获取推荐
 	const submitRequest = async (): Promise<Cocktail> => {
 		isLoading.value = true;
@@ -184,31 +168,6 @@ export const useCocktailStore = defineStore("cocktail", () => {
 		} finally {
 			isLoading.value = false;
 		}
-	};
-
-	// 创建请求对象
-	const createRequestObject = (): CocktailRequest => {
-		const alcoholLevels: Record<string, string> = {
-			low: "低",
-			medium: "中",
-			high: "高",
-			any: "任意",
-		};
-
-		const difficultyLevels: Record<string, string> = {
-			easy: "简单",
-			medium: "中等",
-			hard: "复杂",
-			any: "任意",
-		};
-
-		return {
-			message: userFeedback.value || "推荐一款适合我的鸡尾酒",
-			alcohol_level: alcoholLevels[answers.value[3]] || "任意",
-			has_tools: answers.value[2] === "yes" ? true : answers.value[2] === "no" ? false : null,
-			difficulty_level: difficultyLevels[answers.value[4]] || "任意",
-			base_spirits: baseSpirits.value.length > 0 ? baseSpirits.value : null,
-		};
 	};
 
 	// 开始轮询图片

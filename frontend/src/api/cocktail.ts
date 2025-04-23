@@ -25,45 +25,53 @@ export enum BartenderType {
   CREATIVE = 'creative_bartender'
 }
 
-export interface CocktailRecommendation {
+export interface Ingredient {
+  name: string
+  amount: string
+  unit?: string
+  substitute?: string
+}
+
+export interface Tool {
+  name: string
+  alternative?: string
+}
+
+export interface Step {
+  step_number: number
+  description: string
+  tips?: string
+}
+
+export interface Cocktail {
+  id: string | number
   name: string
   english_name?: string
   description: string
-  time_required?: string
   match_reason: string
   base_spirit: string
   alcohol_level: string
-  flavor_profiles: string[]
-  ingredients: {
-    name: string
-    amount: string
-    unit?: string
-    substitute?: string
-  }[]
-  steps: {
-    step_number: number
-    description: string
-    tips?: string
-  }[]
-  tools: {
-    name: string
-    alternative?: string
-  }[]
   serving_glass: string
+  time_required?: string
+  flavor_profiles: string[]
+  ingredients: Ingredient[]
+  tools: Tool[]
+  steps: Step[]
   image?: string
 }
 
 // 调酒师请求参数
 export interface BartenderRequest {
-  user_id: number
-  session_id: string
-  drinkType: string
-  tools: string
-  mood: string
-  model?: string
+  message: string
+  alcohol_level: AlcoholLevel
+  has_tools: boolean | null
+  difficulty_level: DifficultyLevel
+  base_spirits: string[] | null
+  user_id?: number
+  session_id?: string
 }
 
-export const requestCocktailRecommendation = async (request: BartenderRequest): Promise<CocktailRecommendation> => {
+export const requestCocktailRecommendation = async (request: BartenderRequest): Promise<Cocktail> => {
   const response = await axios.post(`${API_BASE_URL}/agents/classic_bartender`, request)
   return response.data
 }
