@@ -7,6 +7,7 @@ import { useErrorStore } from "./stores/error";
 
 // 导入全局样式
 import "./styles/main.css";
+import "./styles/theme.css";
 
 // 创建应用实例
 const app = createApp(App);

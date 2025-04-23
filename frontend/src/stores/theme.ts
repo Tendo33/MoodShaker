@@ -37,10 +37,13 @@ export const useThemeStore = defineStore("theme", () => {
 	const applyTheme = (newTheme: ThemeType): void => {
 		if (typeof document === "undefined") return;
 
-		if (newTheme === "dark") {
-			document.documentElement.classList.add("dark");
-		} else {
-			document.documentElement.classList.remove("dark");
+		document.documentElement.classList.remove("light", "dark");
+		document.documentElement.classList.add(newTheme);
+
+		// 更新 meta 标签以支持移动设备的主题色
+		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+		if (metaThemeColor) {
+			metaThemeColor.setAttribute("content", newTheme === "dark" ? "#111827" : "#ffffff");
 		}
 	};
 
@@ -49,9 +52,36 @@ export const useThemeStore = defineStore("theme", () => {
 		theme.value = theme.value === "light" ? "dark" : "light";
 	};
 
+	// 获取当前主题的文本颜色类
+	const getTextColorClass = (defaultClass: string = ""): string => {
+		if (theme.value === "dark") {
+			return defaultClass || "text-white";
+		}
+		return defaultClass || "text-gray-900";
+	};
+
+	// 获取当前主题的次要文本颜色类
+	const getSecondaryTextColorClass = (): string => {
+		if (theme.value === "dark") {
+			return "text-gray-300";
+		}
+		return "text-gray-700";
+	};
+
+	// 获取当前主题的静音文本颜色类
+	const getMutedTextColorClass = (): string => {
+		if (theme.value === "dark") {
+			return "text-gray-400";
+		}
+		return "text-gray-600";
+	};
+
 	return {
 		theme,
 		initTheme,
 		toggleTheme,
+		getTextColorClass,
+		getSecondaryTextColorClass,
+		getMutedTextColorClass,
 	};
 });
