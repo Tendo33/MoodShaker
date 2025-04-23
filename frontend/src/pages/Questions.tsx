@@ -11,11 +11,11 @@ import { useCocktail } from "../context/CocktailContext";
 const optionImages = {
 	classic: "/stainless-steel-shaker.png",
 	custom: "/vibrant-elixir.png",
-	yes: "/placeholder.svg?height=120&width=120&query=cocktail tools and equipment",
-	no: "/placeholder.svg?height=120&width=120&query=simple cocktail glass",
-	low: "/placeholder.svg?height=120&width=120&query=light cocktail with fruit",
-	medium: "/placeholder.svg?height=120&width=120&query=medium strength cocktail",
-	high: "/placeholder.svg?height=120&width=120&query=strong whiskey cocktail",
+	yes: "/cocktail-essentials.png",
+	no: "/classic-cocktail-glass.png",
+	low: "/fruity-refreshment.png",
+	medium: "/balanced-citrus-cocktail.png",
+	high: "/dark-and-stormy-night.png",
 	any: "/placeholder.svg?height=120&width=120&query=variety of cocktails",
 	easy: "/placeholder.svg?height=120&width=120&query=simple cocktail preparation",
 	hard: "/placeholder.svg?height=120&width=120&query=complex cocktail preparation",
@@ -56,27 +56,10 @@ const Questions: React.FC = () => {
 	const [localUserFeedback, setLocalUserFeedback] = useState("");
 	const [animateProgress, setAnimateProgress] = useState(false);
 
-	// 主题相关计算属性
-	const themeClasses =
-		theme === "dark"
-			? "bg-gradient-to-b from-gray-950 to-gray-900 text-white"
-			: "bg-gradient-to-b from-amber-50 to-white text-gray-900";
-
+	// 简化主题样式计算
 	const textColorClass = theme === "dark" ? "text-white" : "text-gray-900";
-
-	const cardClasses = theme === "dark" ? "bg-white/10 text-white" : "bg-white/80 text-gray-900";
-
-	const optionCardClasses = theme === "dark" ? "bg-white/5 text-white" : "bg-white/90 text-gray-900";
-
-	const spiritCardClasses = theme === "dark" ? "bg-white/5 hover:bg-white/10" : "bg-white/90 hover:bg-white/95";
-
-	const buttonClasses = theme === "dark" ? "bg-white/10" : "bg-white/90";
-
-	const textAreaClasses = theme === "dark" ? "bg-white/5" : "bg-white/90";
-
-	const footerClasses = theme === "dark" ? "bg-black/30" : "bg-gray-50";
-
-	const borderColorClass = theme === "dark" ? "border-gray-800" : "border-gray-200";
+	const cardClasses = theme === "dark" ? "bg-gray-800/80" : "bg-white/80";
+	const borderClasses = theme === "dark" ? "border-gray-700" : "border-gray-200";
 
 	const questions = [
 		{
@@ -292,274 +275,189 @@ const Questions: React.FC = () => {
 	}, [userFeedback]);
 
 	return (
-		<div className={`min-h-screen transition-colors duration-300 ${themeClasses}`}>
-			{/* Enhanced background effects with better animation */}
-			<div className="absolute inset-0 overflow-hidden opacity-30 pointer-events-none">
-				<div
-					className="absolute top-1/4 left-1/4 w-80 h-80 bg-amber-500 rounded-full blur-3xl animate-pulse"
-					style={{ animationDuration: "8s" }}
-				></div>
-				<div
-					className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-pink-500 rounded-full blur-3xl animate-pulse"
-					style={{ animationDuration: "10s", animationDelay: "2s" }}
-				></div>
-				<div
-					className="absolute top-3/4 left-1/3 w-64 h-64 bg-purple-500 rounded-full blur-3xl animate-pulse"
-					style={{ animationDuration: "12s", animationDelay: "4s" }}
-				></div>
+		<div className="container mx-auto px-4 py-8">
+			{/* 顶部导航和进度条 */}
+			<div className="mb-8 flex items-center justify-between">
+				<button
+					className="flex items-center px-4 py-2 rounded-full hover:bg-white/10 transition-colors"
+					onClick={handleBack}
+				>
+					<ArrowLeft className="mr-2 h-4 w-4" /> 返回
+				</button>
+
+				{/* 进度条 */}
+				<div className="w-1/2 h-2 bg-gray-700/30 rounded-full overflow-hidden">
+					<div
+						className={`h-full bg-gradient-to-r from-amber-500 to-pink-500 rounded-full transition-all duration-500 ${
+							animateProgress ? "animate-pulse" : ""
+						}`}
+						style={{ width: `${progressPercentage}%` }}
+					></div>
+				</div>
 			</div>
 
-			<div className="container max-w-4xl py-12 relative" style={{ margin: "0 auto" }}>
-				<div className="mb-8 flex items-center justify-between">
-					<button
-						className={`flex items-center hover:bg-white/10 px-4 py-2 rounded-full transition-colors duration-300 group ${textColorClass}`}
-						onClick={handleBack}
+			{/* 问题列表 */}
+			<div className="space-y-12 max-w-3xl mx-auto">
+				{questions.map((question) => (
+					<div
+						key={question.id}
+						ref={(el) => {
+							questionRefs.current[question.id] = el;
+						}}
+						className={`transition-all duration-500 ${
+							visibleQuestions.includes(question.id) ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
+						}`}
 					>
-						<ArrowLeft className="mr-2 h-4 w-4 group-hover:translate-x-[-4px] transition-transform" /> 返回
-					</button>
-
-					{/* 垂直进度条 - 从上往下涨 */}
-					<div className="fixed right-8 top-1/2 transform -translate-y-1/2 h-64 w-3 bg-gray-800/30 rounded-full overflow-hidden shadow-inner hidden md:block">
-						<div
-							className={`w-full bg-gradient-to-b from-pink-500 to-amber-500 rounded-full transition-all duration-500 shadow-lg absolute top-0 progress-bar-vertical ${
-								animateProgress ? "animate-pulse" : ""
-							}`}
-							style={{ height: `${progressPercentage}%` }}
-						></div>
-						<div
-							className={`absolute -right-7 transform -translate-y-1/2 text-xs font-medium ${textColorClass}`}
-							style={{ top: `${progressPercentage}%` }}
-						>
-							{Math.round(progressPercentage)}%
-						</div>
-					</div>
-
-					{/* 保留水平进度条，但仅在移动设备上显示 */}
-					<div className="relative w-1/2 h-3 bg-gray-800/30 rounded-full overflow-hidden shadow-inner md:hidden">
-						<div
-							className={`h-full bg-gradient-to-r from-amber-500 to-pink-500 rounded-full transition-all duration-500 shadow-lg ${
-								animateProgress ? "animate-pulse" : ""
-							}`}
-							style={{ width: `${progressPercentage}%` }}
-						></div>
-					</div>
-				</div>
-
-				{/* 问题列表 */}
-				<div className="space-y-16">
-					{questions.map((question) => (
-						<div
-							key={question.id}
-							ref={(el) => {
-								questionRefs.current[question.id] = el;
-							}}
-							className={`transition-all duration-500 ${
-								visibleQuestions.includes(question.id) ? "opacity-100" : "opacity-0 h-0 overflow-hidden"
-							}`}
-						>
-							<div
-								className="transition-all duration-500 transform"
-								style={{
-									transform: visibleQuestions.includes(question.id) ? "translateY(0)" : "translateY(1rem)",
-									opacity: visibleQuestions.includes(question.id) ? 1 : 0,
-								}}
-							>
-								<div
-									className={`mb-6 overflow-hidden border border-white/10 backdrop-blur-sm shadow-xl rounded-2xl transition-colors duration-300 ${cardClasses}`}
-								>
-									<div className="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10 relative">
-										<div className={isQuestionAnswered(question.id.toString()) ? "absolute right-6 top-6" : "hidden"}>
-											<div className="bg-gradient-to-r from-amber-500 to-pink-500 text-white rounded-full p-1.5 shadow-lg">
-												<Check className="h-4 w-4" />
-											</div>
-										</div>
-										<h3 className={`text-2xl font-bold mb-3 ${textColorClass}`}>{question.title}</h3>
-										<p className="text-gray-300">{question.description}</p>
+						<div className={`mb-6 border ${borderClasses} rounded-xl overflow-hidden ${cardClasses}`}>
+							<div className="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10 relative">
+								<div className={isQuestionAnswered(question.id.toString()) ? "absolute right-6 top-6" : "hidden"}>
+									<div className="bg-gradient-to-r from-amber-500 to-pink-500 text-white rounded-full p-1.5">
+										<Check className="h-4 w-4" />
 									</div>
 								</div>
-
-								<div className="grid gap-5 sm:grid-cols-2 md:grid-cols-4">
-									{question.options.map((option) => (
-										<div key={option.id} className="transition-all duration-300 transform scale-100 opacity-100">
-											<div
-												className={`cursor-pointer transition-all duration-300 transform hover:scale-105 hover:shadow-xl backdrop-blur-sm border border-white/10 overflow-hidden rounded-2xl h-full ${optionCardClasses} ${
-													answers[question.id] === option.id
-														? "ring-2 ring-pink-500 shadow-xl shadow-pink-500/20 bg-gradient-to-br from-white/5 to-white/10"
-														: "hover:bg-white/10"
-												}`}
-												data-state={answers[question.id] === option.id ? "selected" : "unselected"}
-												onClick={() => handleOptionSelect(question.id, option.id)}
-											>
-												<div className="p-5">
-													<div className="flex flex-col items-center text-center">
-														<div className="mb-4 rounded-full overflow-hidden bg-gradient-to-r from-amber-500/20 to-pink-500/20 p-3 shadow-inner">
-															<img
-																src={option.image || "/placeholder.svg"}
-																alt={option.text}
-																className="w-[120px] h-[120px] object-cover transition-transform duration-300 hover:scale-110 rounded-full"
-															/>
-														</div>
-														<h3 className={`font-medium text-lg whitespace-nowrap ${textColorClass}`}>{option.text}</h3>
-													</div>
-												</div>
-											</div>
-										</div>
-									))}
-								</div>
-
-								<div
-									className={
-										isQuestionAnswered(question.id.toString()) &&
-										question.id < questions.length &&
-										!visibleQuestions.includes(question.id + 1)
-											? "flex justify-center mt-8"
-											: "hidden"
-									}
-								>
-									<button
-										className={`flex items-center px-6 py-3 hover:bg-white/20 border border-white/10 rounded-full text-sm transition-all duration-300 shadow-lg hover:shadow-xl group whitespace-nowrap ${textColorClass} ${buttonClasses}`}
-										onClick={() => showNextQuestion(question.id)}
-									>
-										下一个问题 <ChevronDown className="ml-2 h-4 w-4 group-hover:translate-y-1 transition-transform" />
-									</button>
-								</div>
+								<h3 className={`text-2xl font-bold mb-3 ${textColorClass}`}>{question.title}</h3>
+								<p className="text-gray-400">{question.description}</p>
 							</div>
 						</div>
-					))}
-				</div>
 
-				{/* 基酒选择 - 增加了上下间距 */}
-				<div
-					className={
-						visibleQuestions.includes(questions.length)
-							? "mt-16 transition-all duration-500 transform translate-y-0 opacity-100"
-							: "hidden"
-					}
-				>
-					<div
-						className={`overflow-hidden border border-white/10 backdrop-blur-sm shadow-xl rounded-2xl transition-colors duration-300 ${cardClasses}`}
-					>
-						<div className="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10">
-							<h3 className={`text-xl font-bold mb-2 ${textColorClass}`}>可用的基酒（可选）</h3>
-							<p className="text-gray-300 mb-4">请选择您家中有的基酒</p>
-						</div>
-						{/* 增加了上下间距 */}
-						<div className="px-6 pb-8 pt-4">
-							<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-								{baseSpiritsOptions.map((spirit) => (
+						<div className="grid gap-4 grid-cols-2 md:grid-cols-4">
+							{question.options.map((option) => (
+								<div key={option.id} className="transition-all duration-300">
 									<div
-										key={spirit.id}
-										className={`cursor-pointer p-4 rounded-2xl transition-all duration-300 ${spiritCardClasses} ${
-											baseSpirits.includes(spirit.id)
-												? "bg-gradient-to-br from-amber-500/20 to-pink-500/30 border border-pink-500/70 shadow-lg"
-												: "border border-white/10 hover:border-white/30"
+										className={`cursor-pointer transition-all duration-300 hover:scale-105 border ${borderClasses} rounded-xl overflow-hidden ${cardClasses} ${
+											answers[question.id] === option.id ? "ring-2 ring-pink-500 shadow-lg" : ""
 										}`}
-										onClick={() => handleBaseSpiritsToggle(spirit.id)}
+										onClick={() => handleOptionSelect(question.id, option.id)}
 									>
-										<div className="flex items-center justify-between mb-2">
-											{spirit.image ? (
-												<div className="flex items-center">
+										<div className="p-4">
+											<div className="flex flex-col items-center text-center">
+												<div className="mb-3 rounded-full overflow-hidden bg-gradient-to-r from-amber-500/20 to-pink-500/20 p-2">
 													<img
-														src={spirit.image || "/placeholder.svg"}
-														alt={spirit.name}
-														className="w-10 h-10 object-cover rounded-full mr-3"
+														src={option.image || "/placeholder.svg"}
+														alt={option.text}
+														className="w-20 h-20 object-cover rounded-full"
 													/>
-													<span className={`font-medium whitespace-nowrap ${textColorClass}`}>{spirit.name}</span>
 												</div>
-											) : (
-												<span className={`font-medium whitespace-nowrap ${textColorClass}`}>{spirit.name}</span>
-											)}
-											<div
-												className={
-													baseSpirits.includes(spirit.id)
-														? "h-6 w-6 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center shadow-lg"
-														: "h-6 w-6 rounded-full bg-white/10 flex items-center justify-center"
-												}
-											>
-												{baseSpirits.includes(spirit.id) ? (
-													<Check className="h-3 w-3 text-white" />
-												) : (
-													<X className="h-3 w-3 text-gray-400" />
-												)}
+												<h3 className={`font-medium ${textColorClass}`}>{option.text}</h3>
 											</div>
 										</div>
-										<p className="text-xs text-gray-400">{spirit.description}</p>
 									</div>
-								))}
-							</div>
+								</div>
+							))}
 						</div>
-					</div>
-				</div>
 
-				{/* 反馈表单 */}
-				<div
-					id="feedback-form"
-					className={
-						showFeedbackForm ? `mt-16 pt-8 border-t transition-colors duration-300 ${borderColorClass}` : "hidden"
-					}
-				>
-					<div
-						className={`overflow-hidden shadow-xl border border-white/10 backdrop-blur-sm rounded-2xl transition-colors duration-300 ${cardClasses}`}
-					>
-						<div className="p-6 bg-gradient-to-r from-amber-500/20 to-pink-500/20">
-							<h3 className={`text-xl font-bold mb-2 ${textColorClass}`}>还有什么想告诉我们的？</h3>
-							<p className="text-gray-300">请分享您的任何特殊需求或偏好</p>
-						</div>
-						<div className="p-6">
-							{/* 更改了文本框为更圆润的样式 */}
-							<textarea
-								value={localUserFeedback}
-								onChange={(e) => setLocalUserFeedback(e.target.value)}
-								placeholder="例如：我喜欢甜一点的鸡尾酒，或者我对某种成分过敏..."
-								className={`w-full min-h-[150px] transition-all duration-300 focus:border-pink-500 border border-white/10 rounded-2xl p-5 transition-colors duration-300 focus:ring-2 focus:ring-pink-500/30 focus:outline-none ${textAreaClasses} ${textColorClass}`}
-							></textarea>
-						</div>
-						<div className={`px-6 py-4 flex justify-end transition-colors duration-300 ${footerClasses}`}>
+						<div
+							className={
+								isQuestionAnswered(question.id.toString()) &&
+								question.id < questions.length &&
+								!visibleQuestions.includes(question.id + 1)
+									? "flex justify-center mt-8"
+									: "hidden"
+							}
+						>
 							<button
-								onClick={handleSubmitFeedback}
-								className={`bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 transition-all duration-300 hover:shadow-xl shadow-pink-500/30 border-0 text-white px-8 py-3 rounded-full flex items-center group whitespace-nowrap ${
-									isLoading ? "opacity-70 cursor-not-allowed" : "hover:scale-105"
-								}`}
-								disabled={isLoading}
+								className="flex items-center px-6 py-3 border border-white/10 rounded-full hover:bg-white/10 transition-all"
+								onClick={() => showNextQuestion(question.id)}
 							>
-								{isLoading ? (
-									<>
-										<div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"></div>
-										<span className="font-medium">正在为您匹配...</span>
-									</>
-								) : (
-									<span className="font-medium inline-flex items-center">
-										查看推荐鸡尾酒
-										<ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-									</span>
-								)}
+								下一个问题 <ChevronDown className="ml-2 h-4 w-4" />
 							</button>
 						</div>
 					</div>
+				))}
+			</div>
+
+			{/* 基酒选择 */}
+			<div className={visibleQuestions.includes(questions.length) ? "mt-12 max-w-3xl mx-auto" : "hidden"}>
+				<div className={`border ${borderClasses} rounded-xl overflow-hidden ${cardClasses}`}>
+					<div className="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10">
+						<h3 className={`text-xl font-bold mb-2 ${textColorClass}`}>可用的基酒（可选）</h3>
+						<p className="text-gray-400 mb-4">请选择您家中有的基酒</p>
+					</div>
+					<div className="p-6">
+						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+							{baseSpiritsOptions.map((spirit) => (
+								<div
+									key={spirit.id}
+									className={`cursor-pointer p-4 rounded-xl transition-all duration-300 border ${
+										baseSpirits.includes(spirit.id)
+											? "border-pink-500 bg-gradient-to-br from-amber-500/10 to-pink-500/10"
+											: `${borderClasses} hover:border-white/30`
+									}`}
+									onClick={() => handleBaseSpiritsToggle(spirit.id)}
+								>
+									<div className="flex items-center justify-between mb-2">
+										{spirit.image ? (
+											<div className="flex items-center">
+												<img
+													src={spirit.image || "/placeholder.svg"}
+													alt={spirit.name}
+													className="w-8 h-8 object-cover rounded-full mr-2"
+												/>
+												<span className={`font-medium ${textColorClass}`}>{spirit.name}</span>
+											</div>
+										) : (
+											<span className={`font-medium ${textColorClass}`}>{spirit.name}</span>
+										)}
+										<div
+											className={
+												baseSpirits.includes(spirit.id)
+													? "h-5 w-5 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center"
+													: "h-5 w-5 rounded-full bg-white/10 flex items-center justify-center"
+											}
+										>
+											{baseSpirits.includes(spirit.id) ? (
+												<Check className="h-3 w-3 text-white" />
+											) : (
+												<X className="h-3 w-3 text-gray-400" />
+											)}
+										</div>
+									</div>
+									<p className="text-xs text-gray-400">{spirit.description}</p>
+								</div>
+							))}
+						</div>
+					</div>
 				</div>
 			</div>
 
-			<style jsx>{`
-				/* 添加进度条动画 */
-				@keyframes pulse-glow {
-					0%,
-					100% {
-						box-shadow: 0 0 5px 0 rgba(244, 114, 182, 0.5);
-					}
-					50% {
-						box-shadow: 0 0 15px 0 rgba(244, 114, 182, 0.8);
-					}
-				}
-
-				.progress-bar-vertical {
-					animation: pulse-glow 2s infinite;
-				}
-
-				/* 确保所有按钮文字不换行 */
-				button {
-					white-space: nowrap;
-				}
-			`}</style>
+			{/* 反馈表单 */}
+			<div id="feedback-form" className={showFeedbackForm ? "mt-12 max-w-3xl mx-auto" : "hidden"}>
+				<div className={`border ${borderClasses} rounded-xl overflow-hidden ${cardClasses}`}>
+					<div className="p-6 bg-gradient-to-r from-amber-500/10 to-pink-500/10">
+						<h3 className={`text-xl font-bold mb-2 ${textColorClass}`}>还有什么想告诉我们的？</h3>
+						<p className="text-gray-400">请分享您的任何特殊需求或偏好</p>
+					</div>
+					<div className="p-6">
+						<textarea
+							value={localUserFeedback}
+							onChange={(e) => setLocalUserFeedback(e.target.value)}
+							placeholder="例如：我喜欢甜一点的鸡尾酒，或者我对某种成分过敏..."
+							className={`w-full min-h-[150px] border ${borderClasses} rounded-xl p-4 bg-transparent focus:border-pink-500 focus:ring-1 focus:ring-pink-500 focus:outline-none ${textColorClass}`}
+						></textarea>
+					</div>
+					<div className="px-6 py-4 flex justify-end border-t border-gray-700">
+						<button
+							onClick={handleSubmitFeedback}
+							className={`bg-gradient-to-r from-amber-500 to-pink-500 hover:from-amber-600 hover:to-pink-600 text-white px-8 py-3 rounded-full flex items-center ${
+								isLoading ? "opacity-70 cursor-not-allowed" : "hover:scale-105"
+							}`}
+							disabled={isLoading}
+						>
+							{isLoading ? (
+								<>
+									<div className="mr-2 h-5 w-5 animate-spin rounded-full border-2 border-white border-r-transparent"></div>
+									<span className="font-medium">正在为您匹配...</span>
+								</>
+							) : (
+								<span className="font-medium inline-flex items-center">
+									查看推荐鸡尾酒
+									<ArrowRight className="ml-2 h-5 w-5" />
+								</span>
+							)}
+						</button>
+					</div>
+				</div>
+			</div>
 		</div>
 	);
 };

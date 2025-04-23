@@ -15,38 +15,24 @@ import CocktailRecommendation from "./pages/CocktailRecommendation";
 import { useError } from "./context/ErrorContext";
 import { useTheme } from "./context/ThemeContext";
 
-// Layout component to wrap all pages
+// 修复Layout组件中的容器和样式问题
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 	const { message, clearError } = useError();
 	const { theme } = useTheme();
 
-	// 计算属性：主题相关样式
-	const themeClasses =
-		theme === "dark"
-			? "bg-gradient-to-b from-gray-950 to-gray-900 text-white"
-			: "bg-gradient-to-b from-amber-50 to-white text-gray-900";
-
-	// 计算属性：头部样式
-	const headerClasses = theme === "dark" ? "border-gray-800 bg-black/90" : "border-amber-100 bg-white/90";
-
-	// 计算属性：页脚样式
-	const footerClasses =
-		theme === "dark" ? "border-gray-800 bg-black/30 backdrop-blur-sm" : "border-amber-100 bg-white/80 backdrop-blur-sm";
-
-	// 计算属性：边框颜色
-	const borderColorClass = theme === "dark" ? "border-gray-800" : "border-amber-100";
-
-	// 计算属性：文本颜色
-	const textColorClass = theme === "dark" ? "text-white" : "text-gray-900";
+	// 简化主题样式计算
+	const bgClass = theme === "dark" ? "bg-gray-900" : "bg-white";
+	const textClass = theme === "dark" ? "text-white" : "text-gray-900";
+	const headerClass = theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200";
+	const footerClass = theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-gray-50 border-gray-200";
 
 	return (
-		<div className={`min-h-screen transition-colors duration-300 flex flex-col ${themeClasses}`}>
-			<header
-				className={`sticky top-0 z-10 border-b backdrop-blur-lg transition-colors duration-300 shadow-md ${headerClasses}`}
-			>
-				<div className="container flex h-16 items-center justify-between">
-					<a href="/" className="flex items-center gap-2 font-bold text-xl transition-transform hover:scale-105">
-						<div className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center shadow-lg">
+		<div className={`min-h-screen flex flex-col ${bgClass} ${textClass}`}>
+			{/* 简化的页头 */}
+			<header className={`sticky top-0 z-10 border-b ${headerClass}`}>
+				<div className="container mx-auto px-4 h-16 flex items-center justify-between">
+					<a href="/" className="flex items-center gap-2 font-bold text-xl">
+						<div className="w-8 h-8 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center">
 							<span className="text-white text-sm">🍹</span>
 						</div>
 						<span className="bg-gradient-to-r from-amber-500 to-pink-500 bg-clip-text text-transparent">
@@ -62,16 +48,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 			<ErrorAlert message={message} onClose={clearError} />
 
-			<main className="flex-1 relative">{children}</main>
+			{/* 主内容区域 */}
+			<main className="flex-1">{children}</main>
 
-			{/* 增强的页脚 */}
-			<footer className={`border-t transition-colors duration-300 py-12 ${footerClasses}`}>
-				<div className="container">
+			{/* 简化的页脚 */}
+			<footer className={`border-t py-8 ${footerClass}`}>
+				<div className="container mx-auto px-4">
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
 						{/* 品牌信息 */}
-						<div className="md:col-span-1">
+						<div>
 							<div className="flex items-center gap-2 mb-4">
-								<div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center shadow-lg">
+								<div className="w-10 h-10 rounded-full bg-gradient-to-r from-amber-500 to-pink-500 flex items-center justify-center">
 									<span className="text-white text-sm">🍹</span>
 								</div>
 								<span className="font-bold text-xl bg-gradient-to-r from-amber-500 to-pink-500 bg-clip-text text-transparent">
@@ -116,9 +103,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 							</div>
 						</div>
 
+						{/* 中间空白区域 */}
+						<div></div>
+
 						{/* 联系我们 */}
-						<div className="md:col-span-1 md:col-start-3">
-							<h3 className={`font-bold text-lg mb-4 ${textColorClass}`}>联系我们</h3>
+						<div>
+							<h3 className="font-bold text-lg mb-4">联系我们</h3>
 							<ul className="space-y-2">
 								<li className="flex items-center text-gray-400">
 									<svg
@@ -181,17 +171,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 						</div>
 					</div>
 
-					<div className={`mt-10 pt-8 border-t text-center text-sm text-gray-400 ${borderColorClass}`}>
+					<div className="mt-8 pt-6 border-t text-center text-sm text-gray-400">
 						<div className="flex flex-col md:flex-row justify-between items-center">
 							<p>© 2024 MoodShaker. 保留所有权利。</p>
 							<div className="flex space-x-6 mt-4 md:mt-0">
-								<a href="#" className="text-gray-400 hover:text-amber-500 transition-colors whitespace-nowrap">
+								<a href="#" className="text-gray-400 hover:text-amber-500 transition-colors">
 									隐私政策
 								</a>
-								<a href="#" className="text-gray-400 hover:text-amber-500 transition-colors whitespace-nowrap">
+								<a href="#" className="text-gray-400 hover:text-amber-500 transition-colors">
 									使用条款
 								</a>
-								<a href="#" className="text-gray-400 hover:text-amber-500 transition-colors whitespace-nowrap">
+								<a href="#" className="text-gray-400 hover:text-amber-500 transition-colors">
 									Cookie 政策
 								</a>
 							</div>
