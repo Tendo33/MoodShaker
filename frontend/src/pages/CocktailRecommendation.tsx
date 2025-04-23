@@ -1,11 +1,21 @@
 "use client"
 
 import type React from "react"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
-import { ArrowLeft, Clock, Droplet, ThumbsUp, RefreshCw, Beaker, GlassWater } from "lucide-react"
+import { ArrowLeft, Clock, Droplet, ThumbsUp, RefreshCw, Beaker, Share2 } from "lucide-react"
 import { useTheme } from "../context/ThemeContext"
 import { useCocktail } from "../context/CocktailContext"
+
+// Cocktail glass images
+const glassImages = {
+  highball: "/placeholder.svg?height=40&width=40&query=highball glass icon",
+  martini: "/placeholder.svg?height=40&width=40&query=martini glass icon",
+  rocks: "/placeholder.svg?height=40&width=40&query=rocks glass icon",
+  hurricane: "/placeholder.svg?height=40&width=40&query=hurricane glass icon",
+  wine: "/placeholder.svg?height=40&width=40&query=wine glass icon",
+  flute: "/placeholder.svg?height=40&width=40&query=champagne flute icon",
+}
 
 const CocktailRecommendation: React.FC = () => {
   const navigate = useNavigate()
@@ -20,10 +30,13 @@ const CocktailRecommendation: React.FC = () => {
     startImagePolling,
   } = useCocktail()
 
+  const [showShareTooltip, setShowShareTooltip] = useState(false)
+  const [activeStep, setActiveStep] = useState<number | null>(null)
+
   // 主题相关计算属性
   const themeClasses =
     theme === "dark"
-      ? "bg-gradient-to-b from-black to-gray-900 text-white"
+      ? "bg-gradient-to-b from-gray-950 to-gray-900 text-white"
       : "bg-gradient-to-b from-amber-50 to-white text-gray-900"
 
   const textColorClass = theme === "dark" ? "text-white" : "text-gray-900"
@@ -42,9 +55,24 @@ const CocktailRecommendation: React.FC = () => {
 
   const borderColorClass = theme === "dark" ? "border-white/10" : "border-gray-200"
 
-  // 模拟用户ID和会话ID，实际应用中应从认证系统获取
-  const MOCK_USER_ID = 1
-  const MOCK_SESSION_ID = "session-123"
+  // Get appropriate glass icon
+  const getGlassIcon = (glassType: string) => {
+    const lowerCaseType = glassType.toLowerCase()
+    if (lowerCaseType.includes("highball") || lowerCaseType.includes("collins")) {
+      return glassImages.highball
+    } else if (lowerCaseType.includes("martini") || lowerCaseType.includes("coupe")) {
+      return glassImages.martini
+    } else if (lowerCaseType.includes("rocks") || lowerCaseType.includes("old fashioned")) {
+      return glassImages.rocks
+    } else if (lowerCaseType.includes("hurricane") || lowerCaseType.includes("tiki")) {
+      return glassImages.hurricane
+    } else if (lowerCaseType.includes("wine")) {
+      return glassImages.wine
+    } else if (lowerCaseType.includes("flute") || lowerCaseType.includes("champagne")) {
+      return glassImages.flute
+    }
+    return glassImages.highball // Default
+  }
 
   const handleBack = () => {
     navigate("/")
@@ -59,6 +87,35 @@ const CocktailRecommendation: React.FC = () => {
       localStorage.removeItem("moodshaker-base-spirits")
     }
     navigate("/questions")
+  }
+
+  const handleShare = () => {
+    if (navigator.share && cocktail) {
+      navigator
+        .share({
+          title: `${cocktail.name} - MoodShaker`,
+          text: `Check out this ${cocktail.name} cocktail recipe I found on MoodShaker!`,
+          url: window.location.href,
+        })
+        .catch((error) => {
+          console.error("Error sharing:", error)
+          setShowShareTooltip(true)
+          setTimeout(() => setShowShareTooltip(false), 3000)
+        })
+    } else {
+      // Fallback for browsers that don't support navigator.share
+      navigator.clipboard.writeText(window.location.href)
+      setShowShareTooltip(true)
+      setTimeout(() => setShowShareTooltip(false), 3000)
+    }
+  }
+
+  const handleStepHover = (stepNumber: number) => {
+    setActiveStep(stepNumber)
+  }
+
+  const handleStepLeave = () => {
+    setActiveStep(null)
   }
 
   useEffect(() => {
@@ -165,14 +222,14 @@ const CocktailRecommendation: React.FC = () => {
                 {imageData ? (
                   <img
                     src={`data:image/jpeg;base64,${imageData}`}
-                    alt={cocktail.name}
+                    alt={cocktail?.name ?? 'Cocktail image'}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                 ) : (
                   <img
-                    src="/placeholder.svg?height=400&width=600"
-                    alt={cocktail.name}
-                    className="w-full h-full object-cover opacity-50"
+                    src="/placeholder.svg?height=400&width=600&query=cocktail with ice and garnish"
+                    alt={cocktail?.name ?? 'Cocktail image'}
+                    className="w-full h-full object-cover"
                   />
                 )}
               </div>
@@ -182,6 +239,26 @@ const CocktailRecommendation: React.FC = () => {
                   {cocktail?.name}
                 </h1>
                 {cocktail?.english_name && <p className="text-gray-400 text-lg">{cocktail.english_name}</p>}
+              </div>
+
+              {/* Share button */}
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={handleShare}
+                  className="relative flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 rounded-full transition-all duration-300"
+                >
+                  <Share2 className="h-4 w-4" />
+                  <span>分享配方</span>
+
+                  {/* Tooltip */}
+                  <div
+                    className={`absolute -top-10 left-1/2 transform -translate-x-1/2 px-3 py-1.5 bg-black/80 text-white text-xs rounded-lg transition-opacity duration-300 whitespace-nowrap ${
+                      showShareTooltip ? "opacity-100" : "opacity-0 pointer-events-none"
+                    }`}
+                  >
+                    链接已复制到剪贴板
+                  </div>
+                </button>
               </div>
             </div>
 
@@ -219,7 +296,11 @@ const CocktailRecommendation: React.FC = () => {
                 <div
                   className={`flex items-center backdrop-blur-sm p-3 rounded-full border border-white/10 transition-colors duration-300 hover:bg-white/5 whitespace-nowrap ${cardClasses}`}
                 >
-                  <GlassWater className="mr-2 h-5 w-5 text-green-500" />
+                  <img
+                    src={getGlassIcon(cocktail?.serving_glass || "highball")}
+                    alt="Glass type"
+                    className="mr-2 h-5 w-5"
+                  />
                   <span className={textColorClass}>酒杯: {cocktail?.serving_glass}</span>
                 </div>
               </div>
@@ -300,8 +381,17 @@ const CocktailRecommendation: React.FC = () => {
             <div className="p-6">
               <ol className="space-y-6">
                 {cocktail?.steps.map((step) => (
-                  <li key={step.step_number} className="flex">
-                    <span className="mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-pink-500 text-white shadow-lg">
+                  <li
+                    key={step.step_number}
+                    className="flex"
+                    onMouseEnter={() => handleStepHover(step.step_number)}
+                    onMouseLeave={handleStepLeave}
+                  >
+                    <span
+                      className={`mr-4 flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-pink-500 text-white shadow-lg transition-transform duration-300 ${
+                        activeStep === step.step_number ? "scale-110" : ""
+                      }`}
+                    >
                       {step.step_number}
                     </span>
                     <div className="flex-1 pt-1">
