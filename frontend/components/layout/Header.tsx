@@ -4,10 +4,17 @@ import Link from "next/link";
 import { useTheme } from "@/context/ThemeContext";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSelector from "@/components/LanguageSelector";
+import { useEffect, useState } from "react";
 
 export default function Header() {
 	const { theme } = useTheme();
-	const headerClass = theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200";
+	const [headerClass, setHeaderClass] = useState(
+		theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
+	);
+
+	useEffect(() => {
+		setHeaderClass(theme === "dark" ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200");
+	}, [theme]);
 
 	return (
 		<header className={`sticky top-0 z-10 border-b ${headerClass}`}>

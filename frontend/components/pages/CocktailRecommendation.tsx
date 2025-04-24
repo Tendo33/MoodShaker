@@ -19,6 +19,13 @@ const glassImages = {
 	flute: "/elegant-champagne-flute.png",
 };
 
+// 静态鸡尾酒图片映射
+const staticCocktailImages = {
+	mojito: "/cocktail-mojito.png",
+	margarita: "/cocktail-margarita.png",
+	cosmopolitan: "/cocktail-cosmopolitan.png",
+};
+
 export default function CocktailRecommendation() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -71,6 +78,11 @@ export default function CocktailRecommendation() {
 			return glassImages.flute;
 		}
 		return glassImages.highball; // Default
+	};
+
+	// 获取静态鸡尾酒图片
+	const getStaticCocktailImage = (id: string) => {
+		return staticCocktailImages[id as keyof typeof staticCocktailImages] || "/vibrant-cocktail-closeup.png";
 	};
 
 	const handleBack = () => {
@@ -241,11 +253,13 @@ export default function CocktailRecommendation() {
 								/>
 							) : (
 								<img
-									src={cocktailId ? `/cocktail-${cocktailId}.jpg` : "/vibrant-cocktail-closeup.png"}
+									src={cocktailId ? getStaticCocktailImage(cocktailId) : "/vibrant-cocktail-closeup.png"}
 									alt={cocktail?.name ?? "Cocktail image"}
 									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
 									onError={(e) => {
-										e.currentTarget.src = "/vibrant-cocktail-closeup.png";
+										e.currentTarget.src = `/placeholder.svg?height=500&width=800&query=${encodeURIComponent(
+											cocktail?.name || "cocktail"
+										)}`;
 									}}
 								/>
 							)}

@@ -236,12 +236,20 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			// 确定使用哪种调酒师类型
 			const bartenderType = answers[1] === "classic" ? AgentType.CLASSIC_BARTENDER : AgentType.CREATIVE_BARTENDER;
 
+			console.log("Submitting request:", JSON.stringify(request, null, 2));
+			console.log("Using bartender type:", bartenderType);
+
 			// 发送请求
 			const result = await requestCocktailRecommendation(request, bartenderType);
-			setRecommendation(result);
 
-			// 保存推荐结果
-			localStorage.setItem("moodshaker-recommendation", JSON.stringify(result));
+			console.log("Received recommendation:", result);
+
+			// 确保我们不使用默认数据，除非API调用失败
+			if (result) {
+				setRecommendation(result);
+				// 保存推荐结果
+				localStorage.setItem("moodshaker-recommendation", JSON.stringify(result));
+			}
 
 			// 开始轮询图片
 			startImagePolling();
@@ -249,7 +257,7 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			return result;
 		} catch (e) {
 			console.error("Error submitting request:", e);
-			setError("获取推荐时出错，请稍后再试");
+			setError(`获取推荐时出错: ${e instanceof Error ? e.message : "未知错误"}`);
 			throw e;
 		} finally {
 			setIsLoading(false);

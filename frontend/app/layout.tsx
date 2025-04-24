@@ -9,12 +9,16 @@ import Footer from "@/components/layout/Footer";
 import ErrorAlert from "@/components/ErrorAlert";
 import "./globals.css";
 
+// 导入ApiDebugger组件
+import ApiDebugger from "@/components/ApiDebugger";
+
 export const metadata: Metadata = {
 	title: "MoodShaker - 找到适合您心情的鸡尾酒",
 	description: "通过回答几个简单问题，让我们为您推荐完美的鸡尾酒",
 	generator: "v0.dev",
 };
 
+// 在RootLayout组件中添加ApiDebugger
 export default function RootLayout({
 	children,
 }: Readonly<{
@@ -32,6 +36,7 @@ export default function RootLayout({
 									<ErrorAlert />
 									<main className="flex-1">{children}</main>
 									<Footer />
+									<ApiDebugger />
 								</div>
 							</LanguageProvider>
 						</CocktailProvider>

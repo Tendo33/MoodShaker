@@ -57,33 +57,22 @@ const CocktailDetail: React.FC<CocktailDetailProps> = ({ id }) => {
 
 			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 				<div>
-					<img
-						src={cocktail.strDrinkThumb || "/placeholder.svg"}
-						alt={cocktail.strDrink}
-						className="rounded-lg shadow-md w-full"
-					/>
+					<img src={cocktail.image || "/placeholder.svg"} alt={cocktail.name} className="rounded-lg shadow-md w-full" />
 				</div>
 				<div>
-					<h1 className="text-2xl font-bold mb-2">{cocktail.strDrink}</h1>
+					<h1 className="text-2xl font-bold mb-2">{cocktail.name}</h1>
 					<p className="text-gray-600 mb-4">
-						{cocktail.strCategory} / {cocktail.strAlcoholic}
+						{cocktail.base_spirit} / {cocktail.alcohol_level}
 					</p>
 
 					<div className="flex items-center mb-2">
 						<Clock className="mr-2" />
-						<span className="text-sm">Prep Time: 5 min</span> {/* Example data */}
+						<span className="text-sm">Prep Time: {cocktail.time_required || "5 min"}</span>
 					</div>
 
 					<div className="flex items-center mb-2">
 						<Droplet className="mr-2" />
-						<span className="text-sm">
-							Ingredients:{" "}
-							{
-								Object.keys(cocktail).filter(
-									(key) => key.startsWith("strIngredient") && cocktail[key as keyof Cocktail]
-								).length
-							}
-						</span>
+						<span className="text-sm">Ingredients: {cocktail.ingredients.length}</span>
 					</div>
 
 					<div className="flex items-center mb-4">
@@ -93,26 +82,15 @@ const CocktailDetail: React.FC<CocktailDetailProps> = ({ id }) => {
 
 					<h2 className="text-xl font-semibold mb-2">Ingredients:</h2>
 					<ul className="list-disc list-inside mb-4">
-						{Object.keys(cocktail)
-							.filter((key) => key.startsWith("strIngredient") && cocktail[key as keyof Cocktail])
-							.map((key, index) => {
-								const ingredient = cocktail[key as keyof Cocktail] as string;
-								const measureKey = `strMeasure${index + 1}` as keyof Cocktail;
-								const measure = (cocktail[measureKey] as string) || "";
-
-								if (ingredient) {
-									return (
-										<li key={key}>
-											{measure} {ingredient}
-										</li>
-									);
-								}
-								return null;
-							})}
+						{cocktail.ingredients.map((ingredient, index) => (
+							<li key={index}>
+								{ingredient.amount} {ingredient.name}
+							</li>
+						))}
 					</ul>
 
 					<h2 className="text-xl font-semibold mb-2">Instructions:</h2>
-					<p className="text-gray-700 mb-4">{cocktail.strInstructions}</p>
+					<p className="text-gray-700 mb-4">{cocktail.description}</p>
 
 					<div className="flex items-center justify-between">
 						<button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">

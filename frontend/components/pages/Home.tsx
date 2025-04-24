@@ -18,6 +18,7 @@ export default function Home() {
 	const { t } = useLanguage();
 	const [hasSavedSession, setHasSavedSession] = useState(false);
 	const [currentCocktailIndex, setCurrentCocktailIndex] = useState(0);
+	const [isClient, setIsClient] = useState(false);
 
 	// Featured cocktails for the hero section
 	const featuredCocktails = [
@@ -45,13 +46,13 @@ export default function Home() {
 	];
 
 	useEffect(() => {
-		// 检查是否有保存的会话
-		if (typeof window !== "undefined") {
-			const answers = localStorage.getItem("moodshaker-answers");
-			setHasSavedSession(!!answers);
-		}
+		setIsClient(true);
+		const answers = localStorage.getItem("moodshaker-answers");
+		setHasSavedSession(!!answers);
+	}, []);
 
-		// Rotate featured cocktails
+	// Rotate featured cocktails
+	useEffect(() => {
 		const interval = setInterval(() => {
 			setCurrentCocktailIndex((prev) => (prev + 1) % featuredCocktails.length);
 		}, 5000);
@@ -128,9 +129,15 @@ export default function Home() {
 									<div className="relative h-full">
 										<div className="absolute -inset-4 bg-gradient-to-r from-amber-500/20 to-pink-500/20 rounded-full blur-xl"></div>
 										<img
-											src={cocktail.image || "/placeholder.svg"}
+											src={cocktail.image || "/placeholder.svg?height=500&width=500&query=cocktail"}
 											alt={cocktail.name}
 											className="relative rounded-3xl shadow-2xl w-full h-full object-cover"
+											onError={(e) => {
+												// 如果图片加载失败，使用占位图
+												e.currentTarget.src = `/placeholder.svg?height=500&width=500&query=${encodeURIComponent(
+													cocktail.name
+												)}`;
+											}}
 										/>
 										<div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent rounded-b-3xl">
 											<h3 className="text-2xl font-bold text-white">{cocktail.name}</h3>
@@ -223,9 +230,15 @@ export default function Home() {
 							>
 								<div className="h-48">
 									<img
-										src={cocktail.image || "/placeholder.svg"}
+										src={cocktail.image || "/placeholder.svg?height=300&width=400&query=cocktail"}
 										alt={cocktail.name}
 										className="w-full h-full object-cover"
+										onError={(e) => {
+											// 如果图片加载失败，使用占位图
+											e.currentTarget.src = `/placeholder.svg?height=300&width=400&query=${encodeURIComponent(
+												cocktail.name
+											)}`;
+										}}
 									/>
 								</div>
 								<div className="p-6">

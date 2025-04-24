@@ -9,12 +9,18 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Add API proxy configuration for development
-  async rewrites() {
+  // 添加CORS配置
+  async headers() {
     return [
       {
-        source: '/api/v1/:path*',
-        destination: process.env.API_BASE_URL ? `${process.env.API_BASE_URL}/:path*` : '/api/proxy',
+        // 允许所有来源访问API
+        source: "/api/:path*",
+        headers: [
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET,DELETE,PATCH,POST,PUT" },
+          { key: "Access-Control-Allow-Headers", value: "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version" },
+        ],
       },
     ];
   },

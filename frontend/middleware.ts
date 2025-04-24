@@ -1,34 +1,40 @@
-// Add middleware to handle API requests in production
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// This middleware handles API requests in production
+// 这个中间件处理生产环境中的API请求
 export function middleware(request: NextRequest) {
-	// Get the pathname of the request
+	// 获取请求的路径
 	const path = request.nextUrl.pathname;
 
-	// Check if the request is for the API
+	// 检查请求是否为API
 	if (path.startsWith("/api/v1/")) {
-		// Get the API URL from environment variables
-		const apiUrl = process.env.API_BASE_URL || "https://api.moodshaker.com";
+		// 从环境变量获取API URL
+		const apiUrl = process.env.API_BASE_URL;
 
-		// Create a new URL for the API request
+		if (!apiUrl) {
+			console.error("API_BASE_URL environment variable is not set");
+			return NextResponse.json({ error: "API configuration error: API_BASE_URL not set" }, { status: 500 });
+		}
+
+		// 为API请求创建新的URL
 		const url = new URL(path.replace("/api/v1", ""), apiUrl);
 
-		// Copy all search parameters
+		// 复制所有搜索参数
 		request.nextUrl.searchParams.forEach((value, key) => {
 			url.searchParams.set(key, value);
 		});
 
-		// Return a rewrite to the API URL
+		console.log(`Middleware: Rewriting request to ${url.toString()}`);
+
+		// 返回重写到API URL的请求
 		return NextResponse.rewrite(url);
 	}
 
-	// Continue with the request if it's not for the API
+	// 如果不是API请求，继续处理
 	return NextResponse.next();
 }
 
-// Configure the middleware to run only for API routes
+// 配置中间件仅对API路由运行
 export const config = {
 	matcher: "/api/v1/:path*",
 };
