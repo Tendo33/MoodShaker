@@ -12,6 +12,7 @@ import {
 	type Cocktail,
 	type BartenderRequest,
 } from "@/api/cocktail";
+import { useAuth } from "@/hooks/useAuth";
 
 // 模拟用户ID和会话ID，实际应用中应从认证系统获取
 const MOCK_USER_ID = 1;
@@ -51,6 +52,7 @@ interface CocktailProviderProps {
 }
 
 export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) => {
+	const { user } = useAuth();
 	const [answers, setAnswers] = useState<Record<string, string>>({});
 	const [userFeedback, setUserFeedback] = useState<string>("");
 	const [baseSpirits, setBaseSpirits] = useState<string[]>([]);
@@ -60,20 +62,14 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 	const [isImageLoading, setIsImageLoading] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 	const [sessionId, setSessionId] = useState<string>("");
-	const [userId, setUserId] = useState<string>("");
 
-	// Initialize session and user IDs
+	// Initialize session ID
 	useEffect(() => {
-		// Generate a random user ID if not already set
-		if (!userId) {
-			setUserId(`user-${Math.random().toString(36).substring(2, 15)}`);
-		}
-
 		// Generate a random session ID if not already set
 		if (!sessionId) {
 			setSessionId(`session-${Math.random().toString(36).substring(2, 15)}`);
 		}
-	}, [userId, sessionId]);
+	}, [sessionId]);
 
 	// 计算属性
 	const progressPercentage = (): number => {
@@ -128,17 +124,11 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			if (savedSessionId && savedSessionId !== sessionId) {
 				setSessionId(savedSessionId);
 			}
-
-			// 加载用户ID
-			const savedUserId = localStorage.getItem("moodshaker-user-id");
-			if (savedUserId && savedUserId !== userId) {
-				setUserId(savedUserId);
-			}
 		} catch (e) {
 			console.error("Error loading saved data:", e);
 			setError("加载保存的数据时出错");
 		}
-	}, [answers, baseSpirits, recommendation, userFeedback, sessionId, userId]);
+	}, [answers, baseSpirits, recommendation, userFeedback, sessionId]);
 
 	// 保存答案
 	const saveAnswer = (questionId: string, optionId: string): void => {
@@ -189,30 +179,19 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 
 	// 创建请求对象
 	const createRequestObject = (): BartenderRequest => {
-		// 将用户选择映射到API请求格式
-		let alcoholLevel = AlcoholLevel.ANY;
-		if (answers[3] === "low") alcoholLevel = AlcoholLevel.LOW;
-		else if (answers[3] === "medium") alcoholLevel = AlcoholLevel.MEDIUM;
-		else if (answers[3] === "high") alcoholLevel = AlcoholLevel.HIGH;
-		else if (answers[3] === "none") alcoholLevel = AlcoholLevel.NONE;
-
-		let difficultyLevel = DifficultyLevel.ANY;
-		if (answers[4] === "easy") difficultyLevel = DifficultyLevel.EASY;
-		else if (answers[4] === "medium") difficultyLevel = DifficultyLevel.MEDIUM;
-		else if (answers[4] === "hard") difficultyLevel = DifficultyLevel.HARD;
-
-		const hasTools = answers[2] === "yes" ? true : answers[2] === "no" ? false : null;
-
-		// 过滤掉 "all" 选项，因为后端不需要
-		const filteredSpirits = baseSpirits.filter((spirit) => spirit !== "all");
+		const mood = answers[1] || "happy";
+		const alcoholLevel = (answers[2] as AlcoholLevel) || AlcoholLevel.MEDIUM;
+		const hasTools = answers[3] === "yes";
+		const difficultyLevel = (answers[4] as DifficultyLevel) || DifficultyLevel.MEDIUM;
+		const filteredSpirits = baseSpirits.filter((spirit) => spirit !== "");
 
 		return {
-			message: userFeedback || "推荐一款适合我的鸡尾酒",
+			message: userFeedback,
 			alcohol_level: alcoholLevel,
 			has_tools: hasTools,
 			difficulty_level: difficultyLevel,
 			base_spirits: filteredSpirits.length > 0 ? filteredSpirits : null,
-			user_id: userId,
+			user_id: user?.id.toString() || "",
 			session_id: sessionId,
 		};
 	};
@@ -231,7 +210,7 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 
 			// 保存会话ID和用户ID
 			localStorage.setItem("moodshaker-session-id", sessionId);
-			localStorage.setItem("moodshaker-user-id", userId);
+			localStorage.setItem("moodshaker-user-id", user?.id.toString() || "");
 
 			// 确定使用哪种调酒师类型
 			const bartenderType = answers[1] === "classic" ? AgentType.CLASSIC_BARTENDER : AgentType.CREATIVE_BARTENDER;
@@ -268,7 +247,13 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 	const startImagePolling = (): void => {
 		setIsImageLoading(true);
 
-		pollForCocktailImage(userId, sessionId, (data: string) => {
+		if (!user) {
+			setError("请先登录");
+			setIsImageLoading(false);
+			return;
+		}
+
+		pollForCocktailImage(user.id.toString(), sessionId, (data: string) => {
 			setImageData(data);
 			setIsImageLoading(false);
 		});

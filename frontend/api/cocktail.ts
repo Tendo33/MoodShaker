@@ -173,7 +173,7 @@ export const requestCocktailRecommendation = async (
 				difficulty_level: request.difficulty_level,
 				base_spirits: request.base_spirits,
 				user_id: request.user_id,
-				session_id: request.session_id
+				session_id: request.session_id,
 			}),
 		});
 
@@ -209,7 +209,9 @@ export const requestCocktailRecommendation = async (
 // 修改图片获取方法，使用更高效的方式
 export const getCocktailImage = async (userId: string, sessionId: string): Promise<string> => {
 	try {
-		const endpoint = `/agents/cocktail_image?user_id=${encodeURIComponent(userId)}&session_id=${encodeURIComponent(sessionId)}`;
+		const endpoint = `/agents/cocktail_image?user_id=${encodeURIComponent(userId)}&session_id=${encodeURIComponent(
+			sessionId
+		)}`;
 		const apiUrl = getApiUrl(endpoint);
 
 		console.log(`Fetching cocktail image from: ${apiUrl}`);

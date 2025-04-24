@@ -8,6 +8,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ErrorAlert from "@/components/ErrorAlert";
 import "./globals.css";
+import { UserProvider } from "@/context/UserContext";
 
 // 导入ApiDebugger组件
 import ApiDebugger from "@/components/ApiDebugger";
@@ -27,21 +28,23 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<body>
-				<ThemeProvider>
-					<ErrorProvider>
-						<CocktailProvider>
-							<LanguageProvider>
-								<div className="min-h-screen flex flex-col">
-									<Header />
-									<ErrorAlert />
-									<main className="flex-1">{children}</main>
-									<Footer />
-									<ApiDebugger />
-								</div>
-							</LanguageProvider>
-						</CocktailProvider>
-					</ErrorProvider>
-				</ThemeProvider>
+				<UserProvider>
+					<ThemeProvider>
+						<ErrorProvider>
+							<CocktailProvider>
+								<LanguageProvider>
+									<div className="min-h-screen flex flex-col">
+										<Header />
+										<ErrorAlert />
+										<main className="flex-1">{children}</main>
+										<Footer />
+										<ApiDebugger />
+									</div>
+								</LanguageProvider>
+							</CocktailProvider>
+						</ErrorProvider>
+					</ThemeProvider>
+				</UserProvider>
 			</body>
 		</html>
 	);
