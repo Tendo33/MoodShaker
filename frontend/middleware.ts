@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// 这个中间件处理生产环境中的API请求
+// 修改中间件，使用 NEXT_PUBLIC_API_BASE_URL 而不是 API_BASE_URL
 export function middleware(request: NextRequest) {
 	// 获取请求的路径
 	const path = request.nextUrl.pathname;
@@ -9,11 +9,11 @@ export function middleware(request: NextRequest) {
 	// 检查请求是否为API
 	if (path.startsWith("/api/v1/")) {
 		// 从环境变量获取API URL
-		const apiUrl = process.env.API_BASE_URL;
+		const apiUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 		if (!apiUrl) {
-			console.error("API_BASE_URL environment variable is not set");
-			return NextResponse.json({ error: "API configuration error: API_BASE_URL not set" }, { status: 500 });
+			console.error("NEXT_PUBLIC_API_BASE_URL environment variable is not set");
+			return NextResponse.json({ error: "API configuration error: NEXT_PUBLIC_API_BASE_URL not set" }, { status: 500 });
 		}
 
 		// 为API请求创建新的URL

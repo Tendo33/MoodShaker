@@ -1,8 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import type React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { User, userService } from "@/services/userService";
+import { type User, userService } from "@/services/userService";
 
 interface UserContextType {
 	user: User | null;

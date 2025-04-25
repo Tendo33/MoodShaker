@@ -53,7 +53,7 @@ def get_classic_bartender(
         api_key=settings.SILICONFLOW_API_KEY,
         base_url=settings.SILICONFLOW_BASE_URL,
     )
-
+    # TODO: 需要修改，从数据库中获取
     # 定义 knowledge base
     knowledge = AgentKnowledge(
         vector_db=PgVector(

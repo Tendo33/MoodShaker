@@ -34,7 +34,7 @@ def get_creative_bartender(
         id=model_id,
         api_key=settings.OPENAI_API_KEY,
         base_url=settings.OPENAI_BASE_URL,
-        temperature=0.8,  # 更高的温度以鼓励创意
+        temperature=0.7,
     )
 
     # 定义 persistent memory for chat history

@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, ArrowRight, Check, X } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { useCocktail } from "@/context/CocktailContext";
+import React from "react";
 
 // Question option images
 const optionImages = {
@@ -59,10 +60,21 @@ export default function Questions() {
 	// 添加一个标志来防止重复设置
 	const initialSetupDone = useRef(false);
 
-	// 简化主题样式计算
-	const textColorClass = theme === "dark" ? "text-white" : "text-gray-900";
-	const cardClasses = theme === "dark" ? "bg-gray-800/80" : "bg-white/80";
-	const borderClasses = theme === "dark" ? "border-gray-700" : "border-gray-200";
+	// 使用useMemo优化计算属性
+	const themeClasses = useMemo(
+		() =>
+			theme === "dark"
+				? "bg-gradient-to-b from-gray-950 to-gray-900 text-white"
+				: "bg-gradient-to-b from-amber-50 to-white text-gray-900",
+		[theme]
+	);
+
+	const textColorClass = useMemo(() => (theme === "dark" ? "text-white" : "text-gray-900"), [theme]);
+	const cardClasses = useMemo(
+		() => (theme === "dark" ? "bg-white/10 text-white" : "bg-white/80 text-gray-900"),
+		[theme]
+	);
+	const borderClasses = useMemo(() => (theme === "dark" ? "border-white/10" : "border-gray-200"), [theme]);
 
 	const questions = [
 		{
@@ -166,6 +178,9 @@ export default function Questions() {
 	];
 
 	const handleOptionSelect = (questionId: number, optionId: string) => {
+		// 如果已经选择了相同的选项，不做任何操作
+		if (answers[questionId] === optionId) return;
+
 		saveAnswer(questionId.toString(), optionId);
 		setAnimateProgress(true);
 
@@ -176,7 +191,7 @@ export default function Questions() {
 		// 显示下一个问题或基酒选择部分
 		const nextQuestionId = questionId + 1;
 		if (nextQuestionId <= questions.length) {
-			// 自动显示下一个问题
+			// 只有当下一个问题不在可见列表中时才更新状态
 			if (!visibleQuestions.includes(nextQuestionId)) {
 				setVisibleQuestions((prev) => [...prev, nextQuestionId]);
 
@@ -187,8 +202,8 @@ export default function Questions() {
 					}
 				}, 100);
 			}
-		} else if (questionId === questions.length) {
-			// 如果是最后一个问题，自动显示基酒选择部分
+		} else if (questionId === questions.length && !showBaseSpirits) {
+			// 如果是最后一个问题且基酒选择部分未显示，则显示基酒选择部分
 			setShowBaseSpirits(true);
 			setTimeout(() => {
 				if (baseSpiritsRef.current) {
@@ -288,6 +303,48 @@ export default function Questions() {
 		}
 	}, [userFeedback]);
 
+	// 问题选项组件
+	const QuestionOption = React.memo(
+		({
+			option,
+			isSelected,
+			onSelect,
+		}: {
+			option: { id: string; text: string; image: string };
+			isSelected: boolean;
+			onSelect: () => void;
+		}) => {
+			const { theme } = useTheme();
+			const borderClasses = theme === "dark" ? "border-white/10" : "border-gray-200";
+			const cardClasses = theme === "dark" ? "bg-white/10 text-white" : "bg-white/80 text-gray-900";
+
+			return (
+				<div className="transition-all duration-300">
+					<div
+						className={`cursor-pointer transition-all duration-300 hover:scale-105 border ${borderClasses} rounded-xl overflow-hidden ${cardClasses} ${
+							isSelected ? "ring-2 ring-pink-500 shadow-lg" : ""
+						}`}
+						onClick={onSelect}
+					>
+						<div className="p-4">
+							<div className="flex flex-col items-center text-center">
+								<div className="mb-3 rounded-full overflow-hidden bg-gradient-to-r from-amber-500/20 to-pink-500/20 p-2">
+									<img
+										src={option.image || "/placeholder.svg"}
+										alt={option.text}
+										className="w-20 h-20 object-cover rounded-full"
+									/>
+								</div>
+								<h3 className={`font-medium ${theme === "dark" ? "text-white" : "text-gray-900"}`}>{option.text}</h3>
+							</div>
+						</div>
+					</div>
+				</div>
+			);
+		}
+	);
+	QuestionOption.displayName = "QuestionOption";
+
 	return (
 		<div className="container mx-auto px-4 py-8">
 			<div className="flex">
@@ -337,27 +394,12 @@ export default function Questions() {
 
 								<div className="grid gap-4 grid-cols-2 md:grid-cols-4">
 									{question.options.map((option) => (
-										<div key={option.id} className="transition-all duration-300">
-											<div
-												className={`cursor-pointer transition-all duration-300 hover:scale-105 border ${borderClasses} rounded-xl overflow-hidden ${cardClasses} ${
-													answers[question.id] === option.id ? "ring-2 ring-pink-500 shadow-lg" : ""
-												}`}
-												onClick={() => handleOptionSelect(question.id, option.id)}
-											>
-												<div className="p-4">
-													<div className="flex flex-col items-center text-center">
-														<div className="mb-3 rounded-full overflow-hidden bg-gradient-to-r from-amber-500/20 to-pink-500/20 p-2">
-															<img
-																src={option.image || "/placeholder.svg"}
-																alt={option.text}
-																className="w-20 h-20 object-cover rounded-full"
-															/>
-														</div>
-														<h3 className={`font-medium ${textColorClass}`}>{option.text}</h3>
-													</div>
-												</div>
-											</div>
-										</div>
+										<QuestionOption
+											key={option.id}
+											option={option}
+											isSelected={answers[question.id] === option.id}
+											onSelect={() => handleOptionSelect(question.id, option.id)}
+										/>
 									))}
 								</div>
 							</div>

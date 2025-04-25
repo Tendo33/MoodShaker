@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Clock, Droplet, RefreshCw, Beaker, Share2 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
@@ -8,6 +8,7 @@ import { useCocktail } from "@/context/CocktailContext";
 import { getCocktailById } from "@/services/cocktailService";
 import type { Cocktail } from "@/api/cocktail";
 import LoadingSpinner from "@/components/LoadingSpinner";
+import React from "react";
 
 // Cocktail glass images
 const glassImages = {
@@ -46,15 +47,22 @@ export default function CocktailRecommendation() {
 	const [showShareTooltip, setShowShareTooltip] = useState(false);
 	const [activeStep, setActiveStep] = useState<number | null>(null);
 
-	// 主题相关计算属性
-	const themeClasses =
-		theme === "dark"
-			? "bg-gradient-to-b from-gray-950 to-gray-900 text-white"
-			: "bg-gradient-to-b from-amber-50 to-white text-gray-900";
+	// 使用useMemo优化计算属性
+	const themeClasses = useMemo(
+		() =>
+			theme === "dark"
+				? "bg-gradient-to-b from-gray-950 to-gray-900 text-white"
+				: "bg-gradient-to-b from-amber-50 to-white text-gray-900",
+		[theme]
+	);
 
-	const textColorClass = theme === "dark" ? "text-white" : "text-gray-900";
-	const cardClasses = theme === "dark" ? "bg-white/10 text-white" : "bg-white/80 text-gray-900";
-	const borderClasses = theme === "dark" ? "border-white/10" : "border-gray-200";
+	const textColorClass = useMemo(() => (theme === "dark" ? "text-white" : "text-gray-900"), [theme]);
+	const cardClasses = useMemo(
+		() => (theme === "dark" ? "bg-white/10 text-white" : "bg-white/80 text-gray-900"),
+		[theme]
+	);
+	const borderClasses = useMemo(() => (theme === "dark" ? "border-white/10" : "border-gray-200"), [theme]);
+
 	const loadingOverlayClasses = theme === "dark" ? "bg-gray-800/50" : "bg-white/50";
 	const tagClasses = theme === "dark" ? "bg-white/10 text-white" : "bg-white/90 text-gray-900";
 	const toolCardClasses = theme === "dark" ? "bg-white/5 text-white" : "bg-white/90 text-gray-900";
@@ -186,6 +194,49 @@ export default function CocktailRecommendation() {
 		);
 	}
 
+	// 提取CocktailImage组件
+	const CocktailImage = React.memo(
+		({
+			cocktailId,
+			imageData,
+			cocktailName,
+		}: {
+			cocktailId?: string;
+			imageData: string | null;
+			cocktailName?: string;
+		}) => {
+			const getStaticCocktailImage = (id: string) => {
+				return staticCocktailImages[id as keyof typeof staticCocktailImages] || "/vibrant-cocktail-closeup.png";
+			};
+
+			if (!cocktailId && imageData) {
+				return (
+					<img
+						src={`data:image/jpeg;base64,${imageData}`}
+						alt={cocktailName ?? "Cocktail image"}
+						className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+						loading="lazy"
+					/>
+				);
+			}
+
+			return (
+				<img
+					src={cocktailId ? getStaticCocktailImage(cocktailId) : "/vibrant-cocktail-closeup.png"}
+					alt={cocktailName ?? "Cocktail image"}
+					className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+					loading="lazy"
+					onError={(e) => {
+						e.currentTarget.src = `/placeholder.svg?height=500&width=800&query=${encodeURIComponent(
+							cocktailName || "cocktail"
+						)}`;
+					}}
+				/>
+			);
+		}
+	);
+	CocktailImage.displayName = "CocktailImage";
+
 	return (
 		<div className={`min-h-screen transition-colors duration-300 ${themeClasses}`}>
 			{/* Enhanced background effects */}
@@ -245,24 +296,7 @@ export default function CocktailRecommendation() {
 									<p className="text-gray-300 font-medium">正在生成鸡尾酒图片...</p>
 								</div>
 							</div>
-							{!cocktailId && imageData ? (
-								<img
-									src={`data:image/jpeg;base64,${imageData}`}
-									alt={cocktail?.name ?? "Cocktail image"}
-									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-								/>
-							) : (
-								<img
-									src={cocktailId ? getStaticCocktailImage(cocktailId) : "/vibrant-cocktail-closeup.png"}
-									alt={cocktail?.name ?? "Cocktail image"}
-									className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-									onError={(e) => {
-										e.currentTarget.src = `/placeholder.svg?height=500&width=800&query=${encodeURIComponent(
-											cocktail?.name || "cocktail"
-										)}`;
-									}}
-								/>
-							)}
+							<CocktailImage cocktailId={cocktailId} imageData={imageData} cocktailName={cocktail?.name} />
 						</div>
 
 						<div className="mt-8 text-center">

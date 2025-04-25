@@ -77,21 +77,29 @@ export interface BartenderRequest {
 // Added timeout for API requests
 const API_TIMEOUT = 60000; // 30 seconds
 
-// Helper function to handle API timeouts
-const fetchWithTimeout = async (url: string, options: RequestInit = {}) => {
+// 优化API超时处理
+const fetchWithTimeout = async (url: string, options: RequestInit = {}, timeout = API_TIMEOUT) => {
 	const controller = new AbortController();
 	const { signal } = controller;
 
-	const timeout = setTimeout(() => {
-		controller.abort();
-	}, API_TIMEOUT);
+	// 创建一个超时Promise
+	const timeoutPromise = new Promise<never>((_, reject) => {
+		const timeoutId = setTimeout(() => {
+			controller.abort();
+			reject(new Error(`Request timed out after ${timeout}ms`));
+			clearTimeout(timeoutId);
+		}, timeout);
+	});
 
 	try {
-		const response = await fetch(url, { ...options, signal });
-		clearTimeout(timeout);
+		// 使用Promise.race在请求和超时之间竞争
+		const response = (await Promise.race([fetch(url, { ...options, signal }), timeoutPromise])) as Response;
+
 		return response;
 	} catch (error) {
-		clearTimeout(timeout);
+		if (error instanceof DOMException && error.name === "AbortError") {
+			throw new Error(`Request to ${url} timed out after ${timeout}ms`);
+		}
 		throw error;
 	}
 };
@@ -241,16 +249,17 @@ export async function pollForCocktailImage(
 	onSuccess: (imageData: string) => void,
 	maxAttempts = 10,
 	initialInterval = 1000
-) {
+): Promise<NodeJS.Timeout | null> {
 	let attempts = 0;
 	let interval = initialInterval;
+	let timeoutId: NodeJS.Timeout | null = null;
 
 	const poll = async () => {
 		if (attempts >= maxAttempts) {
 			console.error("Max polling attempts reached");
 			// Provide placeholder image on polling failure
 			onSuccess(""); // Empty string will trigger placeholder image
-			return;
+			return null;
 		}
 
 		attempts++;
@@ -259,18 +268,21 @@ export async function pollForCocktailImage(
 
 			if (imageData) {
 				onSuccess(imageData);
+				return null;
 			} else {
 				// 使用指数退避算法增加轮询间隔
 				interval = Math.min(interval * 1.5, 10000); // 最大间隔10秒
-				setTimeout(poll, interval);
+				timeoutId = setTimeout(poll, interval);
+				return timeoutId;
 			}
 		} catch (error) {
 			console.error("Error polling for image:", error);
 			// 使用指数退避算法增加轮询间隔
 			interval = Math.min(interval * 1.5, 10000); // 最大间隔10秒
-			setTimeout(poll, interval);
+			timeoutId = setTimeout(poll, interval);
+			return timeoutId;
 		}
 	};
 
-	poll();
+	return poll();
 }

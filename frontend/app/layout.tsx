@@ -1,5 +1,6 @@
 import type React from "react";
 import type { Metadata } from "next";
+import { Montserrat } from "next/font/google";
 import { ThemeProvider } from "@/context/ThemeContext";
 import { ErrorProvider } from "@/context/ErrorContext";
 import { CocktailProvider } from "@/context/CocktailContext";
@@ -12,6 +13,13 @@ import { UserProvider } from "@/context/UserContext";
 
 // 导入ApiDebugger组件
 import ApiDebugger from "@/components/ApiDebugger";
+
+// 配置 Montserrat 字体
+const montserrat = Montserrat({
+	subsets: ["latin"],
+	variable: "--font-montserrat",
+	display: "swap",
+});
 
 export const metadata: Metadata = {
 	title: "MoodShaker - 找到适合您心情的鸡尾酒",
@@ -26,7 +34,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang="en" suppressHydrationWarning className={montserrat.variable}>
 			<body>
 				<UserProvider>
 					<ThemeProvider>

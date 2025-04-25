@@ -20,12 +20,14 @@ export default function ApiDebugger() {
 
 				if (!process.env.NEXT_PUBLIC_API_BASE_URL) {
 					setApiStatus("error");
-					setErrorMessage("API_BASE_URL环境变量未配置");
+					setErrorMessage("NEXT_PUBLIC_API_BASE_URL环境变量未配置");
 					return;
 				}
 
 				// 尝试连接API
-				const response = await fetch("/api/proxy?url=" + encodeURIComponent(process.env.NEXT_PUBLIC_API_BASE_URL + "/health"));
+				const response = await fetch(
+					"/api/proxy?url=" + encodeURIComponent(process.env.NEXT_PUBLIC_API_BASE_URL + "/health")
+				);
 
 				if (response.ok) {
 					setApiStatus("connected");

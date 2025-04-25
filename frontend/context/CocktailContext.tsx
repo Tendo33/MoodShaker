@@ -1,8 +1,7 @@
 "use client";
 
-import type React from "react";
-
-import { createContext, useContext, useState, useCallback, type ReactNode, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
+import type { ReactNode } from "react";
 import {
 	requestCocktailRecommendation,
 	pollForCocktailImage,
@@ -13,10 +12,18 @@ import {
 	type BartenderRequest,
 } from "@/api/cocktail";
 import { useAuth } from "@/hooks/useAuth";
+import { getFromStorage, saveToStorage, clearStorageWithPrefix } from "@/utils/localStorage";
 
-// 模拟用户ID和会话ID，实际应用中应从认证系统获取
-const MOCK_USER_ID = 1;
-const MOCK_SESSION_ID = "session-123";
+// 存储键常量
+const STORAGE_KEYS = {
+	ANSWERS: "moodshaker-answers",
+	FEEDBACK: "moodshaker-feedback",
+	BASE_SPIRITS: "moodshaker-base-spirits",
+	RECOMMENDATION: "moodshaker-recommendation",
+	SESSION_ID: "moodshaker-session-id",
+	USER_ID: "moodshaker-user-id",
+	REQUEST: "moodshaker-request",
+};
 
 interface SpiritOption {
 	id: string;
@@ -51,7 +58,11 @@ interface CocktailProviderProps {
 	children: ReactNode;
 }
 
-export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) => {
+/**
+ * 鸡尾酒上下文提供者组件
+ * 管理鸡尾酒推荐相关的状态和操作
+ */
+export const CocktailProvider = ({ children }: CocktailProviderProps) => {
 	const { user } = useAuth();
 	const [answers, setAnswers] = useState<Record<string, string>>({});
 	const [userFeedback, setUserFeedback] = useState<string>("");
@@ -63,64 +74,49 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 	const [error, setError] = useState<string | null>(null);
 	const [sessionId, setSessionId] = useState<string>("");
 
-	// Initialize session ID
+	// 初始化会话ID
 	useEffect(() => {
-		// Generate a random session ID if not already set
 		if (!sessionId) {
-			setSessionId(`session-${Math.random().toString(36).substring(2, 15)}`);
+			const savedSessionId = getFromStorage<string>(STORAGE_KEYS.SESSION_ID, "");
+			if (savedSessionId) {
+				setSessionId(savedSessionId);
+			} else {
+				const newSessionId = `session-${Math.random().toString(36).substring(2, 15)}`;
+				setSessionId(newSessionId);
+				saveToStorage(STORAGE_KEYS.SESSION_ID, newSessionId);
+			}
 		}
 	}, [sessionId]);
 
-	// 计算属性
-	const progressPercentage = (): number => {
+	// 计算进度百分比
+	const progressPercentage = useMemo(() => {
 		const totalQuestions = 4; // 问题总数
 		const answeredCount = Object.keys(answers).length;
 		return (answeredCount / totalQuestions) * 100;
-	};
+	}, [answers]);
 
-	// 是否已回答特定问题
-	const isQuestionAnswered = (questionId: string): boolean => {
-		return answers[questionId] !== undefined;
-	};
+	// 检查问题是否已回答
+	const isQuestionAnswered = useCallback(
+		(questionId: string): boolean => {
+			return answers[questionId] !== undefined;
+		},
+		[answers]
+	);
 
 	// 加载保存的数据
 	const loadSavedData = useCallback((): void => {
 		try {
-			if (typeof window === "undefined") return;
+			const savedAnswers = getFromStorage<Record<string, string>>(STORAGE_KEYS.ANSWERS, {});
+			const savedFeedback = getFromStorage<string>(STORAGE_KEYS.FEEDBACK, "");
+			const savedSpirits = getFromStorage<string[]>(STORAGE_KEYS.BASE_SPIRITS, []);
+			const savedRecommendation = getFromStorage<Cocktail | null>(STORAGE_KEYS.RECOMMENDATION, null);
+			const savedSessionId = getFromStorage<string>(STORAGE_KEYS.SESSION_ID, "");
 
-			// 加载用户答案
-			const savedAnswers = localStorage.getItem("moodshaker-answers");
-			if (savedAnswers) {
-				const parsedAnswers = JSON.parse(savedAnswers);
-				// 只有当答案发生变化时才更新状态
-				if (JSON.stringify(parsedAnswers) !== JSON.stringify(answers)) {
-					setAnswers(parsedAnswers);
-				}
-			}
+			setAnswers(savedAnswers);
+			setUserFeedback(savedFeedback);
+			setBaseSpirits(savedSpirits);
+			setRecommendation(savedRecommendation);
 
-			// 加载用户反馈
-			const savedFeedback = localStorage.getItem("moodshaker-feedback");
-			if (savedFeedback && savedFeedback !== userFeedback) {
-				setUserFeedback(savedFeedback);
-			}
-
-			// 加载基酒选择
-			const savedSpirits = localStorage.getItem("moodshaker-base-spirits");
-			if (savedSpirits) {
-				const parsedSpirits = JSON.parse(savedSpirits);
-				if (JSON.stringify(parsedSpirits) !== JSON.stringify(baseSpirits)) {
-					setBaseSpirits(parsedSpirits);
-				}
-			}
-
-			// 加载推荐结果
-			const savedRecommendation = localStorage.getItem("moodshaker-recommendation");
-			if (savedRecommendation && (!recommendation || savedRecommendation !== JSON.stringify(recommendation))) {
-				setRecommendation(JSON.parse(savedRecommendation));
-			}
-
-			// 加载会话ID
-			const savedSessionId = localStorage.getItem("moodshaker-session-id");
 			if (savedSessionId && savedSessionId !== sessionId) {
 				setSessionId(savedSessionId);
 			}
@@ -128,60 +124,65 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			console.error("Error loading saved data:", e);
 			setError("加载保存的数据时出错");
 		}
-	}, [answers, baseSpirits, recommendation, userFeedback, sessionId]);
+	}, [sessionId]);
 
 	// 保存答案
-	const saveAnswer = (questionId: string, optionId: string): void => {
-		const newAnswers = { ...answers, [questionId]: optionId };
-		setAnswers(newAnswers);
-		localStorage.setItem("moodshaker-answers", JSON.stringify(newAnswers));
-	};
+	const saveAnswer = useCallback(
+		(questionId: string, optionId: string): void => {
+			const newAnswers = { ...answers, [questionId]: optionId };
+			setAnswers(newAnswers);
+			saveToStorage(STORAGE_KEYS.ANSWERS, newAnswers);
+		},
+		[answers]
+	);
 
 	// 保存用户反馈
-	const saveFeedback = (feedback: string): void => {
+	const saveFeedback = useCallback((feedback: string): void => {
 		setUserFeedback(feedback);
-		localStorage.setItem("moodshaker-feedback", feedback);
-	};
+		saveToStorage(STORAGE_KEYS.FEEDBACK, feedback);
+	}, []);
 
 	// 保存基酒选择
-	const saveBaseSpirits = (spirits: string[]): void => {
+	const saveBaseSpirits = useCallback((spirits: string[]): void => {
 		setBaseSpirits(spirits);
-		localStorage.setItem("moodshaker-base-spirits", JSON.stringify(spirits));
-	};
+		saveToStorage(STORAGE_KEYS.BASE_SPIRITS, spirits);
+	}, []);
 
 	// 切换基酒选择
-	const toggleBaseSpirit = (spiritId: string, allSpiritsOptions: SpiritOption[]): void => {
-		let newSpirits = [...baseSpirits];
+	const toggleBaseSpirit = useCallback(
+		(spiritId: string, allSpiritsOptions: SpiritOption[]): void => {
+			let newSpirits = [...baseSpirits];
 
-		if (spiritId === "all") {
-			if (baseSpirits.includes("all")) {
-				newSpirits = [];
+			if (spiritId === "all") {
+				if (baseSpirits.includes("all")) {
+					newSpirits = [];
+				} else {
+					newSpirits = allSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id);
+				}
 			} else {
-				newSpirits = allSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id);
-			}
-		} else {
-			if (baseSpirits.includes(spiritId)) {
-				newSpirits = baseSpirits.filter((id) => id !== spiritId && id !== "all");
-			} else {
-				newSpirits = [...baseSpirits.filter((id) => id !== "all"), spiritId];
+				if (baseSpirits.includes(spiritId)) {
+					newSpirits = baseSpirits.filter((id) => id !== spiritId && id !== "all");
+				} else {
+					newSpirits = [...baseSpirits.filter((id) => id !== "all"), spiritId];
 
-				// 检查是否选择了所有基酒
-				const allOtherSpirits = allSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id);
+					// 检查是否选择了所有基酒
+					const allOtherSpirits = allSpiritsOptions.filter((option) => option.id !== "all").map((option) => option.id);
 
-				if (allOtherSpirits.every((id) => newSpirits.includes(id))) {
-					newSpirits.push("all");
+					if (allOtherSpirits.every((id) => newSpirits.includes(id))) {
+						newSpirits.push("all");
+					}
 				}
 			}
-		}
 
-		saveBaseSpirits(newSpirits);
-	};
+			saveBaseSpirits(newSpirits);
+		},
+		[baseSpirits, saveBaseSpirits]
+	);
 
 	// 创建请求对象
-	const createRequestObject = (): BartenderRequest => {
-		const mood = answers[1] || "happy";
-		const alcoholLevel = (answers[2] as AlcoholLevel) || AlcoholLevel.MEDIUM;
-		const hasTools = answers[3] === "yes";
+	const createRequestObject = useCallback((): BartenderRequest => {
+		const alcoholLevel = (answers[3] as AlcoholLevel) || AlcoholLevel.MEDIUM;
+		const hasTools = answers[2] === "yes";
 		const difficultyLevel = (answers[4] as DifficultyLevel) || DifficultyLevel.MEDIUM;
 		const filteredSpirits = baseSpirits.filter((spirit) => spirit !== "");
 
@@ -194,7 +195,7 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			user_id: user?.id.toString() || "",
 			session_id: sessionId,
 		};
-	};
+	}, [answers, baseSpirits, sessionId, user, userFeedback]);
 
 	// 提交请求获取推荐
 	const submitRequest = async (): Promise<Cocktail> => {
@@ -206,11 +207,8 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			const request = createRequestObject();
 
 			// 保存请求对象
-			localStorage.setItem("moodshaker-request", JSON.stringify(request));
-
-			// 保存会话ID和用户ID
-			localStorage.setItem("moodshaker-session-id", sessionId);
-			localStorage.setItem("moodshaker-user-id", user?.id.toString() || "");
+			saveToStorage(STORAGE_KEYS.REQUEST, request);
+			saveToStorage(STORAGE_KEYS.USER_ID, user?.id.toString() || "");
 
 			// 确定使用哪种调酒师类型
 			const bartenderType = answers[1] === "classic" ? AgentType.CLASSIC_BARTENDER : AgentType.CREATIVE_BARTENDER;
@@ -227,7 +225,7 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			if (result) {
 				setRecommendation(result);
 				// 保存推荐结果
-				localStorage.setItem("moodshaker-recommendation", JSON.stringify(result));
+				saveToStorage(STORAGE_KEYS.RECOMMENDATION, result);
 			}
 
 			// 开始轮询图片
@@ -244,7 +242,7 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 	};
 
 	// 开始轮询图片
-	const startImagePolling = (): void => {
+	const startImagePolling = useCallback((): void => {
 		setIsImageLoading(true);
 
 		if (!user) {
@@ -257,10 +255,10 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 			setImageData(data);
 			setIsImageLoading(false);
 		});
-	};
+	}, [user, sessionId]);
 
 	// 重置所有数据
-	const resetAll = (): void => {
+	const resetAll = useCallback((): void => {
 		setAnswers({});
 		setUserFeedback("");
 		setBaseSpirits([]);
@@ -271,44 +269,62 @@ export const CocktailProvider: React.FC<CocktailProviderProps> = ({ children }) 
 		// 生成新的会话ID
 		const newSessionId = `session-${Math.random().toString(36).substring(2, 15)}`;
 		setSessionId(newSessionId);
-		localStorage.setItem("moodshaker-session-id", newSessionId);
+		saveToStorage(STORAGE_KEYS.SESSION_ID, newSessionId);
 
 		// 清除本地存储
-		localStorage.removeItem("moodshaker-answers");
-		localStorage.removeItem("moodshaker-feedback");
-		localStorage.removeItem("moodshaker-base-spirits");
-		localStorage.removeItem("moodshaker-recommendation");
-		localStorage.removeItem("moodshaker-request");
-	};
+		clearStorageWithPrefix("moodshaker-");
+	}, []);
 
-	return (
-		<CocktailContext.Provider
-			value={{
-				answers,
-				userFeedback,
-				baseSpirits,
-				recommendation,
-				imageData,
-				isLoading,
-				isImageLoading,
-				error,
-				progressPercentage: progressPercentage(),
-				loadSavedData,
-				saveAnswer,
-				saveFeedback,
-				saveBaseSpirits,
-				toggleBaseSpirit,
-				submitRequest,
-				isQuestionAnswered,
-				resetAll,
-				startImagePolling,
-			}}
-		>
-			{children}
-		</CocktailContext.Provider>
+	// 上下文值
+	const contextValue = useMemo(
+		() => ({
+			answers,
+			userFeedback,
+			baseSpirits,
+			recommendation,
+			imageData,
+			isLoading,
+			isImageLoading,
+			error,
+			progressPercentage,
+			loadSavedData,
+			saveAnswer,
+			saveFeedback,
+			saveBaseSpirits,
+			toggleBaseSpirit,
+			submitRequest,
+			isQuestionAnswered,
+			resetAll,
+			startImagePolling,
+		}),
+		[
+			answers,
+			userFeedback,
+			baseSpirits,
+			recommendation,
+			imageData,
+			isLoading,
+			isImageLoading,
+			error,
+			progressPercentage,
+			loadSavedData,
+			saveAnswer,
+			saveFeedback,
+			saveBaseSpirits,
+			toggleBaseSpirit,
+			isQuestionAnswered,
+			resetAll,
+			startImagePolling,
+		]
 	);
+
+	return <CocktailContext.Provider value={contextValue}>{children}</CocktailContext.Provider>;
 };
 
+/**
+ * 使用鸡尾酒上下文的Hook
+ * @returns 鸡尾酒上下文
+ */
 export const useCocktail = (): CocktailContextType => {
 	const context = useContext(CocktailContext);
 	if (context === undefined) {
